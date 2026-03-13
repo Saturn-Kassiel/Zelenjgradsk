@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Апартаменты «Балтийский бриз» — Зеленоградск</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --mint-light: #E2F0D9; --mint: #B8F5D2; --lavender: #CAD5F0;
+  --lilac: #D9C4EC; --sky: #D0E8FF; --aqua: #BFEDF2;
+  --teal: #3E7057; --indigo: #5269AB; --silver: #E1E5F1;
+  --slate: #AFB9D0; --charcoal: #2E384D; --muted: #5A84A1; --bg: #F4F6FB;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { scroll-behavior: smooth; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--charcoal); overflow-x: hidden; }
+body::before {
+  content: ''; position: fixed; inset: 0; z-index: -1;
+  background:
+    radial-gradient(ellipse 80% 50% at 10% 20%, rgba(184,245,210,0.2) 0%, transparent 60%),
+    radial-gradient(ellipse 60% 60% at 90% 80%, rgba(208,232,255,0.25) 0%, transparent 60%),
+    var(--bg);
+}
+
+/* NAV */
+header {
+  position: sticky; top: 0; z-index: 200;
+  background: rgba(244,246,251,0.92); backdrop-filter: blur(16px);
+  border-bottom: 1px solid rgba(202,213,240,0.5);
+}
+.nav-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between;
+  height: 68px; padding: 0 40px;
+}
+.logo { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; color: var(--teal); text-decoration: none; display: flex; align-items: center; gap: 8px; }
+.logo-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg, var(--mint), var(--aqua)); flex-shrink: 0; }
+.nav-right { display: flex; align-items: center; gap: 16px; }
+.nav-back { font-size: 13px; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.nav-back:hover { color: var(--teal); }
+.btn-book-nav { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; background: var(--teal); color: white !important; border: none; padding: 10px 22px; border-radius: 50px; cursor: pointer; transition: all 0.25s; text-decoration: none; }
+.btn-book-nav:hover { background: #325f47; }
+
+/* GUEST MODE TOGGLE */
+.guest-toggle-bar {
+  background: linear-gradient(135deg, var(--teal), #5a9e7a);
+  padding: 12px 40px;
+}
+.guest-toggle-inner {
+  max-width: 1200px; margin: 0 auto;
+  display: flex; align-items: center; justify-content: space-between; gap: 16px;
+}
+.guest-toggle-text { font-size: 14px; color: white; display: flex; align-items: center; gap: 8px; }
+.guest-toggle-text strong { font-weight: 600; }
+.toggle-switch {
+  display: flex; align-items: center; gap: 10px;
+  font-size: 13px; color: rgba(255,255,255,0.8); cursor: pointer; user-select: none;
+}
+.toggle-track {
+  width: 44px; height: 24px; border-radius: 12px;
+  background: rgba(255,255,255,0.3); position: relative;
+  transition: background 0.25s; cursor: pointer; flex-shrink: 0;
+}
+.toggle-track.on { background: white; }
+.toggle-thumb {
+  position: absolute; top: 3px; left: 3px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--teal); transition: transform 0.25s;
+}
+.toggle-track.on .toggle-thumb { transform: translateX(20px); background: var(--teal); }
+
+/* PAGE LAYOUT */
+.page-wrap { max-width: 1200px; margin: 0 auto; padding: 40px 40px 80px; }
+
+/* GALLERY */
+.gallery { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 320px 200px; gap: 12px; border-radius: 24px; overflow: hidden; margin-bottom: 40px; }
+.gallery-main { grid-row: 1 / 3; background: linear-gradient(135deg, #E2F0D9, #BFEDF2, #D0E8FF); display: flex; align-items: center; justify-content: center; position: relative; }
+.gallery-sub { background: linear-gradient(135deg, #E6E6FA, #D9C4EC); display: flex; align-items: center; justify-content: center; position: relative; }
+.gallery-sub:nth-child(3) { background: linear-gradient(135deg, #D0E8FF, #BFEDF2); }
+.gallery-placeholder { opacity: 0.35; }
+.gallery-count { position: absolute; bottom: 16px; right: 16px; background: rgba(46,56,77,0.7); color: white; font-size: 12px; font-weight: 500; padding: 6px 12px; border-radius: 20px; backdrop-filter: blur(4px); }
+
+/* CONTENT GRID */
+.content-grid { display: grid; grid-template-columns: 1fr 380px; gap: 40px; align-items: start; }
+
+/* LEFT COLUMN */
+.prop-header { margin-bottom: 28px; }
+.prop-location { font-size: 12px; font-weight: 500; letter-spacing: 0.8px; text-transform: uppercase; color: var(--muted); display: flex; align-items: center; gap: 5px; margin-bottom: 10px; }
+.prop-title { font-family: 'Manrope', sans-serif; font-size: 32px; font-weight: 800; letter-spacing: -0.5px; color: var(--charcoal); margin-bottom: 14px; }
+.prop-tags { display: flex; gap: 8px; flex-wrap: wrap; }
+.prop-tag { font-size: 12px; padding: 5px 12px; border-radius: 50px; background: white; color: var(--muted); border: 1px solid var(--silver); display: flex; align-items: center; gap: 5px; }
+
+.section-block { margin-bottom: 36px; padding-bottom: 36px; border-bottom: 1px solid var(--silver); }
+.section-block:last-child { border-bottom: none; }
+.block-title { font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 700; color: var(--charcoal); margin-bottom: 16px; display: flex; align-items: center; gap: 10px; }
+.block-title svg { color: var(--teal); flex-shrink: 0; }
+.prop-desc { font-size: 15px; line-height: 1.75; color: var(--muted); }
+
+/* AMENITIES GRID */
+.amenities-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+.amenity-item { display: flex; align-items: center; gap: 10px; padding: 12px 14px; background: white; border-radius: 12px; border: 1px solid var(--silver); font-size: 13px; color: var(--charcoal); }
+.amenity-item svg { color: var(--teal); flex-shrink: 0; }
+
+/* CALENDAR */
+.cal-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 14px; }
+.cal-month-title { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700; color: var(--charcoal); }
+.cal-nav { display: flex; gap: 4px; }
+.cal-nav button { width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; font-size: 14px; color: var(--muted); display: flex; align-items: center; justify-content: center; transition: all 0.2s; touch-action: manipulation; }
+.cal-nav button:hover { border-color: var(--teal); color: var(--teal); }
+.cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; }
+.cal-day-name { font-size: 11px; font-weight: 500; text-align: center; color: var(--muted); padding: 4px 0 8px; text-transform: uppercase; }
+.cal-day { height: 48px; display: flex; align-items: center; justify-content: center; border-radius: 8px; font-size: 13px; cursor: pointer; position: relative; transition: background 0.15s; }
+.cal-day.empty { cursor: default; }
+.cal-day.free { background: rgba(184,245,210,0.4); color: var(--teal); }
+.cal-day.free:hover { background: rgba(184,245,210,0.7); }
+.cal-day.occupied { background: rgba(209,107,107,0.12); color: #c0534f; cursor: default; }
+.cal-day.pending { background: rgba(202,213,240,0.6); color: var(--indigo); cursor: default; }
+.cal-day.blocked { background: var(--silver); color: var(--slate); cursor: default; opacity: 0.6; }
+.cal-day.today { font-weight: 700; }
+.cal-day.today::after { content: ''; position: absolute; bottom: 5px; width: 4px; height: 4px; border-radius: 50%; background: currentColor; }
+.cal-legend { display: flex; gap: 14px; flex-wrap: wrap; margin-top: 16px; padding-top: 14px; border-top: 1px solid var(--silver); }
+.legend-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--muted); }
+.legend-dot { width: 10px; height: 10px; border-radius: 3px; }
+.ld-free { background: rgba(184,245,210,0.7); } .ld-occupied { background: rgba(209,107,107,0.2); }
+.ld-pending { background: rgba(202,213,240,0.8); } .ld-blocked { background: var(--silver); }
+
+/* RIGHT COLUMN — BOOKING CARD */
+.booking-card { background: white; border-radius: 24px; box-shadow: 0 4px 24px rgba(46,56,77,0.1); padding: 28px; position: sticky; top: 88px; }
+.booking-price { display: flex; align-items: baseline; gap: 4px; margin-bottom: 20px; }
+.booking-price-amount { font-family: 'Manrope', sans-serif; font-size: 30px; font-weight: 800; color: var(--charcoal); letter-spacing: -1px; }
+.booking-price-period { font-size: 14px; color: var(--muted); }
+.booking-dates { display: grid; grid-template-columns: 1fr 1fr; border: 1.5px solid var(--silver); border-radius: 14px; overflow: hidden; margin-bottom: 12px; }
+.booking-date-field { padding: 12px 14px; cursor: pointer; transition: background 0.2s; }
+.booking-date-field:first-child { border-right: 1px solid var(--silver); }
+.booking-date-field:hover { background: var(--bg); }
+.booking-date-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.booking-date-val { font-size: 14px; font-weight: 500; color: var(--charcoal); }
+.booking-guests { border: 1.5px solid var(--silver); border-radius: 14px; padding: 12px 14px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 20px; }
+.booking-guests-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: var(--muted); margin-bottom: 4px; }
+.booking-guests-val { font-size: 14px; font-weight: 500; color: var(--charcoal); }
+.btn-book-main { font-family: 'DM Sans', sans-serif; font-size: 15px; font-weight: 600; width: 100%; padding: 16px; border-radius: 50px; background: var(--teal); color: white; border: none; cursor: pointer; transition: all 0.25s; touch-action: manipulation; }
+.btn-book-main:hover { background: #325f47; box-shadow: 0 6px 20px rgba(62,112,87,0.3); }
+.booking-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 12px; }
+.booking-divider { height: 1px; background: var(--silver); margin: 20px 0; }
+.booking-calc { display: flex; flex-direction: column; gap: 10px; }
+.booking-calc-row { display: flex; justify-content: space-between; font-size: 14px; color: var(--muted); }
+.booking-calc-row.total { color: var(--charcoal); font-weight: 600; font-size: 15px; padding-top: 10px; border-top: 1px solid var(--silver); }
+
+/* ── GUEST SECTION ── */
+.guest-section {
+  display: none;
+  margin-top: 40px;
+}
+.guest-section.visible { display: block; }
+
+.guest-header {
+  background: linear-gradient(135deg, var(--teal), #5a9e7a);
+  border-radius: 20px; padding: 28px 32px; margin-bottom: 28px;
+  display: flex; align-items: center; gap: 20px;
+}
+.guest-header-icon { width: 56px; height: 56px; border-radius: 16px; background: rgba(255,255,255,0.2); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.guest-header-text h2 { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 800; color: white; margin-bottom: 4px; }
+.guest-header-text p { font-size: 14px; color: rgba(255,255,255,0.8); }
+
+.guest-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+.guest-card { background: white; border-radius: 20px; padding: 24px; border: 1.5px solid var(--silver); }
+.guest-card.full { grid-column: 1 / -1; }
+.guest-card-header { display: flex; align-items: center; gap: 10px; margin-bottom: 16px; }
+.guest-card-icon { width: 40px; height: 40px; border-radius: 12px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+.gci-teal { background: rgba(62,112,87,0.1); color: var(--teal); }
+.gci-indigo { background: rgba(82,105,171,0.1); color: var(--indigo); }
+.gci-lilac { background: rgba(199,184,234,0.3); color: #6853A3; }
+.gci-sky { background: rgba(208,232,255,0.5); color: #5A84A1; }
+.gci-aqua { background: rgba(191,237,242,0.5); color: #3E7057; }
+.gci-mint { background: rgba(184,245,210,0.4); color: var(--teal); }
+.guest-card-title { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; color: var(--charcoal); }
+
+/* WiFi card */
+.wifi-item { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; border-radius: 12px; background: var(--bg); margin-bottom: 8px; }
+.wifi-label { font-size: 12px; color: var(--muted); margin-bottom: 3px; }
+.wifi-value { font-size: 15px; font-weight: 600; color: var(--charcoal); font-family: 'Manrope', sans-serif; letter-spacing: 0.5px; }
+.copy-btn { font-size: 11px; font-weight: 500; color: var(--teal); border: 1px solid rgba(62,112,87,0.3); background: transparent; padding: 5px 10px; border-radius: 20px; cursor: pointer; white-space: nowrap; touch-action: manipulation; }
+.copy-btn:active { background: rgba(62,112,87,0.1); }
+
+/* Checkin times */
+.time-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.time-item { text-align: center; padding: 16px; background: var(--bg); border-radius: 14px; }
+.time-label { font-size: 11px; color: var(--muted); margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.5px; }
+.time-value { font-family: 'Manrope', sans-serif; font-size: 28px; font-weight: 800; color: var(--charcoal); letter-spacing: -1px; }
+.time-sub { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+/* Address / map */
+.address-text { font-size: 15px; font-weight: 600; color: var(--charcoal); margin-bottom: 6px; }
+.address-sub { font-size: 13px; color: var(--muted); margin-bottom: 14px; line-height: 1.5; }
+.map-placeholder { height: 160px; background: linear-gradient(135deg, var(--mint-light), var(--sky)); border-radius: 14px; display: flex; align-items: center; justify-content: center; position: relative; overflow: hidden; }
+.map-placeholder::after { content: ''; position: absolute; inset: 0; background: url("data:image/svg+xml,%3Csvg width='40' height='40' viewBox='0 0 40 40' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' stroke='rgba(62,112,87,0.08)' stroke-width='1'%3E%3Cpath d='M0 20h40M20 0v40'/%3E%3C/g%3E%3C/svg%3E"); }
+.map-pin { position: relative; z-index: 1; display: flex; flex-direction: column; align-items: center; gap: 4px; }
+.map-pin-dot { width: 16px; height: 16px; border-radius: 50%; background: var(--teal); border: 3px solid white; box-shadow: 0 2px 8px rgba(62,112,87,0.4); }
+.map-pin-label { font-size: 11px; font-weight: 600; color: var(--teal); background: white; padding: 3px 8px; border-radius: 20px; box-shadow: 0 2px 8px rgba(46,56,77,0.1); }
+.btn-map { display: flex; align-items: center; justify-content: center; gap: 6px; margin-top: 12px; width: 100%; padding: 11px; border-radius: 50px; border: 1.5px solid var(--silver); background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; color: var(--charcoal); cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+.btn-map:hover { border-color: var(--teal); color: var(--teal); }
+
+/* Rules */
+.rules-list { display: flex; flex-direction: column; gap: 8px; }
+.rule-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+.rule-item.allowed { background: rgba(184,245,210,0.25); color: var(--charcoal); }
+.rule-item.forbidden { background: rgba(209,107,107,0.08); color: var(--charcoal); }
+.rule-icon { flex-shrink: 0; margin-top: 1px; }
+.rule-icon.ok { color: var(--teal); }
+.rule-icon.no { color: #c0534f; }
+
+/* Nearby */
+.nearby-tabs { display: flex; gap: 6px; flex-wrap: wrap; margin-bottom: 16px; }
+.nearby-tab { font-size: 12px; font-weight: 500; padding: 6px 14px; border-radius: 50px; border: 1.5px solid var(--silver); background: transparent; color: var(--muted); cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+.nearby-tab.active { background: var(--teal); border-color: var(--teal); color: white; }
+.nearby-list { display: flex; flex-direction: column; gap: 8px; }
+.nearby-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; background: var(--bg); border-radius: 12px; }
+.nearby-icon { width: 36px; height: 36px; border-radius: 10px; background: white; border: 1px solid var(--silver); display: flex; align-items: center; justify-content: center; flex-shrink: 0; color: var(--teal); }
+.nearby-name { font-size: 14px; font-weight: 500; color: var(--charcoal); }
+.nearby-dist { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.nearby-panel { display: none; }
+.nearby-panel.active { display: flex; flex-direction: column; gap: 8px; }
+
+/* Excursions */
+.excursion-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.excursion-card { padding: 14px; border-radius: 14px; background: var(--bg); border: 1px solid var(--silver); }
+.excursion-name { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 4px; }
+.excursion-meta { font-size: 11px; color: var(--muted); display: flex; gap: 8px; }
+
+/* Weather widget */
+.weather-widget { background: linear-gradient(135deg, #CAD5F0, #D0E8FF); border-radius: 16px; padding: 20px; }
+.weather-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+.weather-city { font-size: 13px; font-weight: 500; color: var(--charcoal); }
+.weather-temp { font-family: 'Manrope', sans-serif; font-size: 42px; font-weight: 800; color: var(--charcoal); letter-spacing: -2px; }
+.weather-desc { font-size: 13px; color: var(--muted); }
+.weather-days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 6px; margin-top: 14px; }
+.weather-day { text-align: center; background: rgba(255,255,255,0.5); border-radius: 10px; padding: 8px 4px; }
+.weather-day-name { font-size: 10px; color: var(--muted); margin-bottom: 4px; }
+.weather-day-temp { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: var(--charcoal); }
+
+/* MODAL */
+.modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(46,56,77,0.45); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: white; border-radius: 28px; width: 100%; max-width: 480px; max-height: 90vh; overflow-y: auto; padding: 36px; position: relative; transform: translateY(20px); transition: transform 0.3s; box-shadow: 0 24px 80px rgba(46,56,77,0.2); }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-handle { display: none; width: 40px; height: 4px; border-radius: 2px; background: var(--silver); margin: 0 auto 20px; }
+.modal-close { position: absolute; top: 18px; right: 18px; width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.2s; }
+.modal-close:hover { border-color: var(--charcoal); color: var(--charcoal); }
+.modal-label { font-size: 11px; font-weight: 600; letter-spacing: 1.5px; text-transform: uppercase; color: var(--teal); margin-bottom: 8px; }
+.modal-title { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 800; color: var(--charcoal); margin-bottom: 4px; letter-spacing: -0.5px; }
+.modal-subtitle { font-size: 14px; color: var(--muted); margin-bottom: 24px; }
+.form-group { margin-bottom: 14px; }
+.form-label { display: block; font-size: 12px; font-weight: 500; color: var(--charcoal); margin-bottom: 6px; }
+.form-input, .form-select, .form-textarea { font-family: 'DM Sans', sans-serif; width: 100%; padding: 12px 14px; border-radius: 12px; border: 1.5px solid var(--silver); background: var(--bg); font-size: 14px; color: var(--charcoal); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.form-input:focus, .form-select:focus { border-color: var(--teal); box-shadow: 0 0 0 3px rgba(62,112,87,0.1); }
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.form-select { background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A84A1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; padding-right: 36px; }
+.btn-submit { font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 600; width: 100%; padding: 15px; border-radius: 50px; background: var(--teal); color: white; border: none; cursor: pointer; transition: all 0.25s; margin-top: 6px; touch-action: manipulation; }
+.btn-submit:hover { background: #325f47; }
+.privacy-note { text-align: center; font-size: 12px; color: var(--muted); margin-top: 10px; line-height: 1.5; }
+.success-screen { text-align: center; padding: 20px 0; display: none; }
+.success-screen.show { display: block; }
+.success-icon { width: 64px; height: 64px; border-radius: 50%; background: rgba(62,112,87,0.1); display: flex; align-items: center; justify-content: center; margin: 0 auto 16px; animation: pop 0.4s cubic-bezier(0.175,0.885,0.32,1.275); }
+@keyframes pop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+.success-title { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 8px; }
+.success-text { font-size: 14px; color: var(--muted); line-height: 1.6; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 900px) {
+  .content-grid { grid-template-columns: 1fr; }
+  .booking-card { position: static; }
+  .gallery { grid-template-columns: 1fr; grid-template-rows: 240px 140px 140px; }
+  .gallery-main { grid-row: auto; }
+  .guest-grid { grid-template-columns: 1fr; }
+  .amenities-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 640px) {
+  .nav-inner { padding: 0 20px; height: 60px; }
+  .logo { font-size: 13px; }
+  .nav-back span { display: none; }
+  .guest-toggle-bar { padding: 12px 20px; }
+  .page-wrap { padding: 24px 20px 60px; }
+  .gallery { display: flex; flex-direction: column; height: auto; border-radius: 16px; }
+  .gallery-main { height: 220px; }
+  .gallery-sub { height: 0; display: none; }
+  .prop-title { font-size: 24px; }
+  .content-grid { gap: 24px; }
+  .amenities-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .excursion-grid { grid-template-columns: 1fr; }
+  .weather-days { grid-template-columns: repeat(5,1fr); gap: 4px; }
+  .guest-header { padding: 20px; flex-direction: column; text-align: center; }
+  .time-value { font-size: 24px; }
+  .modal-overlay { align-items: flex-end; padding: 0; }
+  .modal { border-radius: 24px 24px 0 0; padding: 24px 20px 32px; }
+  .modal-handle { display: block; }
+  .form-row { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="nav-inner">
+    <a class="logo" href="index.html">
+      <div class="logo-dot"></div>
+      Апартаменты в Зеленоградске
+    </a>
+    <div class="nav-right">
+      <a href="index.html" class="nav-back">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        <span>Все объекты</span>
+      </a>
+      <button class="btn-book-nav" onclick="openModal()">Забронировать</button>
+    </div>
+  </div>
+</header>
+
+<!-- GUEST TOGGLE BAR -->
+<div class="guest-toggle-bar">
+  <div class="guest-toggle-inner">
+    <div class="guest-toggle-text">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+      <span>Режим гостя — <strong>для демонстрации</strong> закрытой информации арендатора</span>
+    </div>
+    <label class="toggle-switch">
+      Показать информацию гостя
+      <div class="toggle-track" id="toggle-track" onclick="toggleGuestMode()">
+        <div class="toggle-thumb"></div>
+      </div>
+    </label>
+  </div>
+</div>
+
+<div class="page-wrap">
+
+  <!-- GALLERY -->
+  <div class="gallery">
+    <div class="gallery-main">
+      <div class="gallery-placeholder">
+        <svg width="80" height="80" viewBox="0 0 24 24" fill="none" stroke="rgba(62,112,87,0.3)" stroke-width="0.8" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+      <div class="gallery-count">1 / 8</div>
+    </div>
+    <div class="gallery-sub">
+      <div class="gallery-placeholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(82,105,171,0.3)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+    </div>
+    <div class="gallery-sub">
+      <div class="gallery-placeholder">
+        <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(62,112,87,0.25)" stroke-width="1" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+      </div>
+    </div>
+  </div>
+
+  <div class="content-grid">
+    <!-- LEFT -->
+    <div>
+
+      <!-- HEADER -->
+      <div class="section-block">
+        <div class="prop-header">
+          <div class="prop-location">
+            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Зеленоградск, Калининградская область
+          </div>
+          <h1 class="prop-title">Апартаменты «Балтийский бриз»</h1>
+          <div class="prop-tags">
+            <span class="prop-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg> 1 спальня</span>
+            <span class="prop-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> До 2 гостей</span>
+            <span class="prop-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/><path d="M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1"/></svg> 5 мин до моря</span>
+            <span class="prop-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg> Парковка</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- DESCRIPTION -->
+      <div class="section-block">
+        <div class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Описание
+        </div>
+        <p class="prop-desc">Светлая и уютная студия в самом центре Зеленоградска, в 5 минутах пешком от Балтийского моря. Современный ремонт, панорамные окна с видом на городской парк, всё необходимое для комфортного отдыха. Идеально для пары или индивидуального путешествия.</p>
+      </div>
+
+      <!-- AMENITIES -->
+      <div class="section-block">
+        <div class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></polyline></svg>
+          Удобства
+        </div>
+        <div class="amenities-grid">
+          <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg> Wi-Fi</div>
+          <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg> Парковка</div>
+          <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-2 2"/><circle cx="10" cy="14" r="6"/><path d="M16 14h2a2 2 0 0 1 0 4h-2"/></svg> Кухня</div>
+          <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg> Стиральная машина</div>
+          <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg> Кондиционер</div>
+          <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg> Ранний заезд</div>
+        </div>
+      </div>
+
+      <!-- CALENDAR -->
+      <div class="section-block">
+        <div class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+          Занятость
+        </div>
+        <div class="cal-header">
+          <div class="cal-month-title" id="cal-month"></div>
+          <div class="cal-nav">
+            <button onclick="changeMonth(-1)">&#8249;</button>
+            <button onclick="changeMonth(1)">&#8250;</button>
+          </div>
+        </div>
+        <div class="cal-grid" id="cal-grid"></div>
+        <div class="cal-legend">
+          <div class="legend-item"><div class="legend-dot ld-free"></div>Свободно</div>
+          <div class="legend-item"><div class="legend-dot ld-occupied"></div>Занято</div>
+          <div class="legend-item"><div class="legend-dot ld-pending"></div>На рассмотрении</div>
+          <div class="legend-item"><div class="legend-dot ld-blocked"></div>Закрыто</div>
+        </div>
+      </div>
+
+      <!-- ── GUEST SECTION ── -->
+      <div class="guest-section" id="guest-section">
+
+        <!-- HEADER -->
+        <div class="guest-header">
+          <div class="guest-header-icon">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          </div>
+          <div class="guest-header-text">
+            <h2>Добро пожаловать!</h2>
+            <p>Вся информация для вашего комфортного пребывания</p>
+          </div>
+        </div>
+
+        <!-- CHECKIN TIMES + WIFI -->
+        <div class="guest-grid">
+          <div class="guest-card">
+            <div class="guest-card-header">
+              <div class="guest-card-icon gci-teal">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+              </div>
+              <div class="guest-card-title">Время заезда и выезда</div>
+            </div>
+            <div class="time-row">
+              <div class="time-item">
+                <div class="time-label">Заезд</div>
+                <div class="time-value">14:00</div>
+                <div class="time-sub">или раньше по договорённости</div>
+              </div>
+              <div class="time-item">
+                <div class="time-label">Выезд</div>
+                <div class="time-value">12:00</div>
+                <div class="time-sub">поздний выезд — за доп. плату</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="guest-card">
+            <div class="guest-card-header">
+              <div class="guest-card-icon gci-indigo">
+                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
+              </div>
+              <div class="guest-card-title">Wi-Fi и доступ</div>
+            </div>
+            <div class="wifi-item">
+              <div>
+                <div class="wifi-label">Сеть Wi-Fi</div>
+                <div class="wifi-value">Baltiysky_Briz</div>
+              </div>
+              <button class="copy-btn" onclick="copyText('Baltiysky_Briz', this)">Скопировать</button>
+            </div>
+            <div class="wifi-item">
+              <div>
+                <div class="wifi-label">Пароль</div>
+                <div class="wifi-value">Sea2024!</div>
+              </div>
+              <button class="copy-btn" onclick="copyText('Sea2024!', this)">Скопировать</button>
+            </div>
+            <div class="wifi-item">
+              <div>
+                <div class="wifi-label">Код подъезда</div>
+                <div class="wifi-value">1847#</div>
+              </div>
+              <button class="copy-btn" onclick="copyText('1847#', this)">Скопировать</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- ADDRESS -->
+        <div class="guest-card full" style="margin-bottom:16px">
+          <div class="guest-card-header">
+            <div class="guest-card-icon gci-sky">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            </div>
+            <div class="guest-card-title">Адрес и как добраться</div>
+          </div>
+          <div class="address-text">ул. Балтийская, 12, кв. 34</div>
+          <div class="address-sub">Зеленоградск, Калининградская область, 238530<br>Подъезд со стороны ул. Морской, домофон — кв. 34</div>
+          <div class="map-placeholder">
+            <div class="map-pin">
+              <div class="map-pin-dot"></div>
+              <div class="map-pin-label">Апартаменты</div>
+            </div>
+          </div>
+          <button class="btn-map" onclick="alert('Откроется в Яндекс.Картах или Google Maps')">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Открыть в картах
+          </button>
+        </div>
+
+        <!-- RULES -->
+        <div class="guest-card full" style="margin-bottom:16px">
+          <div class="guest-card-header">
+            <div class="guest-card-icon gci-lilac">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            </div>
+            <div class="guest-card-title">Правила проживания</div>
+          </div>
+          <div class="rules-list">
+            <div class="rule-item allowed"><svg class="rule-icon ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Тихий час с 23:00 до 8:00</div>
+            <div class="rule-item allowed"><svg class="rule-icon ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Размещение согласно количеству гостей в брони</div>
+            <div class="rule-item allowed"><svg class="rule-icon ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Соблюдать чистоту в апартаментах</div>
+            <div class="rule-item forbidden"><svg class="rule-icon no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Курение запрещено (в том числе на балконе)</div>
+            <div class="rule-item forbidden"><svg class="rule-icon no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Вечеринки и шумные мероприятия запрещены</div>
+            <div class="rule-item forbidden"><svg class="rule-icon no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Животные без согласования запрещены</div>
+          </div>
+        </div>
+
+        <!-- NEARBY -->
+        <div class="guest-card full" style="margin-bottom:16px">
+          <div class="guest-card-header">
+            <div class="guest-card-icon gci-mint">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="guest-card-title">Что рядом</div>
+          </div>
+          <div class="nearby-tabs">
+            <button class="nearby-tab active" onclick="switchTab(this,'cafe')">Кафе</button>
+            <button class="nearby-tab" onclick="switchTab(this,'shop')">Магазины</button>
+            <button class="nearby-tab" onclick="switchTab(this,'pharm')">Аптеки</button>
+            <button class="nearby-tab" onclick="switchTab(this,'sight')">Достопримечательности</button>
+          </div>
+          <div class="nearby-panel active" id="panel-cafe">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Кофейня «Балтика»</div><div class="nearby-dist">180 м · открыто до 22:00</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Ресторан «Янтарь»</div><div class="nearby-dist">320 м · кухня до 23:00</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Пиццерия «Маре»</div><div class="nearby-dist">400 м · открыто до 00:00</div></div></div>
+          </div>
+          <div class="nearby-panel" id="panel-shop">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="nearby-name">Пятёрочка</div><div class="nearby-dist">200 м · 8:00–22:00</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="nearby-name">Магазин «Балтийский»</div><div class="nearby-dist">350 м · 9:00–21:00</div></div></div>
+          </div>
+          <div class="nearby-panel" id="panel-pharm">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптека «Здоровье»</div><div class="nearby-dist">250 м · 9:00–20:00</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптечный пункт «36.6»</div><div class="nearby-dist">600 м · круглосуточно</div></div></div>
+          </div>
+          <div class="nearby-panel" id="panel-sight">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Пляж Балтийского моря</div><div class="nearby-dist">400 м пешком</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Набережная и пирс</div><div class="nearby-dist">600 м пешком</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Кёнигсбергский кот (арт-объект)</div><div class="nearby-dist">800 м пешком</div></div></div>
+          </div>
+        </div>
+
+        <!-- EXCURSIONS -->
+        <div class="guest-card full" style="margin-bottom:16px">
+          <div class="guest-card-header">
+            <div class="guest-card-icon gci-indigo">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+            </div>
+            <div class="guest-card-title">Экскурсии и маршруты</div>
+          </div>
+          <div class="excursion-grid">
+            <div class="excursion-card"><div class="excursion-name">Куршская коса</div><div class="excursion-meta"><span>~40 км</span><span>Природный заповедник</span></div></div>
+            <div class="excursion-card"><div class="excursion-name">Калининград</div><div class="excursion-meta"><span>~45 км</span><span>Исторический центр</span></div></div>
+            <div class="excursion-card"><div class="excursion-name">Янтарный</div><div class="excursion-meta"><span>~25 км</span><span>Янтарный карьер</span></div></div>
+            <div class="excursion-card"><div class="excursion-name">Светлогорск</div><div class="excursion-meta"><span>~15 км</span><span>Курортный город</span></div></div>
+          </div>
+        </div>
+
+        <!-- WEATHER -->
+        <div class="guest-card full">
+          <div class="guest-card-header">
+            <div class="guest-card-icon gci-sky">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </div>
+            <div class="guest-card-title">Погода в Зеленоградске</div>
+          </div>
+          <div class="weather-widget">
+            <div class="weather-top">
+              <div>
+                <div class="weather-city">Зеленоградск, сейчас</div>
+                <div class="weather-temp">+8°</div>
+                <div class="weather-desc">Переменная облачность</div>
+              </div>
+              <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(46,56,77,0.3)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+            </div>
+            <div class="weather-days">
+              <div class="weather-day"><div class="weather-day-name">Пт</div><div class="weather-day-temp">+8°</div></div>
+              <div class="weather-day"><div class="weather-day-name">Сб</div><div class="weather-day-temp">+10°</div></div>
+              <div class="weather-day"><div class="weather-day-name">Вс</div><div class="weather-day-temp">+12°</div></div>
+              <div class="weather-day"><div class="weather-day-name">Пн</div><div class="weather-day-temp">+9°</div></div>
+              <div class="weather-day"><div class="weather-day-name">Вт</div><div class="weather-day-temp">+7°</div></div>
+            </div>
+          </div>
+        </div>
+
+      </div><!-- /guest-section -->
+
+    </div><!-- /left column -->
+
+    <!-- RIGHT COLUMN -->
+    <div>
+      <div class="booking-card">
+        <div class="booking-price">
+          <span class="booking-price-amount">3 500</span>
+          <span class="booking-price-period">₽ / ночь</span>
+        </div>
+        <div class="booking-dates">
+          <div class="booking-date-field">
+            <div class="booking-date-label">Заезд</div>
+            <div class="booking-date-val" id="date-in">Выберите дату</div>
+          </div>
+          <div class="booking-date-field">
+            <div class="booking-date-label">Выезд</div>
+            <div class="booking-date-val" id="date-out">Выберите дату</div>
+          </div>
+        </div>
+        <div class="booking-guests">
+          <div>
+            <div class="booking-guests-label">Гости</div>
+            <div class="booking-guests-val">2 гостя</div>
+          </div>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="6 9 12 15 18 9"/></svg>
+        </div>
+        <button class="btn-book-main" onclick="openModal()">Забронировать</button>
+        <p class="booking-note">Без предоплаты — подтверждение в течение 30 мин</p>
+        <div class="booking-divider"></div>
+        <div class="booking-calc">
+          <div class="booking-calc-row"><span>3 500 ₽ × 3 ночи</span><span>10 500 ₽</span></div>
+          <div class="booking-calc-row"><span>Уборка</span><span>1 000 ₽</span></div>
+          <div class="booking-calc-row total"><span>Итого</span><span>11 500 ₽</span></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content-grid -->
+</div><!-- /page-wrap -->
+
+<!-- MODAL -->
+<div class="modal-overlay" id="modal-overlay" onclick="closeModalOutside(event)">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <button class="modal-close" onclick="closeModal()">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div id="form-screen">
+      <div class="modal-label">Заявка на бронирование</div>
+      <h2 class="modal-title">Балтийский бриз</h2>
+      <p class="modal-subtitle">Зеленоградск · 3 500 ₽ / ночь · до 2 гостей</p>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Имя</label><input type="text" class="form-input" placeholder="Ваше имя"></div>
+        <div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" placeholder="+7 (000) 000-00-00"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Дата заезда</label><input type="date" class="form-input" id="f-checkin"></div>
+        <div class="form-group"><label class="form-label">Дата выезда</label><input type="date" class="form-input"></div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Гостей</label>
+        <select class="form-select"><option>1 гость</option><option selected>2 гостя</option></select>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Комментарий (необязательно)</label>
+        <textarea class="form-input" style="resize:vertical;min-height:72px" placeholder="Особые пожелания..."></textarea>
+      </div>
+      <button class="btn-submit" onclick="submitForm()">Отправить заявку →</button>
+      <p class="privacy-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+    </div>
+    <div class="success-screen" id="success-screen">
+      <div class="success-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
+      <h2 class="success-title">Заявка отправлена!</h2>
+      <p class="success-text">Мы свяжемся с вами в течение 30 минут по указанному номеру.</p>
+      <button class="btn-book-main" style="margin-top:20px" onclick="closeModal()">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// CALENDAR
+var calState = { year: 2025, month: 2 };
+var statuses = {
+  '2025-3-5':'occupied','2025-3-6':'occupied','2025-3-7':'occupied',
+  '2025-3-10':'pending','2025-3-11':'pending',
+  '2025-3-18':'blocked','2025-3-19':'blocked','2025-3-20':'blocked',
+  '2025-3-25':'occupied','2025-3-26':'occupied','2025-3-27':'occupied'
+};
+var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+function renderCalendar() {
+  var year = calState.year, month = calState.month;
+  document.getElementById('cal-month').textContent = monthNames[month] + ' ' + year;
+  var grid = document.getElementById('cal-grid');
+  grid.innerHTML = '';
+  dayNames.forEach(function(d) {
+    var el = document.createElement('div');
+    el.className = 'cal-day-name'; el.textContent = d;
+    grid.appendChild(el);
+  });
+  var firstDay = new Date(year, month, 1).getDay();
+  var offset = firstDay === 0 ? 6 : firstDay - 1;
+  for (var i = 0; i < offset; i++) {
+    var el = document.createElement('div'); el.className = 'cal-day empty'; grid.appendChild(el);
+  }
+  var today = new Date();
+  var days = new Date(year, month + 1, 0).getDate();
+  for (var d = 1; d <= days; d++) {
+    var key = year + '-' + (month+1) + '-' + d;
+    var status = statuses[key] || 'free';
+    var el = document.createElement('div');
+    el.className = 'cal-day ' + status;
+    if (today.getFullYear()===year && today.getMonth()===month && today.getDate()===d) el.classList.add('today');
+    el.textContent = d;
+    grid.appendChild(el);
+  }
+}
+function changeMonth(delta) {
+  calState.month += delta;
+  if (calState.month > 11) { calState.month = 0; calState.year++; }
+  if (calState.month < 0) { calState.month = 11; calState.year--; }
+  renderCalendar();
+}
+renderCalendar();
+
+// GUEST TOGGLE
+function toggleGuestMode() {
+  var track = document.getElementById('toggle-track');
+  var section = document.getElementById('guest-section');
+  var isOn = track.classList.contains('on');
+  if (isOn) {
+    track.classList.remove('on');
+    section.classList.remove('visible');
+  } else {
+    track.classList.add('on');
+    section.classList.add('visible');
+    setTimeout(function() {
+      var top = section.getBoundingClientRect().top + window.pageYOffset - 80;
+      window.scrollTo({ top: top, behavior: 'smooth' });
+    }, 50);
+  }
+}
+
+// NEARBY TABS
+function switchTab(btn, panelId) {
+  document.querySelectorAll('.nearby-tab').forEach(function(t) { t.classList.remove('active'); });
+  document.querySelectorAll('.nearby-panel').forEach(function(p) { p.classList.remove('active'); });
+  btn.classList.add('active');
+  document.getElementById('panel-' + panelId).classList.add('active');
+}
+
+// COPY
+function copyText(text, btn) {
+  if (navigator.clipboard) {
+    navigator.clipboard.writeText(text).then(function() {
+      btn.textContent = 'Скопировано!';
+      setTimeout(function() { btn.textContent = 'Скопировать'; }, 2000);
+    });
+  } else {
+    btn.textContent = 'Скопировано!';
+    setTimeout(function() { btn.textContent = 'Скопировать'; }, 2000);
+  }
+}
+
+// MODAL
+function openModal() {
+  var o = document.getElementById('modal-overlay');
+  o.classList.add('open'); document.body.style.overflow = 'hidden';
+  var today = new Date().toISOString().split('T')[0];
+  document.getElementById('f-checkin').value = today;
+}
+function closeModal() {
+  document.getElementById('modal-overlay').classList.remove('open');
+  document.body.style.overflow = '';
+  setTimeout(function() {
+    document.getElementById('form-screen').style.display = 'block';
+    document.getElementById('success-screen').classList.remove('show');
+  }, 300);
+}
+function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
+function submitForm() {
+  document.getElementById('form-screen').style.display = 'none';
+  document.getElementById('success-screen').classList.add('show');
+}
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+</script>
+</body>
+</html>

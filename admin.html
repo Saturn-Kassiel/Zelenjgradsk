@@ -1,0 +1,1074 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Кабинет управляющего — Зеленоградск</title>
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #3E7057; --teal-light: rgba(62,112,87,0.1); --teal-mid: rgba(62,112,87,0.2);
+  --indigo: #5269AB; --indigo-light: rgba(82,105,171,0.1);
+  --mint: #B8F5D2; --mint-light: #E2F0D9;
+  --lavender: #CAD5F0; --sky: #D0E8FF; --lilac: #D9C4EC; --aqua: #BFEDF2;
+  --silver: #E1E5F1; --slate: #AFB9D0; --charcoal: #2E384D;
+  --muted: #6B7A99; --bg: #F4F6FB; --white: #ffffff;
+  --danger: #E05252; --danger-light: rgba(224,82,82,0.1);
+  --warning: #E09A2B; --warning-light: rgba(224,154,43,0.12);
+  --success: #3E7057; --success-light: rgba(62,112,87,0.1);
+  --sidebar-w: 240px;
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { height: 100%; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--charcoal); display: flex; height: 100%; min-height: 100vh; overflow-x: hidden; }
+
+/* ── SIDEBAR ── */
+.sidebar {
+  width: var(--sidebar-w); background: var(--charcoal); color: white;
+  display: flex; flex-direction: column; position: fixed; top: 0; left: 0; bottom: 0; z-index: 100;
+  transition: transform 0.3s;
+}
+.sidebar-logo {
+  padding: 24px 20px 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
+  display: flex; align-items: center; gap: 10px;
+}
+.logo-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg,#B8F5D2,#BFEDF2); flex-shrink: 0; }
+.sidebar-logo-text { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: white; line-height: 1.3; }
+.sidebar-logo-sub { font-size: 10px; color: rgba(255,255,255,0.4); font-weight: 400; margin-top: 2px; }
+.sidebar-nav { flex: 1; padding: 16px 12px; display: flex; flex-direction: column; gap: 2px; overflow-y: auto; }
+.nav-section-label { font-size: 10px; font-weight: 600; letter-spacing: 1px; text-transform: uppercase; color: rgba(255,255,255,0.3); padding: 12px 8px 6px; }
+.nav-item {
+  display: flex; align-items: center; gap: 10px; padding: 10px 12px; border-radius: 10px;
+  font-size: 13px; font-weight: 500; color: rgba(255,255,255,0.6);
+  cursor: pointer; transition: all 0.2s; user-select: none; position: relative;
+}
+.nav-item:hover { background: rgba(255,255,255,0.06); color: rgba(255,255,255,0.9); }
+.nav-item.active { background: rgba(184,245,210,0.12); color: white; }
+.nav-item.active svg { color: #B8F5D2; }
+.nav-item svg { color: rgba(255,255,255,0.4); flex-shrink: 0; transition: color 0.2s; }
+.nav-badge { margin-left: auto; background: var(--danger); color: white; font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px; }
+.sidebar-footer { padding: 16px 12px; border-top: 1px solid rgba(255,255,255,0.08); }
+.sidebar-footer a { display: flex; align-items: center; gap: 8px; font-size: 12px; color: rgba(255,255,255,0.4); text-decoration: none; padding: 8px; border-radius: 8px; transition: all 0.2s; }
+.sidebar-footer a:hover { color: rgba(255,255,255,0.7); background: rgba(255,255,255,0.05); }
+
+/* ── MAIN ── */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
+.topbar {
+  background: var(--white); border-bottom: 1px solid var(--silver);
+  padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 50;
+}
+.topbar-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; }
+.topbar-right { display: flex; align-items: center; gap: 12px; }
+.btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; border-radius: 50px; padding: 9px 18px; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; touch-action: manipulation; }
+.btn-primary { background: var(--teal); color: white; }
+.btn-primary:hover { background: #325f47; }
+.btn-outline { background: transparent; color: var(--charcoal); border: 1.5px solid var(--silver); }
+.btn-outline:hover { border-color: var(--teal); color: var(--teal); }
+.btn-danger { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(224,82,82,0.2); }
+.btn-sm { padding: 6px 14px; font-size: 12px; }
+
+.content { padding: 28px 32px; flex: 1; }
+
+/* ── PAGES ── */
+.page { display: none; }
+.page.active { display: block; }
+
+/* ── DASHBOARD ── */
+.stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 16px; margin-bottom: 28px; }
+.stat-card { background: var(--white); border-radius: 16px; padding: 20px 22px; border: 1px solid var(--silver); }
+.stat-card-label { font-size: 12px; color: var(--muted); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+.stat-card-value { font-family: 'Manrope', sans-serif; font-size: 28px; font-weight: 800; letter-spacing: -1px; color: var(--charcoal); }
+.stat-card-sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+.stat-card-icon { width: 36px; height: 36px; border-radius: 10px; display: flex; align-items: center; justify-content: center; float: right; margin-top: -4px; }
+.si-teal { background: var(--teal-light); color: var(--teal); }
+.si-indigo { background: var(--indigo-light); color: var(--indigo); }
+.si-warning { background: var(--warning-light); color: var(--warning); }
+.si-mint { background: rgba(184,245,210,0.3); color: var(--teal); }
+.dash-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.dash-card { background: var(--white); border-radius: 16px; padding: 22px; border: 1px solid var(--silver); }
+.dash-card-title { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: var(--charcoal); margin-bottom: 16px; display: flex; align-items: center; gap: 8px; }
+.obj-row { display: flex; align-items: center; gap: 12px; padding: 12px 0; border-bottom: 1px solid var(--silver); }
+.obj-row:last-child { border-bottom: none; padding-bottom: 0; }
+.obj-row-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.obj-row-name { flex: 1; font-size: 13px; font-weight: 500; }
+.obj-row-stat { font-size: 12px; color: var(--muted); }
+.obj-row-income { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: var(--teal); margin-left: 8px; }
+.upcoming-item { display: flex; align-items: flex-start; gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--silver); }
+.upcoming-item:last-child { border-bottom: none; }
+.upcoming-date { text-align: center; min-width: 36px; }
+.upcoming-date-day { font-family: 'Manrope', sans-serif; font-size: 18px; font-weight: 800; color: var(--charcoal); line-height: 1; }
+.upcoming-date-mon { font-size: 10px; color: var(--muted); text-transform: uppercase; }
+.upcoming-info { flex: 1; }
+.upcoming-name { font-size: 13px; font-weight: 500; color: var(--charcoal); }
+.upcoming-meta { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.pill { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 500; padding: 3px 10px; border-radius: 20px; }
+.pill-new { background: rgba(208,232,255,0.6); color: var(--indigo); }
+.pill-confirmed { background: var(--success-light); color: var(--success); }
+.pill-pending { background: var(--warning-light); color: var(--warning); }
+.pill-cancelled { background: var(--danger-light); color: var(--danger); }
+.pill-done { background: var(--silver); color: var(--muted); }
+
+/* ── BOOKINGS ── */
+.filter-bar { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; align-items: center; }
+.filter-tab { font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: 50px; border: 1.5px solid var(--silver); background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+.filter-tab.active { background: var(--charcoal); border-color: var(--charcoal); color: white; }
+.filter-tab:hover:not(.active) { border-color: var(--teal); color: var(--teal); }
+.filter-right { margin-left: auto; display: flex; gap: 8px; }
+.search-box { display: flex; align-items: center; gap: 8px; background: var(--white); border: 1.5px solid var(--silver); border-radius: 50px; padding: 7px 14px; }
+.search-box input { border: none; background: transparent; font-family: 'DM Sans', sans-serif; font-size: 13px; color: var(--charcoal); outline: none; width: 160px; }
+.search-box svg { color: var(--slate); flex-shrink: 0; }
+
+.table-wrap { background: var(--white); border-radius: 16px; border: 1px solid var(--silver); overflow: hidden; }
+.table { width: 100%; border-collapse: collapse; }
+.table th { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); padding: 12px 16px; text-align: left; background: var(--bg); border-bottom: 1px solid var(--silver); white-space: nowrap; }
+.table td { padding: 14px 16px; font-size: 13px; border-bottom: 1px solid var(--silver); vertical-align: middle; }
+.table tr:last-child td { border-bottom: none; }
+.table tr:hover td { background: rgba(244,246,251,0.7); }
+.guest-name { font-weight: 500; color: var(--charcoal); }
+.guest-phone { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.date-range { font-size: 13px; color: var(--charcoal); }
+.nights { font-size: 11px; color: var(--muted); margin-top: 2px; }
+.status-select { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; border: none; border-radius: 20px; padding: 4px 10px; cursor: pointer; outline: none; -webkit-appearance: none; appearance: none; }
+.ss-new { background: rgba(208,232,255,0.6); color: var(--indigo); }
+.ss-confirmed { background: var(--success-light); color: var(--success); }
+.ss-pending { background: var(--warning-light); color: var(--warning); }
+.ss-cancelled { background: var(--danger-light); color: var(--danger); }
+.ss-done { background: var(--silver); color: var(--muted); }
+.action-btns { display: flex; gap: 6px; }
+.icon-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.2s; touch-action: manipulation; }
+.icon-btn:hover { border-color: var(--teal); color: var(--teal); }
+.icon-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
+
+/* ── CALENDAR ── */
+.cal-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.cal-obj-tabs { display: flex; gap: 6px; }
+.cal-obj-tab { font-size: 12px; font-weight: 500; padding: 7px 16px; border-radius: 50px; border: 1.5px solid var(--silver); background: var(--white); color: var(--muted); cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+.cal-obj-tab.active { background: var(--teal); border-color: var(--teal); color: white; }
+.cal-nav-btns { display: flex; gap: 4px; margin-left: auto; }
+.cal-nav-btn { width: 34px; height: 34px; border-radius: 50%; border: 1.5px solid var(--silver); background: var(--white); cursor: pointer; display: flex; align-items: center; justify-content: center; font-size: 14px; color: var(--muted); transition: all 0.2s; touch-action: manipulation; }
+.cal-nav-btn:hover { border-color: var(--teal); color: var(--teal); }
+.cal-month-label { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700; color: var(--charcoal); min-width: 160px; text-align: center; }
+.cal-wrap { background: var(--white); border-radius: 16px; border: 1px solid var(--silver); padding: 24px; }
+.cal-grid-admin { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
+.cal-day-name-a { font-size: 11px; font-weight: 600; text-align: center; color: var(--muted); padding: 4px 0 10px; text-transform: uppercase; }
+.cal-day-a {
+  height: 60px; border-radius: 10px; display: flex; flex-direction: column;
+  align-items: center; justify-content: center; cursor: pointer;
+  position: relative; transition: all 0.15s; border: 1.5px solid transparent; font-size: 14px;
+}
+.cal-day-a.empty { cursor: default; }
+.cal-day-a.free { background: rgba(184,245,210,0.25); color: var(--teal); }
+.cal-day-a.free:hover { background: rgba(184,245,210,0.55); border-color: var(--teal); }
+.cal-day-a.occupied { background: rgba(209,107,107,0.1); color: #c0534f; cursor: default; }
+.cal-day-a.pending { background: rgba(224,154,43,0.1); color: var(--warning); cursor: default; }
+.cal-day-a.blocked { background: var(--silver); color: var(--slate); }
+.cal-day-a.blocked:hover { background: #D0D5E8; border-color: var(--slate); }
+.cal-day-a.today { font-weight: 700; }
+.cal-day-a.selected { border-color: var(--charcoal) !important; background: rgba(46,56,77,0.08) !important; }
+.cal-day-num { font-weight: 600; }
+.cal-day-status-dot { width: 5px; height: 5px; border-radius: 50%; margin-top: 3px; }
+.cal-day-a.free .cal-day-status-dot { background: var(--teal); }
+.cal-day-a.occupied .cal-day-status-dot { background: #c0534f; }
+.cal-day-a.pending .cal-day-status-dot { background: var(--warning); }
+.cal-day-a.blocked .cal-day-status-dot { background: var(--slate); }
+.cal-legend-admin { display: flex; gap: 16px; flex-wrap: wrap; margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--silver); }
+.cal-block-panel { background: var(--bg); border-radius: 12px; padding: 16px; margin-top: 16px; border: 1.5px solid var(--silver); }
+.cal-block-title { font-size: 13px; font-weight: 600; color: var(--charcoal); margin-bottom: 12px; }
+.cal-block-form { display: flex; gap: 10px; align-items: flex-end; flex-wrap: wrap; }
+.form-field { display: flex; flex-direction: column; gap: 5px; }
+.form-field label { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); }
+.form-input-sm { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 12px; border-radius: 10px; border: 1.5px solid var(--silver); background: var(--white); color: var(--charcoal); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.form-input-sm:focus { border-color: var(--teal); }
+.form-select-sm { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 32px 9px 12px; border-radius: 10px; border: 1.5px solid var(--silver); background: var(--white); color: var(--charcoal); outline: none; -webkit-appearance: none; appearance: none; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A84A1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; cursor: pointer; }
+
+/* ── EXPENSES ── */
+.expenses-toolbar { display: flex; align-items: center; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+.period-select { font-family: 'DM Sans', sans-serif; font-size: 13px; padding: 9px 32px 9px 14px; border-radius: 50px; border: 1.5px solid var(--silver); background: var(--white); color: var(--charcoal); outline: none; -webkit-appearance: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A84A1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 14px center; }
+.expenses-grid { display: grid; grid-template-columns: 1fr 360px; gap: 20px; align-items: start; }
+.cat-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.cat-card { background: var(--white); border-radius: 14px; padding: 16px 18px; border: 1px solid var(--silver); }
+.cat-card-top { display: flex; align-items: center; gap: 10px; margin-bottom: 10px; }
+.cat-dot { width: 10px; height: 10px; border-radius: 50%; flex-shrink: 0; }
+.cat-name { font-size: 13px; font-weight: 600; color: var(--charcoal); }
+.cat-amount { font-family: 'Manrope', sans-serif; font-size: 22px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.5px; }
+.cat-sub { font-size: 12px; color: var(--muted); margin-top: 2px; }
+.cat-bar { height: 4px; border-radius: 2px; background: var(--silver); margin-top: 10px; }
+.cat-bar-fill { height: 100%; border-radius: 2px; }
+.expense-form-card { background: var(--white); border-radius: 16px; padding: 22px; border: 1px solid var(--silver); position: sticky; top: 80px; }
+.expense-form-title { font-family: 'Manrope', sans-serif; font-size: 15px; font-weight: 700; color: var(--charcoal); margin-bottom: 16px; }
+.form-group-a { margin-bottom: 14px; }
+.form-group-a label { display: block; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--muted); margin-bottom: 6px; }
+.form-input-a { font-family: 'DM Sans', sans-serif; width: 100%; padding: 10px 13px; border-radius: 10px; border: 1.5px solid var(--silver); background: var(--bg); font-size: 13px; color: var(--charcoal); outline: none; transition: border-color 0.2s; -webkit-appearance: none; }
+.form-input-a:focus { border-color: var(--teal); }
+.form-select-a { font-family: 'DM Sans', sans-serif; width: 100%; padding: 10px 32px 10px 13px; border-radius: 10px; border: 1.5px solid var(--silver); background: var(--bg); font-size: 13px; color: var(--charcoal); outline: none; -webkit-appearance: none; appearance: none; cursor: pointer; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%235A84A1' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 12px center; }
+.expense-log { background: var(--white); border-radius: 16px; border: 1px solid var(--silver); overflow: hidden; margin-top: 16px; }
+.expense-log-header { padding: 14px 18px; background: var(--bg); border-bottom: 1px solid var(--silver); font-size: 13px; font-weight: 600; color: var(--charcoal); }
+.expense-row { display: flex; align-items: center; gap: 12px; padding: 12px 18px; border-bottom: 1px solid var(--silver); font-size: 13px; }
+.expense-row:last-child { border-bottom: none; }
+.expense-cat-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.expense-desc { flex: 1; color: var(--charcoal); }
+.expense-obj { font-size: 11px; color: var(--muted); }
+.expense-amount { font-family: 'Manrope', sans-serif; font-weight: 700; color: var(--charcoal); }
+.expense-date { font-size: 11px; color: var(--muted); min-width: 70px; text-align: right; }
+
+/* ── SUPPLIES ── */
+.supplies-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; margin-bottom: 20px; }
+.supply-card { background: var(--white); border-radius: 14px; padding: 18px; border: 1.5px solid var(--silver); transition: border-color 0.2s; }
+.supply-card.low { border-color: rgba(224,82,82,0.4); }
+.supply-card.ok { border-color: var(--silver); }
+.supply-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 10px; }
+.supply-name { font-size: 13px; font-weight: 600; color: var(--charcoal); }
+.supply-badge-low { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: var(--danger-light); color: var(--danger); }
+.supply-badge-ok { font-size: 10px; font-weight: 600; padding: 2px 8px; border-radius: 20px; background: var(--success-light); color: var(--success); }
+.supply-amount { font-family: 'Manrope', sans-serif; font-size: 26px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.5px; }
+.supply-unit { font-size: 12px; color: var(--muted); }
+.supply-progress { height: 4px; border-radius: 2px; background: var(--silver); margin-top: 10px; }
+.supply-prog-fill { height: 100%; border-radius: 2px; }
+.supply-actions { display: flex; gap: 6px; margin-top: 12px; }
+.btn-supply { font-family: 'DM Sans', sans-serif; font-size: 12px; font-weight: 500; padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--silver); background: transparent; color: var(--charcoal); cursor: pointer; transition: all 0.2s; touch-action: manipulation; }
+.btn-supply:hover { border-color: var(--teal); color: var(--teal); }
+.btn-supply.add { background: var(--teal-light); border-color: var(--teal-mid); color: var(--teal); }
+
+/* ── CLEANING ── */
+.cleaning-cols { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+.clean-col-title { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: var(--charcoal); margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.clean-task { background: var(--white); border-radius: 12px; border: 1.5px solid var(--silver); padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: flex-start; gap: 12px; transition: all 0.2s; cursor: pointer; }
+.clean-task.done { opacity: 0.55; }
+.clean-task-check { width: 20px; height: 20px; border-radius: 6px; border: 2px solid var(--silver); display: flex; align-items: center; justify-content: center; flex-shrink: 0; margin-top: 1px; transition: all 0.2s; }
+.clean-task.done .clean-task-check { background: var(--teal); border-color: var(--teal); }
+.clean-task-body { flex: 1; }
+.clean-task-name { font-size: 13px; font-weight: 500; color: var(--charcoal); }
+.clean-task.done .clean-task-name { text-decoration: line-through; color: var(--muted); }
+.clean-task-meta { font-size: 11px; color: var(--muted); margin-top: 3px; }
+.clean-task-urgent { background: rgba(224,82,82,0.06); border-color: rgba(224,82,82,0.3); }
+.clean-add-form { background: var(--bg); border-radius: 12px; padding: 14px; border: 1.5px dashed var(--silver); margin-top: 4px; }
+.clean-add-form input { font-family: 'DM Sans', sans-serif; width: 100%; font-size: 13px; padding: 8px 0; border: none; background: transparent; color: var(--charcoal); outline: none; }
+.clean-add-row { display: flex; gap: 8px; margin-top: 10px; flex-wrap: wrap; }
+
+/* ── MODAL ── */
+.modal-overlay { position: fixed; inset: 0; z-index: 500; background: rgba(46,56,77,0.45); backdrop-filter: blur(6px); display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity 0.3s; }
+.modal-overlay.open { opacity: 1; pointer-events: all; }
+.modal { background: var(--white); border-radius: 24px; width: 100%; max-width: 520px; max-height: 90vh; overflow-y: auto; padding: 32px; position: relative; transform: translateY(16px); transition: transform 0.3s; box-shadow: 0 24px 80px rgba(46,56,77,0.2); }
+.modal-overlay.open .modal { transform: translateY(0); }
+.modal-close { position: absolute; top: 18px; right: 18px; width: 32px; height: 32px; border-radius: 50%; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.2s; touch-action: manipulation; }
+.modal-close:hover { border-color: var(--charcoal); color: var(--charcoal); }
+.modal-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); margin-bottom: 4px; }
+.modal-sub { font-size: 13px; color: var(--muted); margin-bottom: 22px; }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 24px; right: 24px; background: var(--charcoal); color: white; font-size: 13px; padding: 12px 18px; border-radius: 12px; box-shadow: 0 8px 24px rgba(46,56,77,0.25); z-index: 1000; display: flex; align-items: center; gap: 8px; transform: translateY(80px); opacity: 0; transition: all 0.3s; }
+.toast.show { transform: translateY(0); opacity: 1; }
+.toast.success svg { color: #B8F5D2; }
+
+/* ── MOBILE TOGGLE ── */
+.mobile-menu-btn { display: none; }
+
+@media (max-width: 1100px) { .stats-grid { grid-template-columns: repeat(2,1fr); } .dash-grid { grid-template-columns: 1fr; } }
+@media (max-width: 900px) {
+  .sidebar { transform: translateX(-100%); } .sidebar.open { transform: translateX(0); }
+  .main { margin-left: 0; }
+  .mobile-menu-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; color: var(--charcoal); }
+  .content { padding: 20px 16px; }
+  .topbar { padding: 0 16px; }
+  .expenses-grid { grid-template-columns: 1fr; }
+  .cleaning-cols { grid-template-columns: 1fr; }
+  .supplies-grid { grid-template-columns: 1fr 1fr; }
+  .cat-cards { grid-template-columns: 1fr; }
+  .stats-grid { grid-template-columns: 1fr 1fr; }
+}
+@media (max-width: 600px) {
+  .stats-grid { grid-template-columns: 1fr; }
+  .supplies-grid { grid-template-columns: 1fr; }
+  .table-wrap { overflow-x: auto; }
+  .table { min-width: 600px; }
+}
+.overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
+.overlay-bg.show { display: block; }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-dot"></div>
+    <div>
+      <div class="sidebar-logo-text">Апартаменты<br>в Зеленоградске</div>
+      <div class="sidebar-logo-sub">Кабинет управляющего</div>
+    </div>
+  </div>
+  <nav class="sidebar-nav">
+    <div class="nav-section-label">Управление</div>
+    <div class="nav-item active" onclick="showPage('bookings')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+      Бронирования
+      <span class="nav-badge" id="new-badge">3</span>
+    </div>
+    <div class="nav-item" onclick="showPage('calendar')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Календарь
+    </div>
+    <div class="nav-item" onclick="showPage('expenses')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Расходы
+    </div>
+    <div class="nav-item" onclick="showPage('supplies')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+      Расходники
+    </div>
+    <div class="nav-item" onclick="showPage('cleaning')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+      Клининг
+    </div>
+    <div class="nav-section-label">Аналитика</div>
+    <div class="nav-item" onclick="showPage('dashboard')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
+      Дашборд
+    </div>
+  </nav>
+  <div class="sidebar-footer">
+    <a href="index.html">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+      Публичная страница
+    </a>
+  </div>
+</aside>
+<div class="overlay-bg" id="overlay-bg" onclick="closeSidebar()"></div>
+
+<!-- MAIN -->
+<div class="main">
+  <div class="topbar">
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="topbar-title">Бронирования</div>
+    </div>
+    <div class="topbar-right">
+      <button class="btn btn-outline" id="topbar-secondary" onclick="topbarSecondary()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        PDF-отчёт
+      </button>
+      <button class="btn btn-primary" id="topbar-primary" onclick="topbarPrimary()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Новая бронь
+      </button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- ══ BOOKINGS ══ -->
+    <div class="page active" id="page-bookings">
+      <div class="filter-bar">
+        <button class="filter-tab active" onclick="filterBookings('all',this)">Все</button>
+        <button class="filter-tab" onclick="filterBookings('new',this)">Новые</button>
+        <button class="filter-tab" onclick="filterBookings('confirmed',this)">Подтверждённые</button>
+        <button class="filter-tab" onclick="filterBookings('pending',this)">На рассмотрении</button>
+        <button class="filter-tab" onclick="filterBookings('done',this)">Завершённые</button>
+        <div class="filter-right">
+          <div class="search-box">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+            <input type="text" placeholder="Поиск гостя..." oninput="searchBookings(this.value)">
+          </div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <table class="table" id="bookings-table">
+          <thead>
+            <tr>
+              <th>Гость</th>
+              <th>Объект</th>
+              <th>Даты</th>
+              <th>Гостей</th>
+              <th>Сумма</th>
+              <th>Статус</th>
+              <th>Действия</th>
+            </tr>
+          </thead>
+          <tbody id="bookings-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ══ CALENDAR ══ -->
+    <div class="page" id="page-calendar">
+      <div class="cal-toolbar">
+        <div class="cal-obj-tabs">
+          <button class="cal-obj-tab active" onclick="switchCalObj(1,this)">Балтийский бриз</button>
+          <button class="cal-obj-tab" onclick="switchCalObj(2,this)">Янтарный</button>
+        </div>
+        <div style="margin-left:auto;display:flex;align-items:center;gap:10px">
+          <div class="cal-month-label" id="admin-cal-month"></div>
+          <div class="cal-nav-btns">
+            <button class="cal-nav-btn" onclick="adminCalMonth(-1)">&#8249;</button>
+            <button class="cal-nav-btn" onclick="adminCalMonth(1)">&#8250;</button>
+          </div>
+        </div>
+      </div>
+      <div class="cal-wrap">
+        <div class="cal-grid-admin" id="admin-cal-grid"></div>
+        <div class="cal-legend-admin">
+          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(184,245,210,0.5)"></div>Свободно</div>
+          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(209,107,107,0.2)"></div>Занято</div>
+          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(224,154,43,0.15)"></div>На рассмотрении</div>
+          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:var(--silver)"></div>Закрыто</div>
+        </div>
+        <div class="cal-block-panel">
+          <div class="cal-block-title">Заблокировать / разблокировать период</div>
+          <div class="cal-block-form">
+            <div class="form-field"><label>С</label><input type="date" class="form-input-sm" id="block-from"></div>
+            <div class="form-field"><label>По</label><input type="date" class="form-input-sm" id="block-to"></div>
+            <div class="form-field"><label>Статус</label>
+              <select class="form-select-sm" id="block-status">
+                <option value="blocked">Закрыто</option>
+                <option value="free">Открыть (свободно)</option>
+              </select>
+            </div>
+            <button class="btn btn-primary" onclick="applyBlock()">Применить</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ EXPENSES ══ -->
+    <div class="page" id="page-expenses">
+      <div class="expenses-toolbar">
+        <select class="period-select" id="expense-period" onchange="renderExpenses()">
+          <option value="2025-03">Март 2025</option>
+          <option value="2025-02">Февраль 2025</option>
+          <option value="2025-01">Январь 2025</option>
+        </select>
+        <select class="period-select" id="expense-obj-filter" onchange="renderExpenses()">
+          <option value="all">Все объекты</option>
+          <option value="1">Балтийский бриз</option>
+          <option value="2">Янтарный</option>
+        </select>
+      </div>
+      <div class="expenses-grid">
+        <div>
+          <div class="cat-cards" id="cat-cards"></div>
+          <div class="expense-log">
+            <div class="expense-log-header">История расходов</div>
+            <div id="expense-log-body"></div>
+          </div>
+        </div>
+        <div class="expense-form-card">
+          <div class="expense-form-title">Добавить расход</div>
+          <div class="form-group-a"><label>Объект</label>
+            <select class="form-select-a" id="exp-obj">
+              <option value="1">Балтийский бриз</option>
+              <option value="2">Янтарный</option>
+            </select>
+          </div>
+          <div class="form-group-a"><label>Категория</label>
+            <select class="form-select-a" id="exp-cat">
+              <option value="cleaning">Клининг</option>
+              <option value="supplies">Расходники</option>
+              <option value="repair">Ремонт</option>
+              <option value="utilities">Коммунальные</option>
+              <option value="other">Прочее</option>
+            </select>
+          </div>
+          <div class="form-group-a"><label>Описание</label><input type="text" class="form-input-a" id="exp-desc" placeholder="Уборка после гостей..."></div>
+          <div class="form-group-a"><label>Сумма, ₽</label><input type="number" class="form-input-a" id="exp-amount" placeholder="0"></div>
+          <div class="form-group-a"><label>Дата</label><input type="date" class="form-input-a" id="exp-date"></div>
+          <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:4px" onclick="addExpense()">Сохранить расход</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ SUPPLIES ══ -->
+    <div class="page" id="page-supplies">
+      <div style="margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="openAddSupply()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Добавить позицию
+        </button>
+      </div>
+      <div class="supplies-grid" id="supplies-grid"></div>
+    </div>
+
+    <!-- ══ CLEANING ══ -->
+    <div class="page" id="page-cleaning">
+      <div class="cleaning-cols">
+        <div>
+          <div class="clean-col-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Балтийский бриз
+          </div>
+          <div id="clean-list-1"></div>
+          <div class="clean-add-form">
+            <input type="text" id="clean-input-1" placeholder="Добавить задачу...">
+            <div class="clean-add-row">
+              <select class="form-select-sm" id="clean-priority-1" style="font-size:12px;padding:5px 28px 5px 10px">
+                <option value="normal">Обычная</option>
+                <option value="urgent">Срочная</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="addCleanTask(1)">Добавить</button>
+            </div>
+          </div>
+        </div>
+        <div>
+          <div class="clean-col-title">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="var(--indigo)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            Янтарный
+          </div>
+          <div id="clean-list-2"></div>
+          <div class="clean-add-form">
+            <input type="text" id="clean-input-2" placeholder="Добавить задачу...">
+            <div class="clean-add-row">
+              <select class="form-select-sm" id="clean-priority-2" style="font-size:12px;padding:5px 28px 5px 10px">
+                <option value="normal">Обычная</option>
+                <option value="urgent">Срочная</option>
+              </select>
+              <button class="btn btn-primary btn-sm" onclick="addCleanTask(2)">Добавить</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ══ DASHBOARD ══ -->
+    <div class="page" id="page-dashboard">
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Доход за март
+          </div>
+          <div class="stat-card-icon si-teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
+          <div class="stat-card-value">87 500 ₽</div>
+          <div class="stat-card-sub">+12% к прошлому месяцу</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Занятость
+          </div>
+          <div class="stat-card-icon si-indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg></div>
+          <div class="stat-card-value">74%</div>
+          <div class="stat-card-sub">23 ночи из 31</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Бронирований
+          </div>
+          <div class="stat-card-icon si-mint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
+          <div class="stat-card-value">8</div>
+          <div class="stat-card-sub">3 предстоящих</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label">
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Расходы за март
+          </div>
+          <div class="stat-card-icon si-warning"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-card-value">14 200 ₽</div>
+          <div class="stat-card-sub">Чистая прибыль: 73 300 ₽</div>
+        </div>
+      </div>
+      <div class="dash-grid">
+        <div class="dash-card">
+          <div class="dash-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
+            По объектам — март
+          </div>
+          <div class="obj-row">
+            <div class="obj-row-dot" style="background:var(--teal)"></div>
+            <div class="obj-row-name">Балтийский бриз</div>
+            <div class="obj-row-stat">15 ночей · 79%</div>
+            <div class="obj-row-income">52 500 ₽</div>
+          </div>
+          <div class="obj-row">
+            <div class="obj-row-dot" style="background:var(--indigo)"></div>
+            <div class="obj-row-name">Янтарный</div>
+            <div class="obj-row-stat">8 ночей · 65%</div>
+            <div class="obj-row-income">35 000 ₽</div>
+          </div>
+        </div>
+        <div class="dash-card">
+          <div class="dash-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+            Ближайшие заезды
+          </div>
+          <div class="upcoming-item">
+            <div class="upcoming-date"><div class="upcoming-date-day">15</div><div class="upcoming-date-mon">Мар</div></div>
+            <div class="upcoming-info">
+              <div class="upcoming-name">Анна Смирнова <span class="pill pill-confirmed" style="margin-left:6px">Подтверждено</span></div>
+              <div class="upcoming-meta">Балтийский бриз · 3 ночи · 10 500 ₽</div>
+            </div>
+          </div>
+          <div class="upcoming-item">
+            <div class="upcoming-date"><div class="upcoming-date-day">18</div><div class="upcoming-date-mon">Мар</div></div>
+            <div class="upcoming-info">
+              <div class="upcoming-name">Павел Козлов <span class="pill pill-new" style="margin-left:6px">Новая</span></div>
+              <div class="upcoming-meta">Янтарный · 5 ночей · 26 000 ₽</div>
+            </div>
+          </div>
+          <div class="upcoming-item">
+            <div class="upcoming-date"><div class="upcoming-date-day">25</div><div class="upcoming-date-mon">Мар</div></div>
+            <div class="upcoming-info">
+              <div class="upcoming-name">Мария Иванова <span class="pill pill-pending" style="margin-left:6px">Рассматривается</span></div>
+              <div class="upcoming-meta">Балтийский бриз · 2 ночи · 7 000 ₽</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /main -->
+
+<!-- MODAL: New Booking -->
+<div class="modal-overlay" id="modal-booking" onclick="closeModalBg(event,'modal-booking')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-booking')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title">Новая бронь</div>
+    <div class="modal-sub">Добавьте бронирование вручную</div>
+    <div class="form-group-a"><label>Объект</label>
+      <select class="form-select-a" id="nb-obj"><option value="1">Балтийский бриз</option><option value="2">Янтарный</option></select>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group-a"><label>Имя гостя</label><input type="text" class="form-input-a" id="nb-name" placeholder="Анна Смирнова"></div>
+      <div class="form-group-a"><label>Телефон</label><input type="tel" class="form-input-a" id="nb-phone" placeholder="+7 (000) 000-00-00"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group-a"><label>Заезд</label><input type="date" class="form-input-a" id="nb-in"></div>
+      <div class="form-group-a"><label>Выезд</label><input type="date" class="form-input-a" id="nb-out"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group-a"><label>Гостей</label>
+        <select class="form-select-a" id="nb-guests"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+      </div>
+      <div class="form-group-a"><label>Статус</label>
+        <select class="form-select-a" id="nb-status">
+          <option value="new">Новая</option>
+          <option value="confirmed">Подтверждена</option>
+          <option value="pending">На рассмотрении</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group-a"><label>Сумма, ₽</label><input type="number" class="form-input-a" id="nb-amount" placeholder="10500"></div>
+    <div class="form-group-a"><label>Комментарий</label><input type="text" class="form-input-a" id="nb-comment" placeholder="Необязательно..."></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="saveBooking()">Сохранить бронирование</button>
+  </div>
+</div>
+
+<!-- MODAL: Add Supply -->
+<div class="modal-overlay" id="modal-supply" onclick="closeModalBg(event,'modal-supply')">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-supply')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title">Добавить расходник</div>
+    <div class="modal-sub">Новая позиция в инвентаре</div>
+    <div class="form-group-a"><label>Название</label><input type="text" class="form-input-a" id="sup-name" placeholder="Туалетная бумага"></div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group-a"><label>Количество</label><input type="number" class="form-input-a" id="sup-amount" placeholder="10"></div>
+      <div class="form-group-a"><label>Единица</label><input type="text" class="form-input-a" id="sup-unit" placeholder="рул, шт, л..."></div>
+    </div>
+    <div class="form-group-a"><label>Минимальный запас</label><input type="number" class="form-input-a" id="sup-min" placeholder="5"></div>
+    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="saveSupply()">Добавить</button>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast">
+  <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
+  <span id="toast-text">Сохранено</span>
+</div>
+
+<script>
+// ── DATA ──
+var bookings = [
+  { id:1, obj:'1', objName:'Балтийский бриз', name:'Анна Смирнова', phone:'+7 900 123-45-67', in:'2025-03-15', out:'2025-03-18', guests:2, amount:10500, status:'confirmed', comment:'' },
+  { id:2, obj:'2', objName:'Янтарный', name:'Павел Козлов', phone:'+7 911 234-56-78', in:'2025-03-18', out:'2025-03-23', guests:3, amount:26000, status:'new', comment:'Нужна парковка' },
+  { id:3, obj:'1', objName:'Балтийский бриз', name:'Мария Иванова', phone:'+7 922 345-67-89', in:'2025-03-25', out:'2025-03-27', guests:1, amount:7000, status:'pending', comment:'' },
+  { id:4, obj:'2', objName:'Янтарный', name:'Сергей Петров', phone:'+7 933 456-78-90', in:'2025-03-05', out:'2025-03-08', guests:4, amount:15600, status:'done', comment:'' },
+  { id:5, obj:'1', objName:'Балтийский бриз', name:'Ольга Новикова', phone:'+7 944 567-89-01', in:'2025-03-01', out:'2025-03-05', guests:2, amount:14000, status:'done', comment:'' },
+  { id:6, obj:'2', objName:'Янтарный', name:'Дмитрий Фёдоров', phone:'+7 955 678-90-12', in:'2025-04-02', out:'2025-04-07', guests:2, amount:26000, status:'new', comment:'Первый раз в Зеленоградске' },
+  { id:7, obj:'1', objName:'Балтийский бриз', name:'Татьяна Белова', phone:'+7 966 789-01-23', in:'2025-04-10', out:'2025-04-13', guests:2, amount:10500, status:'new', comment:'' }
+];
+var nextBookingId = 8;
+
+var calStatuses = {
+  1: {
+    '2025-3-5':'occupied','2025-3-6':'occupied','2025-3-7':'occupied',
+    '2025-3-10':'pending','2025-3-11':'pending',
+    '2025-3-15':'occupied','2025-3-16':'occupied','2025-3-17':'occupied',
+    '2025-3-25':'pending','2025-3-26':'pending'
+  },
+  2: {
+    '2025-3-1':'occupied','2025-3-2':'occupied','2025-3-3':'occupied',
+    '2025-3-8':'pending','2025-3-9':'pending','2025-3-10':'pending',
+    '2025-3-18':'occupied','2025-3-19':'occupied','2025-3-20':'occupied','2025-3-21':'occupied','2025-3-22':'occupied'
+  }
+};
+
+var expenses = [
+  { id:1, obj:'1', cat:'cleaning', desc:'Уборка после гостей', amount:1500, date:'2025-03-08' },
+  { id:2, obj:'2', cat:'utilities', desc:'Коммунальные услуги', amount:4200, date:'2025-03-01' },
+  { id:3, obj:'1', cat:'supplies', desc:'Туалетная бумага, мыло', amount:800, date:'2025-03-10' },
+  { id:4, obj:'2', cat:'cleaning', desc:'Уборка + смена белья', amount:2000, date:'2025-03-12' },
+  { id:5, obj:'1', cat:'repair', desc:'Замена лампочки', amount:350, date:'2025-03-14' },
+  { id:6, obj:'2', cat:'supplies', desc:'Шампунь, гель для душа', amount:600, date:'2025-03-15' },
+  { id:7, obj:'1', cat:'utilities', desc:'Коммунальные услуги', amount:3800, date:'2025-03-01' },
+  { id:8, obj:'2', cat:'other', desc:'Сувениры для гостей', amount:950, date:'2025-03-18' }
+];
+var nextExpenseId = 9;
+var nextSupplyId = 6;
+
+var catMeta = {
+  cleaning: { name:'Клининг', color:'#3E7057' },
+  supplies: { name:'Расходники', color:'#5269AB' },
+  repair: { name:'Ремонт', color:'#E09A2B' },
+  utilities: { name:'Коммунальные', color:'#5A84A1' },
+  other: { name:'Прочее', color:'#AFB9D0' }
+};
+
+var supplies = [
+  { id:1, name:'Туалетная бумага', amount:4, unit:'рул', min:10 },
+  { id:2, name:'Жидкое мыло', amount:2, unit:'шт', min:3 },
+  { id:3, name:'Шампунь', amount:6, unit:'шт', min:4 },
+  { id:4, name:'Сменное бельё', amount:3, unit:'компл', min:2 },
+  { id:5, name:'Полотенца', amount:8, unit:'шт', min:4 }
+];
+
+var cleanTasks = {
+  1: [
+    { id:1, name:'Уборка после выезда Смирновой', urgent:true, done:false, date:'15 мар' },
+    { id:2, name:'Смена постельного белья', urgent:false, done:true, date:'15 мар' },
+    { id:3, name:'Пополнить расходники в ванной', urgent:false, done:false, date:'14 мар' }
+  ],
+  2: [
+    { id:1, name:'Генеральная уборка', urgent:true, done:false, date:'18 мар' },
+    { id:2, name:'Проверить работу бойлера', urgent:false, done:false, date:'16 мар' }
+  ]
+};
+var nextCleanId = { 1: 4, 2: 3 };
+
+// ── NAVIGATION ──
+var currentPage = 'bookings';
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд' };
+var primaryLabels = { bookings:'Новая бронь', calendar:'Заблокировать', expenses:'Добавить расход', supplies:'Добавить позицию', cleaning:'', dashboard:'PDF-отчёт' };
+
+function showPage(name) {
+  document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
+  document.getElementById('page-' + name).classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
+  var items = document.querySelectorAll('.nav-item');
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard'].indexOf(name);
+  if (items[pageIndex]) items[pageIndex].classList.add('active');
+  document.getElementById('topbar-title').textContent = pageTitles[name];
+  currentPage = name;
+  closeSidebar();
+}
+
+function topbarPrimary() {
+  if (currentPage === 'bookings') openModal('modal-booking');
+  else if (currentPage === 'supplies') openAddSupply();
+  else if (currentPage === 'expenses') addExpense();
+}
+function topbarSecondary() { showToast('PDF-отчёт формируется...'); }
+
+// ── MOBILE SIDEBAR ──
+function toggleSidebar() {
+  var s = document.getElementById('sidebar');
+  var o = document.getElementById('overlay-bg');
+  s.classList.toggle('open');
+  o.classList.toggle('show');
+}
+function closeSidebar() {
+  document.getElementById('sidebar').classList.remove('open');
+  document.getElementById('overlay-bg').classList.remove('show');
+}
+
+// ── BOOKINGS ──
+var bookingFilter = 'all';
+function renderBookings(filter, search) {
+  filter = filter || bookingFilter;
+  search = (search || '').toLowerCase();
+  var tbody = document.getElementById('bookings-body');
+  var list = bookings.filter(function(b) {
+    if (filter !== 'all' && b.status !== filter) return false;
+    if (search && b.name.toLowerCase().indexOf(search) === -1 && b.phone.indexOf(search) === -1) return false;
+    return true;
+  });
+  tbody.innerHTML = '';
+  if (!list.length) {
+    tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Нет бронирований</td></tr>';
+    return;
+  }
+  list.forEach(function(b) {
+    var inD = formatDate(b.in); var outD = formatDate(b.out);
+    var nights = Math.round((new Date(b.out) - new Date(b.in)) / 86400000);
+    var statusOptions = ['new','confirmed','pending','cancelled','done'];
+    var statusLabels = { new:'Новая', confirmed:'Подтверждена', pending:'Рассматривается', cancelled:'Отменена', done:'Завершена' };
+    var opts = statusOptions.map(function(s) { return '<option value="' + s + '"' + (b.status===s?' selected':'') + '>' + statusLabels[s] + '</option>'; }).join('');
+    var tr = document.createElement('tr');
+    tr.setAttribute('data-id', b.id);
+    tr.innerHTML =
+      '<td><div class="guest-name">' + b.name + '</div><div class="guest-phone">' + b.phone + '</div></td>' +
+      '<td><span style="font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:' + (b.obj==='1'?'rgba(62,112,87,0.1)':'rgba(82,105,171,0.1)') + ';color:' + (b.obj==='1'?'var(--teal)':'var(--indigo)') + '">' + b.objName + '</span></td>' +
+      '<td><div class="date-range">' + inD + ' — ' + outD + '</div><div class="nights">' + nights + ' ' + nightWord(nights) + '</div></td>' +
+      '<td>' + b.guests + '</td>' +
+      '<td><span style="font-family:Manrope,sans-serif;font-weight:700">' + b.amount.toLocaleString('ru') + ' ₽</span>' + (b.comment?'<div style="font-size:11px;color:var(--muted);margin-top:2px">' + b.comment + '</div>':'') + '</td>' +
+      '<td><select class="status-select ss-' + b.status + '" onchange="changeStatus(' + b.id + ',this)">' + opts + '</select></td>' +
+      '<td><div class="action-btns">' +
+        '<button class="icon-btn danger" onclick="deleteBooking(' + b.id + ')" title="Удалить">' +
+          '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
+        '</button>' +
+      '</div></td>';
+    tbody.appendChild(tr);
+  });
+  var newCount = bookings.filter(function(b){ return b.status==='new'; }).length;
+  var badge = document.getElementById('new-badge');
+  if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; }
+  else badge.style.display = 'none';
+}
+
+function filterBookings(filter, btn) {
+  bookingFilter = filter;
+  document.querySelectorAll('.filter-tab').forEach(function(t){ t.classList.remove('active'); });
+  btn.classList.add('active');
+  renderBookings(filter);
+}
+function searchBookings(val) { renderBookings(bookingFilter, val); }
+
+function changeStatus(id, sel) {
+  var b = bookings.find(function(x){ return x.id===id; });
+  if (b) {
+    b.status = sel.value;
+    sel.className = 'status-select ss-' + sel.value;
+    renderBookings(bookingFilter);
+    showToast('Статус обновлён');
+  }
+}
+function deleteBooking(id) {
+  bookings = bookings.filter(function(b){ return b.id!==id; });
+  renderBookings(bookingFilter);
+  showToast('Бронирование удалено');
+}
+function saveBooking() {
+  var obj = document.getElementById('nb-obj').value;
+  var objName = obj==='1'?'Балтийский бриз':'Янтарный';
+  var name = document.getElementById('nb-name').value.trim();
+  var phone = document.getElementById('nb-phone').value.trim();
+  var inD = document.getElementById('nb-in').value;
+  var outD = document.getElementById('nb-out').value;
+  if (!name || !inD || !outD) { alert('Заполните имя и даты'); return; }
+  bookings.push({
+    id: nextBookingId++, obj: obj, objName: objName,
+    name: name, phone: phone, in: inD, out: outD,
+    guests: parseInt(document.getElementById('nb-guests').value),
+    amount: parseInt(document.getElementById('nb-amount').value) || 0,
+    status: document.getElementById('nb-status').value,
+    comment: document.getElementById('nb-comment').value
+  });
+  closeModal('modal-booking');
+  renderBookings(bookingFilter);
+  showToast('Бронирование добавлено');
+}
+
+// ── CALENDAR ──
+var adminCalState = { year:2025, month:2, obj:1 };
+var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
+
+function renderAdminCal() {
+  var y = adminCalState.year, m = adminCalState.month, obj = adminCalState.obj;
+  document.getElementById('admin-cal-month').textContent = monthNames[m] + ' ' + y;
+  var grid = document.getElementById('admin-cal-grid');
+  grid.innerHTML = '';
+  dayNames.forEach(function(d) { var el=document.createElement('div'); el.className='cal-day-name-a'; el.textContent=d; grid.appendChild(el); });
+  var firstDay = new Date(y,m,1).getDay();
+  var offset = firstDay===0?6:firstDay-1;
+  for(var i=0;i<offset;i++){var el=document.createElement('div');el.className='cal-day-a empty';grid.appendChild(el);}
+  var today = new Date(); var days = new Date(y,m+1,0).getDate();
+  var st = calStatuses[obj] || {};
+  for(var d=1;d<=days;d++){
+    var key = y+'-'+(m+1)+'-'+d;
+    var status = st[key]||'free';
+    var el=document.createElement('div'); el.className='cal-day-a '+status;
+    if(today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d) el.classList.add('today');
+    el.innerHTML='<span class="cal-day-num">'+d+'</span><div class="cal-day-status-dot"></div>';
+    (function(day,k,s){ el.onclick=function(){ if(s==='occupied'||s==='pending') return; var newS=s==='blocked'?'free':'blocked'; calStatuses[obj][k]=newS==='free'?undefined:newS; if(!calStatuses[obj][k]) delete calStatuses[obj][k]; renderAdminCal(); showToast(newS==='blocked'?'Дата закрыта':'Дата открыта'); }; })(d,key,status);
+    grid.appendChild(el);
+  }
+  var fromInput = document.getElementById('block-from');
+  var toInput = document.getElementById('block-to');
+  if(fromInput && !fromInput.value){ var t=new Date(); fromInput.value=t.toISOString().split('T')[0]; }
+}
+
+function adminCalMonth(d){ adminCalState.month+=d; if(adminCalState.month>11){adminCalState.month=0;adminCalState.year++;} if(adminCalState.month<0){adminCalState.month=11;adminCalState.year--;} renderAdminCal(); }
+function switchCalObj(id,btn){ adminCalState.obj=id; document.querySelectorAll('.cal-obj-tab').forEach(function(t){t.classList.remove('active');}); btn.classList.add('active'); renderAdminCal(); }
+
+function applyBlock() {
+  var from = document.getElementById('block-from').value;
+  var to = document.getElementById('block-to').value;
+  var status = document.getElementById('block-status').value;
+  if (!from || !to) { alert('Укажите даты'); return; }
+  var d = new Date(from); var end = new Date(to);
+  if (d > end) { alert('Дата «С» должна быть раньше «По»'); return; }
+  var obj = adminCalState.obj;
+  while (d <= end) {
+    var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+    if (status === 'free') { delete calStatuses[obj][key]; }
+    else { calStatuses[obj][key] = status; }
+    d.setDate(d.getDate()+1);
+  }
+  renderAdminCal();
+  showToast(status==='free'?'Период открыт':'Период закрыт');
+}
+
+// ── EXPENSES ──
+function renderExpenses() {
+  var period = document.getElementById('expense-period').value;
+  var objFilter = document.getElementById('expense-obj-filter').value;
+  var filtered = expenses.filter(function(e) {
+    var dateMatch = e.date.substr(0,7) === period;
+    var objMatch = objFilter==='all' || e.obj===objFilter;
+    return dateMatch && objMatch;
+  });
+  var totals = {};
+  filtered.forEach(function(e){ totals[e.cat]=(totals[e.cat]||0)+e.amount; });
+  var grandTotal = filtered.reduce(function(s,e){return s+e.amount;},0);
+  var cards = document.getElementById('cat-cards');
+  cards.innerHTML = '';
+  Object.keys(catMeta).forEach(function(cat) {
+    var amt = totals[cat]||0;
+    var pct = grandTotal>0?Math.round(amt/grandTotal*100):0;
+    var m = catMeta[cat];
+    var card = document.createElement('div'); card.className='cat-card';
+    card.innerHTML='<div class="cat-card-top"><div class="cat-dot" style="background:'+m.color+'"></div><div class="cat-name">'+m.name+'</div></div>' +
+      '<div class="cat-amount">'+(amt?amt.toLocaleString('ru'):'0')+' ₽</div>' +
+      '<div class="cat-sub">'+pct+'% от расходов</div>' +
+      '<div class="cat-bar"><div class="cat-bar-fill" style="width:'+pct+'%;background:'+m.color+'"></div></div>';
+    cards.appendChild(card);
+  });
+  var log = document.getElementById('expense-log-body');
+  log.innerHTML = '';
+  var sorted = filtered.slice().sort(function(a,b){ return b.date.localeCompare(a.date); });
+  if(!sorted.length){ log.innerHTML='<div style="padding:20px;text-align:center;color:var(--muted);font-size:13px">Расходов нет</div>'; return; }
+  sorted.forEach(function(e){
+    var row = document.createElement('div'); row.className='expense-row';
+    row.innerHTML='<div class="expense-cat-dot" style="background:'+catMeta[e.cat].color+'"></div>' +
+      '<div><div class="expense-desc">'+e.desc+'</div><div class="expense-obj">'+catMeta[e.cat].name+' · '+(e.obj==='1'?'Балт. бриз':'Янтарный')+'</div></div>' +
+      '<div class="expense-amount">'+e.amount.toLocaleString('ru')+' ₽</div>' +
+      '<div class="expense-date">'+formatDate(e.date)+'</div>';
+    log.appendChild(row);
+  });
+}
+
+function addExpense() {
+  var desc = document.getElementById('exp-desc').value.trim();
+  var amt = parseInt(document.getElementById('exp-amount').value);
+  var date = document.getElementById('exp-date').value;
+  if (!desc || !amt || !date) { alert('Заполните описание, сумму и дату'); return; }
+  expenses.push({ id:nextExpenseId++, obj:document.getElementById('exp-obj').value, cat:document.getElementById('exp-cat').value, desc:desc, amount:amt, date:date });
+  document.getElementById('exp-desc').value=''; document.getElementById('exp-amount').value='';
+  renderExpenses(); showToast('Расход добавлен');
+}
+
+// ── SUPPLIES ──
+function renderSupplies() {
+  var grid = document.getElementById('supplies-grid');
+  grid.innerHTML = '';
+  supplies.forEach(function(s) {
+    var low = s.amount < s.min;
+    var pct = Math.min(100, Math.round(s.amount/s.min*100));
+    var color = low?'#E05252':'#3E7057';
+    var card = document.createElement('div'); card.className='supply-card '+(low?'low':'ok');
+    card.innerHTML=
+      '<div class="supply-header"><div class="supply-name">'+s.name+'</div>' +
+      '<span class="supply-badge-'+(low?'low':'ok')+'">'+(low?'Мало':'В норме')+'</span></div>' +
+      '<div class="supply-amount">'+s.amount+'</div><div class="supply-unit">'+s.unit+' · мин: '+s.min+'</div>' +
+      '<div class="supply-progress"><div class="supply-prog-fill" style="width:'+pct+'%;background:'+color+'"></div></div>' +
+      '<div class="supply-actions">' +
+        '<button class="btn-supply add" onclick="changeSupply('+s.id+',1)">+ Пополнить</button>' +
+        '<button class="btn-supply" onclick="changeSupply('+s.id+',-1)">− Использовать</button>' +
+      '</div>';
+    grid.appendChild(card);
+  });
+}
+function changeSupply(id, delta) {
+  var s = supplies.find(function(x){return x.id===id;});
+  if (s) { s.amount = Math.max(0, s.amount+delta); renderSupplies(); showToast(delta>0?'Пополнено':'Использовано'); }
+}
+function openAddSupply() { openModal('modal-supply'); }
+function saveSupply() {
+  var name = document.getElementById('sup-name').value.trim();
+  var amt = parseInt(document.getElementById('sup-amount').value);
+  var unit = document.getElementById('sup-unit').value.trim();
+  var min = parseInt(document.getElementById('sup-min').value);
+  if (!name || !unit) { alert('Заполните название и единицу'); return; }
+  supplies.push({ id:nextSupplyId++, name:name, amount:amt||0, unit:unit, min:min||1 });
+  closeModal('modal-supply'); renderSupplies(); showToast('Позиция добавлена');
+}
+
+// ── CLEANING ──
+function renderClean(obj) {
+  var list = document.getElementById('clean-list-'+obj);
+  list.innerHTML = '';
+  (cleanTasks[obj]||[]).forEach(function(t) {
+    var div = document.createElement('div');
+    div.className = 'clean-task' + (t.done?' done':'') + (t.urgent&&!t.done?' clean-task-urgent':'');
+    div.setAttribute('data-id', t.id);
+    div.innerHTML =
+      '<div class="clean-task-check">' + (t.done?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="3" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>':'') + '</div>' +
+      '<div class="clean-task-body">' +
+        '<div class="clean-task-name">' + t.name + '</div>' +
+        '<div class="clean-task-meta">' + (t.urgent&&!t.done?'🔴 Срочно · ':'') + t.date + '</div>' +
+      '</div>';
+    div.onclick = function() { toggleCleanTask(obj, t.id); };
+    list.appendChild(div);
+  });
+}
+function toggleCleanTask(obj, id) {
+  var t = (cleanTasks[obj]||[]).find(function(x){return x.id===id;});
+  if (t) { t.done = !t.done; renderClean(obj); showToast(t.done?'Задача выполнена':'Задача возобновлена'); }
+}
+function addCleanTask(obj) {
+  var input = document.getElementById('clean-input-'+obj);
+  var name = input.value.trim();
+  if (!name) return;
+  var priority = document.getElementById('clean-priority-'+obj).value;
+  var today = new Date(); var d = today.getDate()+' '+['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'][today.getMonth()];
+  if (!cleanTasks[obj]) cleanTasks[obj]=[];
+  cleanTasks[obj].unshift({ id:nextCleanId[obj]++, name:name, urgent:priority==='urgent', done:false, date:d });
+  input.value=''; renderClean(obj); showToast('Задача добавлена');
+}
+
+// ── MODAL ──
+function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); document.body.style.overflow=''; }
+function closeModalBg(e,id) { if(e.target===document.getElementById(id)) closeModal(id); }
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});document.body.style.overflow='';}});
+
+// ── TOAST ──
+var toastTimer;
+function showToast(msg) {
+  var t = document.getElementById('toast'); document.getElementById('toast-text').textContent=msg;
+  t.classList.add('show'); clearTimeout(toastTimer); toastTimer=setTimeout(function(){t.classList.remove('show');},2500);
+}
+
+// ── UTILS ──
+function formatDate(str) { if(!str) return '—'; var p=str.split('-'); return p[2]+'.'+p[1]+'.'+p[0]; }
+function nightWord(n) { if(n===1) return 'ночь'; if(n<5) return 'ночи'; return 'ночей'; }
+
+// ── INIT ──
+renderBookings();
+renderAdminCal();
+var todayStr = new Date().toISOString().split('T')[0];
+document.getElementById('exp-date').value = todayStr;
+renderExpenses();
+renderSupplies();
+renderClean(1); renderClean(2);
+</script>
+</body>
+</html>
