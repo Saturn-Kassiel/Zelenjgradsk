@@ -645,8 +645,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <input type="text" class="form-input-a" id="nb-name" placeholder="Имя и фамилия" oninput="nbClearError(this)">
       </div>
       <div class="form-group-a">
-        <label>Телефон</label>
-        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7 (000) 000-00-00" oninput="nbFormatPhone(this)">
+        <label>Телефон <span style="color:var(--danger)">*</span></label>
+        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7 (000) 000-00-00" oninput="nbFormatPhone(this);nbClearError(this)">
+        <div id="nb-phone-hint" style="font-size:11px;margin-top:4px;display:none"></div>
       </div>
     </div>
 
@@ -995,6 +996,17 @@ function nbFormatPhone(input) {
   if (v.length >= 7) formatted += '-' + v.slice(7, 9);
   if (v.length >= 9) formatted += '-' + v.slice(9, 11);
   input.value = formatted;
+  // Живая проверка
+  var hint = document.getElementById('nb-phone-hint');
+  if (nbValidatePhone(formatted)) {
+    input.style.borderColor = 'var(--teal)';
+    hint.textContent = '✓ Номер корректен';
+    hint.style.color = 'var(--teal)';
+    hint.style.display = 'block';
+  } else if (v.length > 3) {
+    input.style.borderColor = '';
+    hint.style.display = 'none';
+  }
 }
 
 function nbFromCheckout() {
@@ -1002,7 +1014,15 @@ function nbFromCheckout() {
   var outVal = document.getElementById('nb-out-vis').value;
   if (!inVal || !outVal) return;
   var nights = Math.round((new Date(outVal) - new Date(inVal)) / 86400000);
-  if (nights < 1) { document.getElementById('nb-out-vis').value = ''; return; }
+  if (nights < 1) {
+    document.getElementById('nb-nights').value = 1;
+    document.getElementById('nb-out-vis').style.borderColor = 'var(--danger)';
+    document.getElementById('nb-amount').value = 0;
+    document.getElementById('nb-amount-hint').textContent = '⚠️ Дата выезда должна быть позже даты заезда';
+    document.getElementById('nb-amount-hint').style.color = 'var(--danger)';
+    return;
+  }
+  document.getElementById('nb-out-vis').style.borderColor = '';
   document.getElementById('nb-nights').value = nights;
   document.getElementById('nb-out').value = outVal;
   nbRecalc();
@@ -1082,6 +1102,11 @@ function nbRecalc() {
   hintEl.textContent = hint;
 }
 
+function nbValidatePhone(val) {
+  var digits = val.replace(/\D/g, '');
+  return digits.length === 11 && digits.startsWith('7');
+}
+
 function nbClearError(el) {
   el.style.borderColor = '';
 }
@@ -1089,12 +1114,35 @@ function nbClearError(el) {
 function nbValidate() {
   var ok = true;
   var name = document.getElementById('nb-name');
+  var phone = document.getElementById('nb-phone');
   var inD = document.getElementById('nb-in');
   var nights = document.getElementById('nb-nights');
+  var phoneHint = document.getElementById('nb-phone-hint');
 
   if (!name.value.trim()) { name.style.borderColor = 'var(--danger)'; ok = false; }
   if (!inD.value) { inD.style.borderColor = 'var(--danger)'; ok = false; }
   if (!parseInt(nights.value) || parseInt(nights.value) < 1) { nights.style.borderColor = 'var(--danger)'; ok = false; }
+
+  // Телефон обязателен и должен быть корректным
+  if (!phone.value.trim()) {
+    phone.style.borderColor = 'var(--danger)';
+    phoneHint.textContent = 'Телефон обязателен';
+    phoneHint.style.color = 'var(--danger)';
+    phoneHint.style.display = 'block';
+    ok = false;
+  } else if (!nbValidatePhone(phone.value)) {
+    phone.style.borderColor = 'var(--danger)';
+    phoneHint.textContent = 'Введите корректный номер +7 (10 цифр)';
+    phoneHint.style.color = 'var(--danger)';
+    phoneHint.style.display = 'block';
+    ok = false;
+  } else {
+    phone.style.borderColor = 'var(--teal)';
+    phoneHint.textContent = '✓ Номер корректен';
+    phoneHint.style.color = 'var(--teal)';
+    phoneHint.style.display = 'block';
+  }
+
   return ok;
 }
 
@@ -1117,6 +1165,7 @@ function editBooking(id) {
   document.getElementById('nb-phone').value = b.phone;
   document.getElementById('nb-in').value = b.in;
   document.getElementById('nb-out').value = b.out;
+  document.getElementById('nb-out-vis').value = b.out;
   var nights = b.in && b.out ? Math.round((new Date(b.out) - new Date(b.in)) / 86400000) : 3;
   document.getElementById('nb-nights').value = Math.max(1, nights);
   document.getElementById('nb-guests').value = b.guests;
@@ -1382,6 +1431,8 @@ function closeModal(id) {
     var infoEl = document.getElementById('nb-checkout-info');
     if (infoEl) infoEl.style.display = 'none';
     document.getElementById('nb-amount-hint').textContent = '';
+    document.getElementById('nb-phone-hint').style.display = 'none';
+    document.getElementById('nb-phone').style.borderColor = '';
     document.querySelector('#modal-booking .modal-title').textContent = 'Новая бронь';
     document.querySelector('#modal-booking .modal-sub').textContent = 'Добавьте бронирование вручную';
   }
