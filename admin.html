@@ -630,22 +630,53 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     </button>
     <div class="modal-title">Новая бронь</div>
     <div class="modal-sub">Добавьте бронирование вручную</div>
-    <div class="form-group-a"><label>Объект</label>
-      <select class="form-select-a" id="nb-obj"><option value="1">Балтийский бриз</option><option value="2">Янтарный</option></select>
+
+    <div class="form-group-a">
+      <label>Объект</label>
+      <select class="form-select-a" id="nb-obj" onchange="nbRecalc()">
+        <option value="1">Балтийский бриз — 4 000 ₽/ночь</option>
+        <option value="2">Янтарный закат — 5 000 ₽/ночь</option>
+      </select>
     </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group-a"><label>Имя гостя</label><input type="text" class="form-input-a" id="nb-name" placeholder="Анна Смирнова"></div>
-      <div class="form-group-a"><label>Телефон</label><input type="tel" class="form-input-a" id="nb-phone" placeholder="+7 (000) 000-00-00"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group-a"><label>Заезд</label><input type="date" class="form-input-a" id="nb-in"></div>
-      <div class="form-group-a"><label>Выезд</label><input type="date" class="form-input-a" id="nb-out"></div>
-    </div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
-      <div class="form-group-a"><label>Гостей</label>
-        <select class="form-select-a" id="nb-guests"><option>1</option><option selected>2</option><option>3</option><option>4</option></select>
+      <div class="form-group-a">
+        <label>Имя гостя <span style="color:var(--danger)">*</span></label>
+        <input type="text" class="form-input-a" id="nb-name" placeholder="Анна Смирнова" oninput="nbClearError(this)">
       </div>
-      <div class="form-group-a"><label>Статус</label>
+      <div class="form-group-a">
+        <label>Телефон</label>
+        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7 (000) 000-00-00" oninput="nbFormatPhone(this)">
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group-a">
+        <label>Дата заезда <span style="color:var(--danger)">*</span></label>
+        <input type="date" class="form-input-a" id="nb-in" onchange="nbRecalc();nbClearError(this)">
+      </div>
+      <div class="form-group-a">
+        <label>Ночей <span style="color:var(--danger)">*</span></label>
+        <div style="display:flex;align-items:center;gap:8px">
+          <button type="button" onclick="nbChangeNights(-1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--charcoal)">−</button>
+          <input type="number" class="form-input-a" id="nb-nights" value="3" min="1" max="90" style="text-align:center;font-weight:600" oninput="nbRecalc()">
+          <button type="button" onclick="nbChangeNights(1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--charcoal)">+</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Дата выезда и предупреждение о занятых датах -->
+    <div id="nb-checkout-info" style="display:none;margin:-6px 0 12px;padding:10px 14px;border-radius:10px;font-size:13px"></div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <div class="form-group-a">
+        <label>Гостей</label>
+        <select class="form-select-a" id="nb-guests">
+          <option>1</option><option selected>2</option><option>3</option><option>4</option>
+        </select>
+      </div>
+      <div class="form-group-a">
+        <label>Статус</label>
         <select class="form-select-a" id="nb-status">
           <option value="new">Новая</option>
           <option value="confirmed">Подтверждена</option>
@@ -653,8 +684,20 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         </select>
       </div>
     </div>
-    <div class="form-group-a"><label>Сумма, ₽</label><input type="number" class="form-input-a" id="nb-amount" placeholder="10500"></div>
-    <div class="form-group-a"><label>Комментарий</label><input type="text" class="form-input-a" id="nb-comment" placeholder="Необязательно..."></div>
+
+    <div class="form-group-a">
+      <label>Сумма, ₽</label>
+      <input type="number" class="form-input-a" id="nb-amount" placeholder="0">
+      <div id="nb-amount-hint" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+    </div>
+
+    <input type="hidden" id="nb-out">
+
+    <div class="form-group-a">
+      <label>Комментарий</label>
+      <input type="text" class="form-input-a" id="nb-comment" placeholder="Необязательно...">
+    </div>
+
     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="saveBooking()">Сохранить бронирование</button>
   </div>
 </div>
@@ -895,6 +938,110 @@ function deleteBooking(id) {
   apiWrite('delete', 'bookings', [], id, function(){ showToast('Удалено'); loadBookings(); });
 }
 
+// ── SMART BOOKING FORM ──
+var objPrices = { '1': 4000, '2': 5000 };
+
+function nbFormatPhone(input) {
+  var v = input.value.replace(/\D/g, '');
+  if (v.startsWith('8')) v = '7' + v.slice(1);
+  if (!v.startsWith('7')) v = '7' + v;
+  v = v.slice(0, 11);
+  var formatted = '+7';
+  if (v.length > 1) formatted += ' (' + v.slice(1, 4);
+  if (v.length >= 4) formatted += ') ' + v.slice(4, 7);
+  if (v.length >= 7) formatted += '-' + v.slice(7, 9);
+  if (v.length >= 9) formatted += '-' + v.slice(9, 11);
+  input.value = formatted;
+}
+
+function nbChangeNights(delta) {
+  var el = document.getElementById('nb-nights');
+  var val = parseInt(el.value) || 1;
+  val = Math.max(1, Math.min(90, val + delta));
+  el.value = val;
+  nbRecalc();
+}
+
+function nbRecalc() {
+  var inVal = document.getElementById('nb-in').value;
+  var nights = parseInt(document.getElementById('nb-nights').value) || 1;
+  var obj = document.getElementById('nb-obj').value;
+  var infoEl = document.getElementById('nb-checkout-info');
+  var hintEl = document.getElementById('nb-amount-hint');
+  var amountEl = document.getElementById('nb-amount');
+
+  if (!inVal) { infoEl.style.display = 'none'; return; }
+
+  // Считаем дату выезда
+  var inDate = new Date(inVal);
+  var outDate = new Date(inDate);
+  outDate.setDate(outDate.getDate() + nights);
+  var outStr = outDate.toISOString().split('T')[0];
+  document.getElementById('nb-out').value = outStr;
+
+  // Форматируем для показа
+  var outFormatted = outDate.getDate() + '.' + String(outDate.getMonth()+1).padStart(2,'0') + '.' + outDate.getFullYear();
+
+  // Проверяем занятость
+  var objId = parseInt(obj);
+  var st = calStatuses[objId] || {};
+  var d = new Date(inDate);
+  var busyDays = [];
+  while (d < outDate) {
+    var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+    if (st[key] === 'occupied' || st[key] === 'pending') {
+      busyDays.push(d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0'));
+    }
+    d.setDate(d.getDate()+1);
+  }
+
+  if (busyDays.length > 0) {
+    infoEl.style.display = 'block';
+    infoEl.style.background = 'rgba(224,82,82,0.08)';
+    infoEl.style.border = '1px solid rgba(224,82,82,0.3)';
+    infoEl.style.color = 'var(--danger)';
+    infoEl.innerHTML = '⚠️ Выезд: <strong>' + outFormatted + '</strong> — заняты дни: ' + busyDays.join(', ');
+  } else {
+    infoEl.style.display = 'block';
+    infoEl.style.background = 'rgba(62,112,87,0.06)';
+    infoEl.style.border = '1px solid rgba(62,112,87,0.2)';
+    infoEl.style.color = 'var(--teal)';
+    infoEl.innerHTML = '✓ Выезд: <strong>' + outFormatted + '</strong> — даты свободны';
+  }
+
+  // Автоподсчёт суммы
+  var price = objPrices[obj] || 0;
+  var total = price * nights;
+  if (!amountEl.dataset.manualEdit) {
+    amountEl.value = total;
+  }
+  hintEl.textContent = price.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights) + ' = ' + total.toLocaleString('ru') + ' ₽';
+}
+
+function nbClearError(el) {
+  el.style.borderColor = '';
+}
+
+function nbValidate() {
+  var ok = true;
+  var name = document.getElementById('nb-name');
+  var inD = document.getElementById('nb-in');
+  var nights = document.getElementById('nb-nights');
+
+  if (!name.value.trim()) { name.style.borderColor = 'var(--danger)'; ok = false; }
+  if (!inD.value) { inD.style.borderColor = 'var(--danger)'; ok = false; }
+  if (!parseInt(nights.value) || parseInt(nights.value) < 1) { nights.style.borderColor = 'var(--danger)'; ok = false; }
+  return ok;
+}
+
+// Помечаем ручное редактирование суммы
+document.addEventListener('DOMContentLoaded', function() {
+  var amountEl = document.getElementById('nb-amount');
+  if (amountEl) {
+    amountEl.addEventListener('input', function() { this.dataset.manualEdit = '1'; });
+  }
+});
+
 var editingBookingId = null;
 
 function editBooking(id) {
@@ -906,23 +1053,26 @@ function editBooking(id) {
   document.getElementById('nb-phone').value = b.phone;
   document.getElementById('nb-in').value = b.in;
   document.getElementById('nb-out').value = b.out;
+  var nights = b.in && b.out ? Math.round((new Date(b.out) - new Date(b.in)) / 86400000) : 3;
+  document.getElementById('nb-nights').value = Math.max(1, nights);
   document.getElementById('nb-guests').value = b.guests;
   document.getElementById('nb-status').value = b.status;
   document.getElementById('nb-amount').value = b.amount;
+  document.getElementById('nb-amount').dataset.manualEdit = '1';
   document.getElementById('nb-comment').value = b.comment;
   document.querySelector('#modal-booking .modal-title').textContent = 'Редактировать бронь';
   document.querySelector('#modal-booking .modal-sub').textContent = 'Измените данные и сохраните';
-  document.querySelector('#modal-booking .btn').textContent = 'Сохранить изменения';
+  nbRecalc();
   openModal('modal-booking');
 }
 
 function saveBooking() {
+  if (!nbValidate()) return;
   var obj = document.getElementById('nb-obj').value;
   var name = document.getElementById('nb-name').value.trim();
   var phone = document.getElementById('nb-phone').value.trim();
   var inD = document.getElementById('nb-in').value;
   var outD = document.getElementById('nb-out').value;
-  if (!name || !inD || !outD) { alert('Заполните имя и даты'); return; }
   var row;
   if (editingBookingId) {
     row = [editingBookingId, obj, name, phone, inD, outD,
@@ -941,9 +1091,7 @@ function saveBooking() {
     apiWrite('append', 'bookings', row, undefined, function(){ showToast('Бронирование сохранено'); loadBookings(); });
   }
   editingBookingId = null;
-  document.querySelector('#modal-booking .modal-title').textContent = 'Новая бронь';
-  document.querySelector('#modal-booking .modal-sub').textContent = 'Добавьте бронирование вручную';
-  document.querySelector('#modal-booking .btn').textContent = 'Сохранить бронирование';
+  document.getElementById('nb-amount').dataset.manualEdit = '';
   closeModal('modal-booking');
   showToast('Сохраняем...');
 }
@@ -1170,9 +1318,11 @@ function closeModal(id) {
   document.body.style.overflow='';
   if (id === 'modal-booking') {
     editingBookingId = null;
+    document.getElementById('nb-amount').dataset.manualEdit = '';
+    document.getElementById('nb-checkout-info').style.display = 'none';
+    document.getElementById('nb-amount-hint').textContent = '';
     document.querySelector('#modal-booking .modal-title').textContent = 'Новая бронь';
     document.querySelector('#modal-booking .modal-sub').textContent = 'Добавьте бронирование вручную';
-    document.querySelector('#modal-booking .btn').textContent = 'Сохранить бронирование';
   }
 }
 function closeModalBg(e,id) { if(e.target===document.getElementById(id)) closeModal(id); }
