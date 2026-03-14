@@ -762,15 +762,49 @@ function closeSidebar() {
 // ── BOOKINGS ──
 var bookingFilter = 'all';
 
+function parseSheetDate(val) {
+  if (!val) return '';
+  var s = String(val);
+  // если уже в формате YYYY-MM-DD
+  if (s.match(/^\d{4}-\d{2}-\d{2}$/)) return s;
+  // если ISO строка с T
+  if (s.indexOf('T') !== -1) return s.substr(0, 10);
+  // если Date объект пришёл как строка типа "Mon Mar 16 2026..."
+  var d = new Date(s);
+  if (!isNaN(d)) {
+    var y = d.getFullYear();
+    var m = String(d.getMonth()+1).padStart(2,'0');
+    var dd = String(d.getDate()).padStart(2,'0');
+    return y+'-'+m+'-'+dd;
+  }
+  return s;
+}
+
 function loadBookings() {
   document.getElementById('bookings-body').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Загрузка...</td></tr>';
   apiRead('bookings', function(data) {
     bookings = data.map(function(r) {
-      return { id:String(r.id), obj:String(r.obj_id), objName:String(r.obj_id)==='1'?'Балтийский бриз':'Янтарный закат', name:String(r.name||''), phone:String(r.phone||''), in:String(r.date_in||''), out:String(r.date_out||''), guests:r.guests||2, amount:parseInt(r.amount)||0, status:String(r.status||'new'), comment:String(r.comment||'') };
+      var objId = String(r.obj_id||'1').trim();
+      var objName = objId==='1'?'Балтийский бриз':'Янтарный закат';
+      var amt = String(r.amount||'0').replace(/\s/g,'').replace(',','.');
+      return {
+        id: String(r.id),
+        obj: objId,
+        objName: objName,
+        name: String(r.name||''),
+        phone: String(r.phone||''),
+        in: parseSheetDate(r.date_in),
+        out: parseSheetDate(r.date_out),
+        guests: parseInt(r.guests)||2,
+        amount: Math.round(parseFloat(amt))||0,
+        status: String(r.status||'new'),
+        comment: String(r.comment||'')
+      };
     });
     calStatuses = {1:{},2:{}};
     bookings.forEach(function(b) {
       if (b.status==='cancelled'||b.status==='done') return;
+      if (!b.in||!b.out) return;
       var d = new Date(b.in); var end = new Date(b.out);
       var obj = parseInt(b.obj);
       if (!calStatuses[obj]) calStatuses[obj]={};
