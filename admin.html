@@ -656,17 +656,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <input type="date" class="form-input-a" id="nb-in" onchange="nbRecalc();nbClearError(this)">
       </div>
       <div class="form-group-a">
-        <label>Ночей <span style="color:var(--danger)">*</span></label>
-        <div style="display:flex;align-items:center;gap:8px">
-          <button type="button" onclick="nbChangeNights(-1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--charcoal)">−</button>
-          <input type="number" class="form-input-a" id="nb-nights" value="3" min="1" max="90" style="text-align:center;font-weight:600" oninput="nbRecalc()">
-          <button type="button" onclick="nbChangeNights(1)" style="width:36px;height:36px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;color:var(--charcoal)">+</button>
-        </div>
+        <label>Дата выезда <span style="color:var(--danger)">*</span></label>
+        <input type="date" class="form-input-a" id="nb-out-vis" onchange="nbFromCheckout()">
       </div>
     </div>
 
-    <!-- Дата выезда и предупреждение о занятых датах -->
-    <div id="nb-checkout-info" style="display:none;margin:-6px 0 12px;padding:10px 14px;border-radius:10px;font-size:13px"></div>
+    <div style="display:flex;align-items:center;gap:10px;margin:-4px 0 12px;padding:10px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--silver)">
+      <span style="font-size:12px;color:var(--muted);flex-shrink:0">Ночей:</span>
+      <button type="button" onclick="nbChangeNights(-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--silver);background:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+      <input type="number" id="nb-nights" value="3" min="1" max="90" style="width:56px;text-align:center;font-weight:700;font-family:Manrope,sans-serif;font-size:16px;border:1.5px solid var(--silver);border-radius:8px;padding:4px 8px;outline:none" oninput="nbRecalc()">
+      <button type="button" onclick="nbChangeNights(1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--silver);background:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+      <span id="nb-nights-label" style="font-size:12px;color:var(--muted)"></span>
+    </div>
 
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="form-group-a">
@@ -687,7 +688,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <div class="form-group-a">
       <label>Сумма, ₽</label>
-      <input type="number" class="form-input-a" id="nb-amount" placeholder="0">
+      <input type="number" class="form-input-a" id="nb-amount" placeholder="0" readonly style="background:var(--bg);color:var(--teal);font-weight:600;font-family:Manrope,sans-serif">
       <div id="nb-amount-hint" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
     </div>
 
@@ -954,6 +955,17 @@ function nbFormatPhone(input) {
   input.value = formatted;
 }
 
+function nbFromCheckout() {
+  var inVal = document.getElementById('nb-in').value;
+  var outVal = document.getElementById('nb-out-vis').value;
+  if (!inVal || !outVal) return;
+  var nights = Math.round((new Date(outVal) - new Date(inVal)) / 86400000);
+  if (nights < 1) { document.getElementById('nb-out-vis').value = ''; return; }
+  document.getElementById('nb-nights').value = nights;
+  document.getElementById('nb-out').value = outVal;
+  nbRecalc();
+}
+
 function nbChangeNights(delta) {
   var el = document.getElementById('nb-nights');
   var val = parseInt(el.value) || 1;
@@ -969,18 +981,18 @@ function nbRecalc() {
   var infoEl = document.getElementById('nb-checkout-info');
   var hintEl = document.getElementById('nb-amount-hint');
   var amountEl = document.getElementById('nb-amount');
+  var nightsLabel = document.getElementById('nb-nights-label');
 
-  if (!inVal) { infoEl.style.display = 'none'; return; }
+  nightsLabel.textContent = nightWord(nights);
 
-  // Считаем дату выезда
+  if (!inVal) { if(infoEl) infoEl.style.display = 'none'; return; }
+
   var inDate = new Date(inVal);
   var outDate = new Date(inDate);
   outDate.setDate(outDate.getDate() + nights);
   var outStr = outDate.toISOString().split('T')[0];
   document.getElementById('nb-out').value = outStr;
-
-  // Форматируем для показа
-  var outFormatted = outDate.getDate() + '.' + String(outDate.getMonth()+1).padStart(2,'0') + '.' + outDate.getFullYear();
+  document.getElementById('nb-out-vis').value = outStr;
 
   // Проверяем занятость
   var objId = parseInt(obj);
@@ -995,26 +1007,22 @@ function nbRecalc() {
     d.setDate(d.getDate()+1);
   }
 
-  if (busyDays.length > 0) {
-    infoEl.style.display = 'block';
-    infoEl.style.background = 'rgba(224,82,82,0.08)';
-    infoEl.style.border = '1px solid rgba(224,82,82,0.3)';
-    infoEl.style.color = 'var(--danger)';
-    infoEl.innerHTML = '⚠️ Выезд: <strong>' + outFormatted + '</strong> — заняты дни: ' + busyDays.join(', ');
-  } else {
-    infoEl.style.display = 'block';
-    infoEl.style.background = 'rgba(62,112,87,0.06)';
-    infoEl.style.border = '1px solid rgba(62,112,87,0.2)';
-    infoEl.style.color = 'var(--teal)';
-    infoEl.innerHTML = '✓ Выезд: <strong>' + outFormatted + '</strong> — даты свободны';
+  if (infoEl) {
+    if (busyDays.length > 0) {
+      infoEl.style.display = 'block';
+      infoEl.style.background = 'rgba(224,82,82,0.08)';
+      infoEl.style.border = '1px solid rgba(224,82,82,0.3)';
+      infoEl.style.color = 'var(--danger)';
+      infoEl.innerHTML = '⚠️ Заняты дни: ' + busyDays.join(', ');
+    } else {
+      infoEl.style.display = 'none';
+    }
   }
 
   // Автоподсчёт суммы
   var price = objPrices[obj] || 0;
   var total = price * nights;
-  if (!amountEl.dataset.manualEdit) {
-    amountEl.value = total;
-  }
+  amountEl.value = total;
   hintEl.textContent = price.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights) + ' = ' + total.toLocaleString('ru') + ' ₽';
 }
 
@@ -1057,8 +1065,6 @@ function editBooking(id) {
   document.getElementById('nb-nights').value = Math.max(1, nights);
   document.getElementById('nb-guests').value = b.guests;
   document.getElementById('nb-status').value = b.status;
-  document.getElementById('nb-amount').value = b.amount;
-  document.getElementById('nb-amount').dataset.manualEdit = '1';
   document.getElementById('nb-comment').value = b.comment;
   document.querySelector('#modal-booking .modal-title').textContent = 'Редактировать бронь';
   document.querySelector('#modal-booking .modal-sub').textContent = 'Измените данные и сохраните';
@@ -1091,7 +1097,6 @@ function saveBooking() {
     apiWrite('append', 'bookings', row, undefined, function(){ showToast('Бронирование сохранено'); loadBookings(); });
   }
   editingBookingId = null;
-  document.getElementById('nb-amount').dataset.manualEdit = '';
   closeModal('modal-booking');
   showToast('Сохраняем...');
 }
@@ -1318,8 +1323,8 @@ function closeModal(id) {
   document.body.style.overflow='';
   if (id === 'modal-booking') {
     editingBookingId = null;
-    document.getElementById('nb-amount').dataset.manualEdit = '';
-    document.getElementById('nb-checkout-info').style.display = 'none';
+    var infoEl = document.getElementById('nb-checkout-info');
+    if (infoEl) infoEl.style.display = 'none';
     document.getElementById('nb-amount-hint').textContent = '';
     document.querySelector('#modal-booking .modal-title').textContent = 'Новая бронь';
     document.querySelector('#modal-booking .modal-sub').textContent = 'Добавьте бронирование вручную';
