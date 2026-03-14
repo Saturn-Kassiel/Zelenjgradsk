@@ -764,12 +764,21 @@ var bookingFilter = 'all';
 
 function parseSheetDate(val) {
   if (!val) return '';
-  var s = String(val);
-  // если уже в формате YYYY-MM-DD
+  var s = String(val).trim();
+  // YYYY-MM-DD
   if (s.match(/^\d{4}-\d{2}-\d{2}$/)) return s;
-  // если ISO строка с T
+  // ISO с T
   if (s.indexOf('T') !== -1) return s.substr(0, 10);
-  // если Date объект пришёл как строка типа "Mon Mar 16 2026..."
+  // Google Sheets serial number (число дней с 30.12.1899)
+  if (s.match(/^\d+$/)) {
+    var serial = parseInt(s);
+    var d = new Date((serial - 25569) * 86400000);
+    var y = d.getUTCFullYear();
+    var m = String(d.getUTCMonth()+1).padStart(2,'0');
+    var dd = String(d.getUTCDate()).padStart(2,'0');
+    return y+'-'+m+'-'+dd;
+  }
+  // любой другой формат
   var d = new Date(s);
   if (!isNaN(d)) {
     var y = d.getFullYear();
