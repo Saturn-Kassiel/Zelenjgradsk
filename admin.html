@@ -690,7 +690,14 @@ var API = 'https://script.google.com/macros/s/AKfycbyWiaw5B3WqltMGe2tMyAauJ45_5-
 function apiRead(sheet, callback) {
   fetch(API + '?sheet=' + sheet)
     .then(function(r){ return r.json(); })
-    .then(function(d){ callback(d.data || []); })
+    .then(function(d){
+      var data = (d.data || []).map(function(row) {
+        var clean = {};
+        Object.keys(row).forEach(function(k){ clean[k.trim()] = row[k]; });
+        return clean;
+      });
+      callback(data);
+    })
     .catch(function(){ callback([]); });
 }
 
