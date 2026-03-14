@@ -623,7 +623,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 </div><!-- /main -->
 
 <!-- MODAL: New Booking -->
-<div class="modal-overlay" id="modal-booking" onclick="closeModalBg(event,'modal-booking')">
+<div class="modal-overlay" id="modal-booking">
   <div class="modal">
     <button class="modal-close" onclick="closeModal('modal-booking')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
@@ -642,7 +642,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="form-group-a">
         <label>Имя гостя <span style="color:var(--danger)">*</span></label>
-        <input type="text" class="form-input-a" id="nb-name" placeholder="Анна Смирнова" oninput="nbClearError(this)">
+        <input type="text" class="form-input-a" id="nb-name" placeholder="Имя и фамилия" oninput="nbClearError(this)">
       </div>
       <div class="form-group-a">
         <label>Телефон</label>
@@ -672,7 +672,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="form-group-a">
         <label>Гостей</label>
-        <select class="form-select-a" id="nb-guests">
+        <select class="form-select-a" id="nb-guests" onchange="nbRecalc()">
           <option>1</option><option selected>2</option><option>3</option><option>4</option>
         </select>
       </div>
@@ -683,6 +683,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
           <option value="confirmed">Подтверждена</option>
           <option value="pending">На рассмотрении</option>
         </select>
+      </div>
+    </div>
+
+    <div id="nb-surcharge-row" style="display:none;padding:10px 14px;background:rgba(224,154,43,0.08);border:1px solid rgba(224,154,43,0.3);border-radius:10px;margin-bottom:12px">
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:12px">
+        <div style="font-size:13px;color:var(--charcoal)">Наценка за доп. гостей (от 3-го)</div>
+        <div style="display:flex;align-items:center;gap:6px;flex-shrink:0">
+          <input type="number" id="nb-surcharge" value="1000" min="0" style="width:90px;text-align:center;font-weight:600;font-family:Manrope,sans-serif;border:1.5px solid rgba(224,154,43,0.4);border-radius:8px;padding:5px 8px;outline:none;font-size:13px" oninput="nbRecalc()">
+          <span style="font-size:12px;color:var(--muted)">₽</span>
+        </div>
       </div>
     </div>
 
@@ -699,7 +709,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <input type="text" class="form-input-a" id="nb-comment" placeholder="Необязательно...">
     </div>
 
-    <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="saveBooking()">Сохранить бронирование</button>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-booking')">Отмена</button>
+      <button class="btn btn-primary" style="justify-content:center" onclick="saveBooking()">Сохранить бронирование</button>
+    </div>
   </div>
 </div>
 
@@ -718,6 +731,23 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     </div>
     <div class="form-group-a"><label>Минимальный запас</label><input type="number" class="form-input-a" id="sup-min" placeholder="5"></div>
     <button class="btn btn-primary" style="width:100%;justify-content:center;margin-top:8px" onclick="saveSupply()">Добавить</button>
+  </div>
+</div>
+
+<!-- MODAL: Confirm Delete -->
+<div class="modal-overlay" id="modal-confirm">
+  <div class="modal" style="max-width:400px;padding:28px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:52px;height:52px;border-radius:50%;background:var(--danger-light);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+      </div>
+      <div class="modal-title" style="font-size:18px">Удалить бронирование?</div>
+      <div id="confirm-text" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-confirm')">Отмена</button>
+      <button class="btn btn-danger" style="justify-content:center;background:var(--danger);color:white;border:none" onclick="confirmDelete()">Удалить</button>
+    </div>
   </div>
 </div>
 
@@ -934,9 +964,21 @@ function changeStatus(id, sel) {
   loadBookings();
 }
 
+var pendingDeleteId = null;
+
 function deleteBooking(id) {
-  if (!confirm('Удалить бронирование?')) return;
-  apiWrite('delete', 'bookings', [], id, function(){ showToast('Удалено'); loadBookings(); });
+  var b = bookings.find(function(x){ return String(x.id)===String(id); });
+  if (!b) return;
+  pendingDeleteId = id;
+  document.getElementById('confirm-text').textContent = b.name + ' · ' + formatDate(b.in) + ' — ' + formatDate(b.out);
+  openModal('modal-confirm');
+}
+
+function confirmDelete() {
+  if (!pendingDeleteId) return;
+  apiWrite('delete', 'bookings', [], pendingDeleteId, function(){ showToast('Удалено'); loadBookings(); });
+  pendingDeleteId = null;
+  closeModal('modal-confirm');
 }
 
 // ── SMART BOOKING FORM ──
@@ -1019,11 +1061,25 @@ function nbRecalc() {
     }
   }
 
+  // Наценка за доп. гостей
+  var guests = parseInt(document.getElementById('nb-guests').value) || 2;
+  var surchargeRow = document.getElementById('nb-surcharge-row');
+  var surcharge = 0;
+  if (guests > 2) {
+    surchargeRow.style.display = 'block';
+    surcharge = (parseInt(document.getElementById('nb-surcharge').value) || 0) * nights;
+  } else {
+    surchargeRow.style.display = 'none';
+  }
+
   // Автоподсчёт суммы
   var price = objPrices[obj] || 0;
-  var total = price * nights;
+  var total = price * nights + surcharge;
   amountEl.value = total;
-  hintEl.textContent = price.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights) + ' = ' + total.toLocaleString('ru') + ' ₽';
+  var hint = price.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights);
+  if (surcharge > 0) hint += ' + ' + surcharge.toLocaleString('ru') + ' ₽ (наценка)';
+  hint += ' = ' + total.toLocaleString('ru') + ' ₽';
+  hintEl.textContent = hint;
 }
 
 function nbClearError(el) {
@@ -1331,6 +1387,15 @@ function closeModal(id) {
   }
 }
 function closeModalBg(e,id) { if(e.target===document.getElementById(id)) closeModal(id); }
+
+// Закрытие только modal-supply по клику на оверлей
+(function() {
+  var el = document.getElementById('modal-supply');
+  if (!el) return;
+  var downOnOverlay = false;
+  el.addEventListener('mousedown', function(e) { downOnOverlay = e.target === el; });
+  el.addEventListener('click', function(e) { if (downOnOverlay && e.target === el) closeModal('modal-supply'); });
+})();
 document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});document.body.style.overflow='';}});
 
 // ── TOAST ──
