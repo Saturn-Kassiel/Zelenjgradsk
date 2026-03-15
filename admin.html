@@ -416,22 +416,28 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <div class="cal-grid-admin" id="admin-cal-grid"></div>
         <div class="cal-legend-admin">
           <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(184,245,210,0.5)"></div>Свободно</div>
-          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(209,107,107,0.2)"></div>Занято</div>
+          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(209,107,107,0.2)"></div>Занято (подтверждено)</div>
           <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(224,154,43,0.15)"></div>На рассмотрении</div>
-          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:var(--silver)"></div>Закрыто</div>
+          <div class="legend-item" style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:rgba(150,150,170,0.2)"></div>Закрыто</div>
         </div>
         <div class="cal-block-panel">
-          <div class="cal-block-title">Заблокировать / разблокировать период</div>
+          <div class="cal-block-title">Закрыть период</div>
           <div class="cal-block-form">
             <div class="form-field"><label>С</label><input type="date" class="form-input-sm" id="block-from"></div>
             <div class="form-field"><label>По</label><input type="date" class="form-input-sm" id="block-to"></div>
-            <div class="form-field"><label>Статус</label>
-              <select class="form-select-sm" id="block-status">
-                <option value="blocked">Закрыто</option>
-                <option value="free">Открыть (свободно)</option>
+            <div class="form-field"><label>Причина</label>
+              <select class="form-select-sm" id="block-reason">
+                <option value="Собственник">Собственник</option>
+                <option value="Ремонт">Ремонт</option>
+                <option value="Техническое закрытие">Техническое закрытие</option>
+                <option value="Другое">Другое</option>
               </select>
             </div>
-            <button class="btn btn-primary" onclick="applyBlock()">Применить</button>
+            <div class="form-field"><label>Комментарий</label><input type="text" class="form-input-sm" id="block-comment" placeholder="Необязательно"></div>
+          </div>
+          <div style="display:flex;gap:10px;margin-top:12px">
+            <button class="btn btn-primary" onclick="applyBlock()">Закрыть период</button>
+            <button class="btn btn-outline" onclick="applyUnblock()">Открыть период</button>
           </div>
         </div>
       </div>
@@ -1097,7 +1103,9 @@ function loadBookings() {
       if (!calStatuses[obj]) calStatuses[obj]={};
       while (d < end) {
         var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
-        calStatuses[obj][key] = b.status==='pending' ? 'pending' : 'occupied';
+        if (b.status==='blocked') calStatuses[obj][key] = 'blocked';
+        else if (b.status==='pending') calStatuses[obj][key] = 'pending';
+        else calStatuses[obj][key] = 'occupied';
         d.setDate(d.getDate()+1);
       }
     });
@@ -1112,6 +1120,7 @@ function renderBookings(filter, search) {
   search = (search || '').toLowerCase();
   var tbody = document.getElementById('bookings-body');
   var list = bookings.filter(function(b) {
+    if (b.status === 'blocked') return false; // блокировки не показываем в списке
     if (filter !== 'all' && b.status !== filter) return false;
     if (search && b.name.toLowerCase().indexOf(search) === -1 && b.phone.indexOf(search) === -1) return false;
     return true;
@@ -1540,13 +1549,41 @@ function renderAdminCal() {
   for(var i=0;i<offset;i++){var el=document.createElement('div');el.className='cal-day-a empty';grid.appendChild(el);}
   var today = new Date(); var days = new Date(y,m+1,0).getDate();
   var st = calStatuses[obj] || {};
+
+  // Строим карту причин блокировки
+  var blockReasons = {};
+  bookings.forEach(function(b) {
+    if (b.status !== 'blocked' || String(b.obj) !== String(obj)) return;
+    if (!b.in || !b.out) return;
+    var d = new Date(b.in); var end = new Date(b.out);
+    while (d < end) {
+      var k = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+      blockReasons[k] = b.name + (b.comment ? ': ' + b.comment : '');
+      d.setDate(d.getDate()+1);
+    }
+  });
+
   for(var d=1;d<=days;d++){
     var key = y+'-'+(m+1)+'-'+d;
     var status = st[key]||'free';
     var el=document.createElement('div'); el.className='cal-day-a '+status;
     if(today.getFullYear()===y&&today.getMonth()===m&&today.getDate()===d) el.classList.add('today');
+    var tooltip = blockReasons[key] ? blockReasons[key] : '';
     el.innerHTML='<span class="cal-day-num">'+d+'</span><div class="cal-day-status-dot"></div>';
-    (function(k,s){ el.onclick=function(){ if(s==='occupied'||s==='pending') return; var newS=s==='blocked'?'free':'blocked'; if(newS==='free'){delete calStatuses[obj][k];}else{calStatuses[obj][k]=newS;} renderAdminCal(); showToast(newS==='blocked'?'Дата закрыта':'Дата открыта'); }; })(key,status);
+    if (tooltip) el.title = tooltip;
+    (function(k,s){ el.onclick=function(){
+      if(s==='occupied'||s==='pending') return;
+      if(s==='blocked') {
+        // Открываем - удаляем из bookings
+        var bl = bookings.find(function(b){ return b.status==='blocked' && String(b.obj)===String(obj) && b.in<=k && b.out>k; });
+        if(bl) apiWrite('delete','bookings',[],bl.id,function(){ loadBookings(); showToast('День открыт'); });
+      } else {
+        // Закрываем - добавляем в bookings
+        var id = Date.now();
+        var row = [id, obj, 'Закрыто', '', k, new Date(new Date(k).getTime()+86400000).toISOString().split('T')[0], 0, 0, 'blocked', ''];
+        apiWrite('append','bookings',row,undefined,function(){ loadBookings(); showToast('День закрыт'); });
+      }
+    }; })(key,status);
     grid.appendChild(el);
   }
   var fromInput = document.getElementById('block-from');
@@ -1559,19 +1596,39 @@ function switchCalObj(id,btn){ adminCalState.obj=id; document.querySelectorAll('
 function applyBlock() {
   var from = document.getElementById('block-from').value;
   var to = document.getElementById('block-to').value;
-  var status = document.getElementById('block-status').value;
-  if (!from||!to) { alert('Укажите даты'); return; }
-  var d = new Date(from); var end = new Date(to);
-  if (d>end) { alert('Дата «С» должна быть раньше «По»'); return; }
+  var reason = document.getElementById('block-reason').value;
+  var comment = document.getElementById('block-comment').value;
+  if (!from || !to) { alert('Укажите даты'); return; }
+  if (new Date(from) > new Date(to)) { alert('Дата «С» должна быть раньше «По»'); return; }
   var obj = adminCalState.obj;
-  while (d<=end) {
-    var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
-    if (status==='free'){delete calStatuses[obj][key];}else{calStatuses[obj][key]=status;}
-    d.setDate(d.getDate()+1);
-  }
-  renderAdminCal();
-  showToast(status==='free'?'Период открыт':'Период закрыт');
+  var id = Date.now();
+  var row = [id, obj, reason, '', from, to, 0, 0, 'blocked', comment];
+  apiWrite('append', 'bookings', row, undefined, function(){
+    showToast('Период закрыт: ' + reason);
+    loadBookings();
+  });
 }
+
+function applyUnblock() {
+  var from = document.getElementById('block-from').value;
+  var to = document.getElementById('block-to').value;
+  if (!from || !to) { alert('Укажите даты'); return; }
+  var obj = String(adminCalState.obj);
+  // Находим все blocked записи которые попадают в период
+  var toDelete = bookings.filter(function(b) {
+    return b.status === 'blocked' && b.obj === obj &&
+      b.in >= from && b.out <= to;
+  });
+  if (!toDelete.length) { showToast('Нет закрытых периодов в этих датах'); return; }
+  var done = 0;
+  toDelete.forEach(function(b) {
+    apiWrite('delete', 'bookings', [], b.id, function() {
+      done++;
+      if (done === toDelete.length) { showToast('Период открыт'); loadBookings(); }
+    });
+  });
+}
+
 
 // ── EXPENSES ──
 function loadExpenses() {
