@@ -1266,11 +1266,15 @@ function openModal(propId) {
   if (propId) {
     document.getElementById('prop-select').value = propId;
     updateModalProp();
-    gRecalc();
   }
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-checkin').value = today;
-  gRecalc();
+  // Сбрасываем форму
+  document.getElementById('f-checkin').value = '';
+  document.getElementById('f-checkout').value = '';
+  var visEl = document.getElementById('f-checkout-vis');
+  if (visEl) visEl.value = '';
+  document.getElementById('f-nights').value = 3;
+  document.getElementById('f-calc').style.display = 'none';
+  document.getElementById('f-dates-info').style.display = 'none';
 }
 
 function closeModal() {
