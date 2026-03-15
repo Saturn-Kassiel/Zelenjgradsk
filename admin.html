@@ -636,15 +636,22 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-dashboard">
+      <!-- Фильтр периода -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
+        <select id="dash-period" class="period-select" onchange="updateDashboard()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none;font-family:DM Sans,sans-serif">
+        </select>
+        <span id="dash-period-label" style="font-size:13px;color:var(--muted)"></span>
+      </div>
+
       <div class="stats-grid">
         <div class="stat-card">
           <div class="stat-card-label">
             <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Доход за март
+            <span id="dash-income-label">Доход</span>
           </div>
           <div class="stat-card-icon si-teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
-          <div class="stat-card-value">87 500 ₽</div>
-          <div class="stat-card-sub">+12% к прошлому месяцу</div>
+          <div class="stat-card-value" id="dash-income">— ₽</div>
+          <div class="stat-card-sub" id="dash-income-sub">подтверждённые брони</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-label">
@@ -652,8 +659,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             Занятость
           </div>
           <div class="stat-card-icon si-indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg></div>
-          <div class="stat-card-value">74%</div>
-          <div class="stat-card-sub">23 ночи из 31</div>
+          <div class="stat-card-value" id="dash-occ">—%</div>
+          <div class="stat-card-sub" id="dash-occ-sub">ночей занято</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-label">
@@ -661,64 +668,34 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             Бронирований
           </div>
           <div class="stat-card-icon si-mint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
-          <div class="stat-card-value">8</div>
-          <div class="stat-card-sub">3 предстоящих</div>
+          <div class="stat-card-value" id="dash-bookings">—</div>
+          <div class="stat-card-sub" id="dash-bookings-sub">в выбранном периоде</div>
         </div>
         <div class="stat-card">
           <div class="stat-card-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            Расходы за март
+            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+            Отменено
           </div>
-          <div class="stat-card-icon si-warning"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
-          <div class="stat-card-value">14 200 ₽</div>
-          <div class="stat-card-sub">Чистая прибыль: 73 300 ₽</div>
+          <div class="stat-card-icon si-warning"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
+          <div class="stat-card-value" id="dash-cancelled">—</div>
+          <div class="stat-card-sub" id="dash-cancelled-sub">отменённых броней</div>
         </div>
       </div>
+
       <div class="dash-grid">
         <div class="dash-card">
           <div class="dash-card-title">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
-            По объектам — март
+            По объектам
           </div>
-          <div class="obj-row">
-            <div class="obj-row-dot" style="background:var(--teal)"></div>
-            <div class="obj-row-name">Балтийский бриз</div>
-            <div class="obj-row-stat">15 ночей · 79%</div>
-            <div class="obj-row-income">52 500 ₽</div>
-          </div>
-          <div class="obj-row">
-            <div class="obj-row-dot" style="background:var(--indigo)"></div>
-            <div class="obj-row-name">Янтарный</div>
-            <div class="obj-row-stat">8 ночей · 65%</div>
-            <div class="obj-row-income">35 000 ₽</div>
-          </div>
+          <div id="dash-by-obj"></div>
         </div>
         <div class="dash-card">
           <div class="dash-card-title">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             Ближайшие заезды
           </div>
-          <div class="upcoming-item">
-            <div class="upcoming-date"><div class="upcoming-date-day">15</div><div class="upcoming-date-mon">Мар</div></div>
-            <div class="upcoming-info">
-              <div class="upcoming-name">Анна Смирнова <span class="pill pill-confirmed" style="margin-left:6px">Подтверждено</span></div>
-              <div class="upcoming-meta">Балтийский бриз · 3 ночи · 10 500 ₽</div>
-            </div>
-          </div>
-          <div class="upcoming-item">
-            <div class="upcoming-date"><div class="upcoming-date-day">18</div><div class="upcoming-date-mon">Мар</div></div>
-            <div class="upcoming-info">
-              <div class="upcoming-name">Павел Козлов <span class="pill pill-new" style="margin-left:6px">Новая</span></div>
-              <div class="upcoming-meta">Янтарный · 5 ночей · 26 000 ₽</div>
-            </div>
-          </div>
-          <div class="upcoming-item">
-            <div class="upcoming-date"><div class="upcoming-date-day">25</div><div class="upcoming-date-mon">Мар</div></div>
-            <div class="upcoming-info">
-              <div class="upcoming-name">Мария Иванова <span class="pill pill-pending" style="margin-left:6px">Рассматривается</span></div>
-              <div class="upcoming-meta">Балтийский бриз · 2 ночи · 7 000 ₽</div>
-            </div>
-          </div>
+          <div id="dash-upcoming"></div>
         </div>
       </div>
     </div>
@@ -1845,19 +1822,134 @@ function addCleanTask(obj) {
 }
 
 // ── DASHBOARD ──
-function updateDashboard() {
+function initDashPeriods() {
+  var sel = document.getElementById('dash-period');
+  if (!sel) return;
+  // Собираем все месяцы из бронирований
+  var months = {};
+  bookings.forEach(function(b) { if(b.in && b.in.length>=7) months[b.in.substr(0,7)]=true; });
   var now = new Date();
-  var period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  var monthExpenses = expenses.filter(function(e){ return e.date && e.date.substr(0,7)===period; });
-  var totalExpenses = monthExpenses.reduce(function(s,e){return s+e.amount;},0);
-  var monthBookings = bookings.filter(function(b){ return b.in && b.in.substr(0,7)===period; });
-  var totalIncome = monthBookings.reduce(function(s,b){return s+b.amount;},0);
-  var newCount = bookings.filter(function(b){return b.status==='new';}).length;
-  // обновляем цифры на дашборде
-  var statCards = document.querySelectorAll('.stat-card-value');
-  if (statCards[0]) statCards[0].textContent = totalIncome.toLocaleString('ru') + ' ₽';
-  if (statCards[2]) statCards[2].textContent = bookings.length;
-  if (statCards[3]) statCards[3].textContent = totalExpenses.toLocaleString('ru') + ' ₽';
+  var curMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  months[curMonth] = true;
+  var sorted = Object.keys(months).sort().reverse();
+  var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  sel.innerHTML = '';
+  sorted.forEach(function(m) {
+    var p=m.split('-');
+    sel.innerHTML += '<option value="'+m+'"'+(m===curMonth?' selected':'')+'>'+monthNames[parseInt(p[1])]+' '+p[0]+'</option>';
+  });
+}
+
+function updateDashboard() {
+  initDashPeriods();
+  var sel = document.getElementById('dash-period');
+  var period = sel ? sel.value : '';
+  if (!period) {
+    var now = new Date();
+    period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  }
+
+  var parts = period.split('-');
+  var year = parseInt(parts[0]), month = parseInt(parts[1]);
+  var daysInMonth = new Date(year, month, 0).getDate();
+  var monthStart = period + '-01';
+  var monthEnd = period + '-' + String(daysInMonth).padStart(2,'0');
+
+  var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  document.getElementById('dash-income-label').textContent = 'Доход — ' + monthNames[month];
+
+  // Фильтруем бронирования периода (не заблокированные)
+  var periodBookings = bookings.filter(function(b) {
+    return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
+  });
+
+  // Доход — только подтверждённые и завершённые
+  var income = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; })
+    .reduce(function(s,b){return s+b.amount;},0);
+  document.getElementById('dash-income').textContent = income.toLocaleString('ru') + ' ₽';
+  var confirmedCount = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).length;
+  document.getElementById('dash-income-sub').textContent = confirmedCount + ' подтверждённых броней';
+
+  // Занятость — считаем занятые ночи (confirmed + blocked) за месяц по обоим объектам
+  var occupiedNights = {1:0, 2:0};
+  bookings.forEach(function(b) {
+    if (b.status!=='confirmed' && b.status!=='blocked') return;
+    if (!b.in || !b.out) return;
+    var d = new Date(b.in); var end = new Date(b.out);
+    var obj = parseInt(b.obj)||1;
+    while(d < end) {
+      var k = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+      if (k === period) { occupiedNights[obj]=(occupiedNights[obj]||0)+1; }
+      d.setDate(d.getDate()+1);
+    }
+  });
+  var totalOcc = (occupiedNights[1]||0) + (occupiedNights[2]||0);
+  var totalPossible = daysInMonth * 2; // 2 объекта
+  var occPct = Math.round(totalOcc / totalPossible * 100);
+  document.getElementById('dash-occ').textContent = occPct + '%';
+  document.getElementById('dash-occ-sub').textContent = totalOcc + ' из ' + totalPossible + ' ночей';
+
+  // Счётчик бронирований
+  document.getElementById('dash-bookings').textContent = periodBookings.length;
+  var upcoming = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='new'; }).length;
+  document.getElementById('dash-bookings-sub').textContent = upcoming + ' активных';
+
+  // Отменённые
+  var cancelled = periodBookings.filter(function(b){ return b.status==='cancelled'; }).length;
+  document.getElementById('dash-cancelled').textContent = cancelled;
+  document.getElementById('dash-cancelled-sub').textContent = cancelled > 0 ? 'потеряно броней' : 'отлично!';
+
+  // По объектам
+  var objData = {
+    '1': { name:'Балтийский бриз', color:'var(--teal)', nights:occupiedNights[1]||0, income:0 },
+    '2': { name:'Янтарный закат', color:'var(--indigo)', nights:occupiedNights[2]||0, income:0 }
+  };
+  periodBookings.forEach(function(b) {
+    if(b.status==='confirmed'||b.status==='done') {
+      if(objData[b.obj]) objData[b.obj].income += b.amount;
+    }
+  });
+  var objHtml = Object.keys(objData).map(function(id) {
+    var o = objData[id];
+    var pct = Math.round(o.nights / daysInMonth * 100);
+    return '<div class="obj-row">' +
+      '<div class="obj-row-dot" style="background:'+o.color+'"></div>' +
+      '<div class="obj-row-name">'+o.name+'</div>' +
+      '<div class="obj-row-stat">'+o.nights+' '+nightWord(o.nights)+' · '+pct+'%</div>' +
+      '<div class="obj-row-income">'+o.income.toLocaleString('ru')+' ₽</div>' +
+      '</div>';
+  }).join('');
+  document.getElementById('dash-by-obj').innerHTML = objHtml || '<div style="color:var(--muted);font-size:13px;padding:12px 0">Нет данных</div>';
+
+  // Ближайшие заезды — следующие 30 дней
+  var today = new Date(); today.setHours(0,0,0,0);
+  var in30 = new Date(today.getTime() + 30*86400000);
+  var monNames = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  var statusLabels = { new:'Новая', confirmed:'Подтверждена', pending:'На рассмотрении' };
+  var statusColors = { new:'var(--indigo)', confirmed:'var(--teal)', pending:'var(--warning)' };
+
+  var upcoming2 = bookings.filter(function(b) {
+    if (!b.in || b.status==='cancelled'||b.status==='done'||b.status==='blocked') return false;
+    var d = new Date(b.in);
+    return d >= today && d <= in30;
+  }).sort(function(a,b){ return new Date(a.in)-new Date(b.in); }).slice(0,5);
+
+  if (upcoming2.length) {
+    document.getElementById('dash-upcoming').innerHTML = upcoming2.map(function(b) {
+      var d = new Date(b.in);
+      var nights = Math.round((new Date(b.out)-new Date(b.in))/86400000);
+      var sLabel = statusLabels[b.status]||b.status;
+      var sColor = statusColors[b.status]||'var(--muted)';
+      return '<div class="upcoming-item">' +
+        '<div class="upcoming-date"><div class="upcoming-date-day">'+d.getDate()+'</div><div class="upcoming-date-mon">'+monNames[d.getMonth()]+'</div></div>' +
+        '<div class="upcoming-info">' +
+          '<div class="upcoming-name">'+b.name+' <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:'+sColor+';opacity:0.9;color:white;margin-left:6px">'+sLabel+'</span></div>' +
+          '<div class="upcoming-meta">'+b.objName+' · '+nights+' '+nightWord(nights)+' · '+b.amount.toLocaleString('ru')+' ₽</div>' +
+        '</div></div>';
+    }).join('');
+  } else {
+    document.getElementById('dash-upcoming').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center">Нет ближайших заездов</div>';
+  }
 }
 
 // ── PROMO ──
