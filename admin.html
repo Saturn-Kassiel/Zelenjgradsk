@@ -135,6 +135,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .ss-pending { background: var(--warning-light); color: var(--warning); }
 .ss-cancelled { background: rgba(224,82,82,0.1); color: var(--danger); }
 .ss-done { background: rgba(62,112,87,0.1); color: var(--teal); }
+.ss-blocked { background: rgba(150,150,170,0.15); color: var(--muted); }
 .ss-cancelled { background: var(--danger-light); color: var(--danger); }
 .ss-done { background: var(--silver); color: var(--muted); }
 .action-btns { display: flex; gap: 6px; }
@@ -375,6 +376,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <button class="filter-tab" data-filter="pending" onclick="filterBookings('pending',this)">На рассмотрении</button>
         <button class="filter-tab" data-filter="done" onclick="filterBookings('done',this)">Завершённые</button>
         <button class="filter-tab" data-filter="cancelled" onclick="filterBookings('cancelled',this)">Отменённые</button>
+        <button class="filter-tab" data-filter="blocked" onclick="filterBookings('blocked',this)">Закрытые периоды</button>
         <div class="filter-right">
           <div style="display:flex;align-items:center;gap:6px">
             <select id="booking-period" class="period-select" onchange="renderBookings(bookingFilter)" style="font-size:13px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none">
@@ -1157,8 +1159,12 @@ function renderBookings(filter, search) {
   var period = document.getElementById('booking-period') ? document.getElementById('booking-period').value : '';
   var objFilter = document.getElementById('booking-obj-filter') ? document.getElementById('booking-obj-filter').value : '';
   var list = bookings.filter(function(b) {
-    if (b.status === 'blocked') return false;
-    if (filter !== 'all' && b.status !== filter) return false;
+    if (filter === 'blocked') {
+      if (b.status !== 'blocked') return false;
+    } else {
+      if (b.status === 'blocked') return false;
+      if (filter !== 'all' && b.status !== filter) return false;
+    }
     if (search && b.name.toLowerCase().indexOf(search) === -1 && b.phone.indexOf(search) === -1) return false;
     if (period && b.in && b.in.substr(0,7) !== period) return false;
     if (objFilter && b.obj !== objFilter) return false;
@@ -1186,8 +1192,13 @@ function renderBookings(filter, search) {
     var isDisabled = b.status==='cancelled' || b.status==='done';
     var tr = document.createElement('tr');
     if (b.status === 'cancelled') tr.style.opacity = '0.6';
+    if (b.status === 'blocked') tr.style.background = 'rgba(150,150,170,0.04)';
+
+    var guestCell = b.status === 'blocked'
+      ? '<td><div class="guest-name" style="color:var(--muted)">🔒 ' + (b.name||'Закрыто') + '</div><div class="guest-phone">' + (b.comment||'') + '</div></td>'
+      : '<td><div class="guest-name">'+b.name+'</div><div class="guest-phone">'+b.phone+'</div></td>';
     tr.innerHTML =
-      '<td><div class="guest-name">'+b.name+'</div><div class="guest-phone">'+b.phone+'</div></td>' +
+      guestCell +
       '<td><span style="font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:'+(b.obj==='1'?'rgba(62,112,87,0.1)':'rgba(82,105,171,0.1)')+';color:'+(b.obj==='1'?'var(--teal)':'var(--indigo)')+'">'+b.objName+'</span></td>' +
       '<td><div class="date-range">'+inD+' — '+outD+'</div><div class="nights">'+nights+' '+nightWord(nights)+'</div></td>' +
       '<td>'+b.guests+'</td>' +
