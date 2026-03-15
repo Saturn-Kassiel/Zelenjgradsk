@@ -1539,8 +1539,8 @@ function loadPromoAdmin() {
           var r = data[0];
           Object.keys(r).forEach(function(k){ if(k!==k.trim()){ r[k.trim()]=r[k]; delete r[k]; } });
           promoData = {
-            id: r.id,
-            active: String(r.active).toLowerCase()==='true'||r.active===true,
+            id: r.id || '',
+            active: true,
             obj_id: String(r.obj_id||'1'),
             price: String(r.price||''),
             date_from: String(r.date_from||''),
@@ -1652,13 +1652,15 @@ function savePromo() {
   var to    = type==='special' ? (document.getElementById('promo-to').value||'') : '';
   var label = type==='special' ? (document.getElementById('promo-label').value||'') : '';
   var row = [true, obj, price, from, to, label];
-  apiWrite('update', 'promo', row, promoData.id || '', function(d) {
-    if (!d || d.error) {
+
+  // Удаляем все существующие строки промо, потом добавляем новую
+  if (promoData.id) {
+    apiWrite('delete', 'promo', [], promoData.id, function() {
       apiWrite('append', 'promo', row, undefined, function(){ showToast('Промо сохранено'); });
-    } else {
-      showToast('Промо сохранено');
-    }
-  });
+    });
+  } else {
+    apiWrite('append', 'promo', row, undefined, function(){ showToast('Промо сохранено'); });
+  }
   promoData = { active: true, obj_id: obj, price: price, date_from: from, date_to: to, label: label };
 }
 
