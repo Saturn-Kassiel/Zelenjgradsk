@@ -326,6 +326,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
       Дашборд
     </div>
+    <div class="nav-section-label">Настройки</div>
+    <div class="nav-item" onclick="showPage('promo')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+      Промо / Спецпредложение
+    </div>
   </nav>
   <div class="sidebar-footer">
     <a href="index.html">
@@ -527,6 +532,92 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             </div>
           </div>
         </div>
+      </div>
+    </div>
+
+    <!-- ══ PROMO ══ -->
+    <div class="page" id="page-promo">
+      <div style="max-width:560px">
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:28px;margin-bottom:16px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:var(--charcoal)">Карточка на главной странице</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:4px">Что показывается в герое сайта</div>
+            </div>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--charcoal)">
+              <div class="toggle-track-p" id="promo-active-toggle" onclick="togglePromoActive()" style="width:44px;height:24px;border-radius:12px;background:var(--silver);position:relative;cursor:pointer;transition:background 0.25s;flex-shrink:0">
+                <div id="promo-toggle-thumb" style="position:absolute;top:3px;left:3px;width:18px;height:18px;border-radius:50%;background:white;transition:transform 0.25s;box-shadow:0 1px 4px rgba(0,0,0,0.2)"></div>
+              </div>
+              <span id="promo-active-label">Выключено</span>
+            </label>
+          </div>
+
+          <div class="form-group-a">
+            <label>Объект</label>
+            <select class="form-select-a" id="promo-obj" onchange="promoPreview()">
+              <option value="1">Балтийский бриз</option>
+              <option value="2">Янтарный закат</option>
+            </select>
+          </div>
+
+          <div id="promo-special-block" style="display:none">
+            <div style="height:1px;background:var(--silver);margin:16px 0"></div>
+            <div style="font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:14px;display:flex;align-items:center;gap:6px">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--warning)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
+              Параметры спецпредложения
+            </div>
+            <div class="form-group-a">
+              <label>Название акции (бейдж)</label>
+              <input type="text" class="form-input-a" id="promo-label" placeholder="Спецпредложение" oninput="promoPreview()">
+            </div>
+            <div class="form-group-a">
+              <label>Специальная цена, ₽/ночь</label>
+              <input type="number" class="form-input-a" id="promo-price" placeholder="2800" oninput="promoPreview()">
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div class="form-group-a"><label>Начало акции</label><input type="date" class="form-input-a" id="promo-from" onchange="promoPreview()"></div>
+              <div class="form-group-a"><label>Конец акции</label><input type="date" class="form-input-a" id="promo-to" onchange="promoPreview()"></div>
+            </div>
+          </div>
+
+          <div style="display:flex;gap:10px;margin-top:8px">
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--charcoal);padding:10px 14px;border:1.5px solid var(--silver);border-radius:10px;flex:1">
+              <input type="radio" name="promo-type" value="simple" checked onchange="promoTypeChange()" style="accent-color:var(--teal)">
+              Обычная карточка
+            </label>
+            <label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--charcoal);padding:10px 14px;border:1.5px solid var(--silver);border-radius:10px;flex:1">
+              <input type="radio" name="promo-type" value="special" onchange="promoTypeChange()" style="accent-color:var(--teal)">
+              Спецпредложение
+            </label>
+          </div>
+        </div>
+
+        <!-- Preview -->
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:22px;margin-bottom:16px">
+          <div style="font-size:13px;font-weight:600;color:var(--charcoal);margin-bottom:14px">Предпросмотр</div>
+          <div id="promo-preview-card" style="background:linear-gradient(135deg,#E2F0D9,#BFEDF2);border-radius:16px;overflow:hidden;max-width:280px">
+            <div id="promo-preview-img" style="height:140px;display:flex;align-items:center;justify-content:center">
+              <svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="rgba(62,112,87,0.3)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+            </div>
+            <div style="padding:14px 16px;background:white">
+              <div style="display:flex;align-items:center;gap:6px;margin-bottom:6px">
+                <span style="font-size:10px;font-weight:600;letter-spacing:1px;color:var(--muted);background:var(--bg);padding:3px 8px;border-radius:20px" id="pp-tag">ЗЕЛЕНОГРАДСК</span>
+                <span id="pp-badge" style="display:none;font-size:10px;font-weight:700;padding:3px 8px;border-radius:20px;background:linear-gradient(135deg,#E09A2B,#f0b444);color:white"></span>
+              </div>
+              <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:var(--charcoal);margin-bottom:4px" id="pp-name">Балтийский бриз</div>
+              <div style="display:flex;align-items:baseline;gap:8px">
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="pp-price">4 000 <span style="font-size:11px;font-weight:400;color:var(--muted)">₽/ночь</span></div>
+                <div id="pp-old-price" style="display:none;font-size:12px;color:var(--muted);text-decoration:line-through"></div>
+              </div>
+              <div id="pp-period" style="display:none;font-size:11px;color:var(--muted);margin-top:4px"></div>
+            </div>
+          </div>
+        </div>
+
+        <button class="btn btn-primary" style="width:100%;justify-content:center" onclick="savePromo()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+          Сохранить и применить
+        </button>
       </div>
     </div>
 
@@ -808,14 +899,14 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', promo:'Промо / Спецпредложение' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','promo'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
@@ -1421,7 +1512,107 @@ function updateDashboard() {
   if (statCards[3]) statCards[3].textContent = totalExpenses.toLocaleString('ru') + ' ₽';
 }
 
-// ── MODAL ──
+// ── PROMO ──
+var promoData = { active: false, obj_id: '1', price: '', date_from: '', date_to: '', label: '' };
+var promoObjPrices = { '1': 4000, '2': 5000 };
+var promoObjNames = { '1': 'Балтийский бриз', '2': 'Янтарный закат' };
+
+function loadPromoAdmin() {
+  apiRead('promo', function(data) {
+    if (data.length) {
+      var r = data[0];
+      promoData = { active: String(r.active).toLowerCase()==='true', obj_id: String(r.obj_id||'1'), price: String(r.price||''), date_from: String(r.date_from||''), date_to: String(r.date_to||''), label: String(r.label||'') };
+    }
+    applyPromoToForm();
+  });
+}
+
+function applyPromoToForm() {
+  var activeToggle = document.getElementById('promo-active-toggle');
+  var thumb = document.getElementById('promo-toggle-thumb');
+  var label = document.getElementById('promo-active-label');
+  if (promoData.active) {
+    activeToggle.style.background = 'var(--teal)';
+    thumb.style.transform = 'translateX(20px)';
+    label.textContent = 'Включено';
+  } else {
+    activeToggle.style.background = 'var(--silver)';
+    thumb.style.transform = 'translateX(0)';
+    label.textContent = 'Выключено';
+  }
+  document.getElementById('promo-obj').value = promoData.obj_id;
+  document.getElementById('promo-label').value = promoData.label;
+  document.getElementById('promo-price').value = promoData.price;
+  document.getElementById('promo-from').value = promoData.date_from;
+  document.getElementById('promo-to').value = promoData.date_to;
+  var isSpecial = promoData.price || promoData.date_from;
+  document.querySelectorAll('input[name="promo-type"]').forEach(function(r) {
+    r.checked = isSpecial ? r.value==='special' : r.value==='simple';
+  });
+  document.getElementById('promo-special-block').style.display = isSpecial ? 'block' : 'none';
+  promoPreview();
+}
+
+function togglePromoActive() {
+  promoData.active = !promoData.active;
+  applyPromoToForm();
+}
+
+function promoTypeChange() {
+  var type = document.querySelector('input[name="promo-type"]:checked').value;
+  document.getElementById('promo-special-block').style.display = type==='special' ? 'block' : 'none';
+  promoPreview();
+}
+
+function promoPreview() {
+  var obj = document.getElementById('promo-obj').value;
+  var type = document.querySelector('input[name="promo-type"]:checked').value;
+  var specPrice = parseInt(document.getElementById('promo-price').value) || 0;
+  var label = document.getElementById('promo-label').value;
+  var from = document.getElementById('promo-from').value;
+  var to = document.getElementById('promo-to').value;
+  var regularPrice = promoObjPrices[obj] || 4000;
+  var showPrice = (type==='special' && specPrice) ? specPrice : regularPrice;
+
+  document.getElementById('pp-name').textContent = promoObjNames[obj] || 'Объект';
+  document.getElementById('pp-price').innerHTML = showPrice.toLocaleString('ru') + ' <span style="font-size:11px;font-weight:400;color:var(--muted)">₽/ночь</span>';
+
+  var badge = document.getElementById('pp-badge');
+  if (type==='special' && label) { badge.style.display='inline-block'; badge.textContent=label; } else { badge.style.display='none'; }
+
+  var oldP = document.getElementById('pp-old-price');
+  if (type==='special' && specPrice && specPrice!==regularPrice) { oldP.style.display='inline'; oldP.textContent=regularPrice.toLocaleString('ru')+' ₽'; } else { oldP.style.display='none'; }
+
+  var period = document.getElementById('pp-period');
+  if (type==='special' && from && to) { period.style.display='block'; period.textContent=formatPromoDateA(from)+' — '+formatPromoDateA(to); } else { period.style.display='none'; }
+}
+
+function formatPromoDateA(str) {
+  if (!str) return '';
+  var p = str.split('-');
+  return p.length===3 ? p[2]+'.'+p[1]+'.'+p[0] : str;
+}
+
+function savePromo() {
+  var active = promoData.active;
+  var obj = document.getElementById('promo-obj').value;
+  var type = document.querySelector('input[name="promo-type"]:checked').value;
+  var price = type==='special' ? (document.getElementById('promo-price').value||'') : '';
+  var from = type==='special' ? (document.getElementById('promo-from').value||'') : '';
+  var to = type==='special' ? (document.getElementById('promo-to').value||'') : '';
+  var label = type==='special' ? (document.getElementById('promo-label').value||'') : '';
+  var row = [active, obj, price, from, to, label];
+  apiWrite('update', 'promo', row, promoData.id || '', function(d) {
+    if (!d || d.error) {
+      apiWrite('append', 'promo', row, undefined, function(){ showToast('Промо сохранено'); });
+    } else {
+      showToast('Промо сохранено');
+    }
+  });
+  promoData = { active: active, obj_id: obj, price: price, date_from: from, date_to: to, label: label };
+}
+
+
 function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
@@ -1477,6 +1668,7 @@ loadBookings();
 loadExpenses();
 loadSupplies();
 loadCleaning();
+loadPromoAdmin();
 </script>
 </body>
 </html>
