@@ -1148,6 +1148,7 @@ function loadWeather() {
 }
 
 loadWeather();
+loadBookingsForCal();
 
 
 var APPS_URL = 'https://script.google.com/macros/s/AKfycbyljA9MRoh8CpLWIM03eCQtX2n39CFElfiLIh4IIug7JxS9jwxUTiQrQHubfXAu4U4f/exec';
@@ -1277,6 +1278,31 @@ var calData = {
   1: { year: new Date().getFullYear(), month: new Date().getMonth(), statuses: {} },
   2: { year: new Date().getFullYear(), month: new Date().getMonth(), statuses: {} }
 };
+
+// Загружаем бронирования сразу для блокировки дат в форме
+function loadBookingsForCal() {
+  fetch(APPS_URL + '?sheet=bookings')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      (d.data||[]).forEach(function(b){
+        var clean={};
+        Object.keys(b).forEach(function(k){clean[k.trim()]=b[k];});
+        var objId = parseInt(String(clean.obj_id||'1').trim())||1;
+        var status = String(clean.status||'').trim();
+        if (status==='cancelled'||status==='new'||status==='done') return;
+        var dateIn = parseGDate(clean.date_in);
+        var dateOut = parseGDate(clean.date_out);
+        if (!dateIn||!dateOut) return;
+        if (!calData[objId]) calData[objId]={year:new Date().getFullYear(),month:new Date().getMonth(),statuses:{}};
+        var d2=new Date(dateIn);
+        while(d2<dateOut){
+          var key=d2.getFullYear()+'-'+(d2.getMonth()+1)+'-'+d2.getDate();
+          calData[objId].statuses[key] = (status==='confirmed'||status==='blocked') ? 'occupied' : 'pending';
+          d2.setDate(d2.getDate()+1);
+        }
+      });
+    }).catch(function(){});
+}
 
 var propNames = {};
 
