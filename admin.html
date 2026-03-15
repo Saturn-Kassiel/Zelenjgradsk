@@ -753,6 +753,32 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <span id="nb-nights-label" style="font-size:12px;color:var(--muted)"></span>
     </div>
 
+    <!-- МИНИ-КАЛЕНДАРЬ -->
+    <div style="border:1.5px solid var(--silver);border-radius:14px;overflow:hidden;margin-bottom:14px">
+      <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;background:var(--bg);border-bottom:1px solid var(--silver)">
+        <button type="button" onclick="nbCalPrev()" style="width:28px;height:28px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--muted)">‹</button>
+        <div id="nb-cal-title" style="font-size:13px;font-weight:600;color:var(--charcoal)"></div>
+        <button type="button" onclick="nbCalNext()" style="width:28px;height:28px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--muted)">›</button>
+      </div>
+      <div style="padding:8px">
+        <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Пн</div>
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Вт</div>
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Ср</div>
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Чт</div>
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Пт</div>
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Сб</div>
+          <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:4px 0">Вс</div>
+        </div>
+        <div id="nb-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+      </div>
+      <div style="display:flex;gap:12px;padding:8px 14px;border-top:1px solid var(--silver);font-size:11px;color:var(--muted)">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(62,112,87,0.15);border:1px solid rgba(62,112,87,0.3);margin-right:4px"></span>Выбрано</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(224,82,82,0.15);border:1px solid rgba(224,82,82,0.3);margin-right:4px"></span>Занято</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(224,154,43,0.2);border:1px solid rgba(224,154,43,0.4);margin-right:4px"></span>Ожидание</span>
+      </div>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <div class="form-group-a">
         <label>Гостей</label>
@@ -915,7 +941,11 @@ function showPage(name) {
 }
 
 function topbarPrimary() {
-  if (currentPage === 'bookings') openModal('modal-booking');
+  if (currentPage === 'bookings') {
+    nbCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+    openModal('modal-booking');
+    nbRenderCal();
+  }
   else if (currentPage === 'supplies') openAddSupply();
   else if (currentPage === 'expenses') { showPage('expenses'); }
 }
@@ -1164,7 +1194,101 @@ function confirmDelete() {
   closeModal('modal-confirm');
 }
 
-// ── SMART BOOKING FORM ──
+// ── МИНИ-КАЛЕНДАРЬ В МОДАЛКЕ ──
+var nbCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+var nbMonthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+function nbCalPrev() { nbCalState.month--; if(nbCalState.month<0){nbCalState.month=11;nbCalState.year--;} nbRenderCal(); }
+function nbCalNext() { nbCalState.month++; if(nbCalState.month>11){nbCalState.month=0;nbCalState.year++;} nbRenderCal(); }
+
+function nbRenderCal() {
+  var y = nbCalState.year, m = nbCalState.month;
+  var obj = parseInt(document.getElementById('nb-obj').value) || 1;
+  var st = calStatuses[obj] || {};
+  var inVal = document.getElementById('nb-in').value;
+  var nights = parseInt(document.getElementById('nb-nights').value) || 1;
+  var selIn = inVal ? new Date(inVal) : null;
+  var selOut = selIn ? new Date(selIn.getTime() + nights*86400000) : null;
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  document.getElementById('nb-cal-title').textContent = nbMonthNames[m] + ' ' + y;
+
+  var grid = document.getElementById('nb-cal-grid');
+  grid.innerHTML = '';
+
+  var firstDay = new Date(y, m, 1).getDay();
+  var offset = firstDay === 0 ? 6 : firstDay - 1;
+  var daysInMonth = new Date(y, m+1, 0).getDate();
+
+  for (var i = 0; i < offset; i++) {
+    var empty = document.createElement('div');
+    grid.appendChild(empty);
+  }
+
+  for (var day = 1; day <= daysInMonth; day++) {
+    var date = new Date(y, m, day);
+    var key = y+'-'+(m+1)+'-'+day;
+    var status = st[key] || 'free';
+    var isPast = date < today;
+    var isSelected = selIn && selOut && date >= selIn && date < selOut;
+    var isCheckIn = selIn && date.getTime() === selIn.getTime();
+
+    var el = document.createElement('div');
+    el.textContent = day;
+    el.style.cssText = 'text-align:center;padding:5px 2px;border-radius:6px;font-size:12px;cursor:pointer;transition:all 0.15s;';
+
+    if (isPast) {
+      el.style.color = 'var(--muted)';
+      el.style.opacity = '0.4';
+      el.style.cursor = 'default';
+    } else if (status === 'occupied') {
+      el.style.background = 'rgba(224,82,82,0.12)';
+      el.style.color = '#C0392B';
+      el.style.cursor = 'default';
+      el.title = 'Занято';
+    } else if (status === 'pending') {
+      el.style.background = 'rgba(224,154,43,0.15)';
+      el.style.color = '#B07D1A';
+      el.style.cursor = 'default';
+      el.title = 'На рассмотрении';
+    } else if (isCheckIn) {
+      el.style.background = 'var(--teal)';
+      el.style.color = 'white';
+      el.style.fontWeight = '700';
+    } else if (isSelected) {
+      el.style.background = 'rgba(62,112,87,0.12)';
+      el.style.color = 'var(--teal)';
+      el.style.fontWeight = '500';
+    } else {
+      el.style.color = 'var(--charcoal)';
+      (function(d, dateObj) {
+        el.onmouseenter = function() { this.style.background = 'rgba(62,112,87,0.08)'; };
+        el.onmouseleave = function() { this.style.background = ''; };
+        el.onclick = function() { nbCalSelectDay(dateObj); };
+      })(day, date);
+    }
+
+    // Сегодня
+    if (date.toDateString() === today.toDateString() && !isCheckIn) {
+      el.style.fontWeight = '700';
+      el.style.outline = '1.5px solid var(--teal)';
+    }
+
+    grid.appendChild(el);
+  }
+}
+
+function nbCalSelectDay(date) {
+  var y = date.getFullYear();
+  var m = String(date.getMonth()+1).padStart(2,'0');
+  var d = String(date.getDate()).padStart(2,'0');
+  var dateStr = y+'-'+m+'-'+d;
+  document.getElementById('nb-in').value = dateStr;
+  nbRecalc();
+  nbRenderCal();
+}
+
+
 var objPrices = { '1': 4000, '2': 5000 };
 
 function nbFormatPhone(input) {
@@ -1228,6 +1352,7 @@ function nbRecalc() {
   var nightsLabel = document.getElementById('nb-nights-label');
 
   nightsLabel.textContent = nightWord(nights);
+  nbRenderCal();
 
   if (!inVal) { if(infoEl) infoEl.style.display = 'none'; return; }
 
@@ -1365,7 +1490,9 @@ function editBooking(id) {
   document.getElementById('nb-comment').value = b.comment;
   document.querySelector('#modal-booking .modal-title').textContent = 'Редактировать бронь';
   document.querySelector('#modal-booking .modal-sub').textContent = 'Измените данные и сохраните';
+  nbCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
   nbRecalc();
+  nbRenderCal();
   openModal('modal-booking');
 }
 
