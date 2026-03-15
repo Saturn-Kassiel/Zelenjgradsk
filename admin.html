@@ -1527,33 +1527,43 @@ var promoObjPrices = { '1': 4000, '2': 5000 };
 var promoObjNames = { '1': 'Балтийский бриз', '2': 'Янтарный закат' };
 
 function loadPromoAdmin() {
-  // Загружаем объекты для фото в превью
-  fetch(SHEET_URL.replace ? SHEET_URL : SHEET_URL)
+  // Сначала загружаем объекты для фото, потом промо
+  fetch(SHEET_URL)
     .then(function(r){ return r.text(); })
     .then(function(text){
       var props = parseCSVAdmin(text);
       promoObjImages = {};
+      promoObjPrices = {};
+      promoObjNames = {};
       props.forEach(function(p){
-        if (p.image_1) promoObjImages[String(p.id||'')] = p.image_1;
+        var id = String(p.id||'');
+        if (p.image_1) promoObjImages[id] = p.image_1;
+        if (p.price) promoObjPrices[id] = Math.round(parseFloat(String(p.price).replace(/\s/g,'').replace(',','.'))||0);
+        if (p.name) promoObjNames[id] = p.name;
       });
-    }).catch(function(){});
-
-  apiRead('promo', function(data) {
-    if (data.length) {
-      var r = data[0];
-      Object.keys(r).forEach(function(k){ if(k!==k.trim()){ r[k.trim()]=r[k]; delete r[k]; } });
-      promoData = {
-        id: r.id,
-        active: String(r.active).toLowerCase()==='true'||r.active===true,
-        obj_id: String(r.obj_id||'1'),
-        price: String(r.price||''),
-        date_from: String(r.date_from||''),
-        date_to: String(r.date_to||''),
-        label: String(r.label||'')
-      };
-    }
-    applyPromoToForm();
-  });
+      // После загрузки объектов — загружаем промо
+      apiRead('promo', function(data) {
+        if (data.length) {
+          var r = data[0];
+          Object.keys(r).forEach(function(k){ if(k!==k.trim()){ r[k.trim()]=r[k]; delete r[k]; } });
+          promoData = {
+            id: r.id,
+            active: String(r.active).toLowerCase()==='true'||r.active===true,
+            obj_id: String(r.obj_id||'1'),
+            price: String(r.price||''),
+            date_from: String(r.date_from||''),
+            date_to: String(r.date_to||''),
+            label: String(r.label||'')
+          };
+        }
+        applyPromoToForm();
+      });
+    }).catch(function(){
+      apiRead('promo', function(data) {
+        if (data.length) { promoData.obj_id = String(data[0].obj_id||'1'); }
+        applyPromoToForm();
+      });
+    });
 }
 
 var promoObjImages = {};
