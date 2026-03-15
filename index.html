@@ -238,34 +238,21 @@ header {
 .ld-blocked { background: var(--silver); }
 
 /* ── WEATHER ── */
-.weather-section { padding: 60px 24px; background: linear-gradient(135deg, #E8F4F0 0%, #D0E8FF 100%); }
-.weather-inner { max-width: 900px; margin: 0 auto; }
-.weather-header { display: flex; align-items: flex-start; justify-content: space-between; margin-bottom: 28px; }
-.weather-title { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 800; color: var(--charcoal); margin-bottom: 4px; }
-.weather-subtitle { font-size: 14px; color: var(--muted); }
-.weather-main-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 20px; margin-bottom: 24px; }
-.weather-now { background: white; border-radius: 20px; padding: 28px; display: flex; flex-direction: column; align-items: center; text-align: center; box-shadow: 0 2px 16px rgba(46,56,77,0.06); }
-.weather-icon-big { margin-bottom: 8px; }
-.weather-temp-big { font-family: Manrope, sans-serif; font-size: 52px; font-weight: 800; color: var(--charcoal); line-height: 1; margin-bottom: 6px; }
-.weather-desc-big { font-size: 15px; color: var(--muted); text-transform: capitalize; margin-bottom: 4px; }
-.weather-feels { font-size: 13px; color: var(--muted); }
-.weather-details { display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
-.weather-detail-card { background: white; border-radius: 16px; padding: 20px 16px; text-align: center; box-shadow: 0 2px 12px rgba(46,56,77,0.05); }
-.wd-icon { font-size: 24px; margin-bottom: 8px; }
-.wd-val { font-family: Manrope, sans-serif; font-size: 20px; font-weight: 700; color: var(--charcoal); margin-bottom: 4px; }
-.wd-label { font-size: 12px; color: var(--muted); }
-.weather-forecast { display: grid; grid-template-columns: repeat(5, 1fr); gap: 12px; }
-.wf-day { background: white; border-radius: 14px; padding: 16px 12px; text-align: center; box-shadow: 0 2px 10px rgba(46,56,77,0.05); }
-.wf-name { font-size: 12px; font-weight: 600; color: var(--muted); margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.5px; }
-.wf-icon img { width: 40px; height: 40px; }
-.wf-temp-max { font-family: Manrope, sans-serif; font-size: 16px; font-weight: 700; color: var(--charcoal); }
-.wf-temp-min { font-size: 13px; color: var(--muted); }
-@media(max-width:768px) {
-  .weather-main-grid { grid-template-columns: 1fr; }
-  .weather-forecast { grid-template-columns: repeat(5, 1fr); gap: 6px; }
-  .wf-day { padding: 10px 6px; }
-  .wf-name { font-size: 10px; }
-}
+.weather-section { padding: 60px 24px; }
+.weather-inner { max-width: 680px; margin: 0 auto; }
+.weather-section-title { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 800; color: var(--charcoal); margin-bottom: 6px; text-align: center; }
+.weather-section-sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+.weather-widget-main { background: linear-gradient(135deg, #CAD5F0, #D0E8FF); border-radius: 24px; padding: 28px; box-shadow: 0 4px 24px rgba(46,56,77,0.08); }
+.weather-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.weather-city { font-size: 13px; font-weight: 500; color: var(--charcoal); margin-bottom: 4px; }
+.weather-temp { font-family: 'Manrope', sans-serif; font-size: 56px; font-weight: 800; color: var(--charcoal); letter-spacing: -2px; line-height: 1; }
+.weather-desc { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.weather-meta-line { display: flex; gap: 16px; margin-top: 10px; font-size: 13px; color: var(--charcoal); }
+.weather-days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.5); }
+.weather-day { text-align: center; background: rgba(255,255,255,0.5); border-radius: 12px; padding: 10px 6px; }
+.weather-day-name { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+.weather-day-temp { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: var(--charcoal); }
+@media(max-width:600px) { .weather-days { gap: 4px; } .weather-day { padding: 8px 4px; } }
 
 /* FEATURES */
 .features-section { background: white; padding: 72px 40px; border-top: 1px solid var(--silver); border-bottom: 1px solid var(--silver); }
@@ -605,47 +592,33 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 <!-- WEATHER SECTION -->
 <section class="weather-section" id="weather">
   <div class="weather-inner">
-    <div class="weather-header">
-      <div>
-        <h2 class="weather-title">Погода в Зеленоградске</h2>
-        <p class="weather-subtitle">Балтийское море · сейчас</p>
+    <h2 class="weather-section-title">Погода в Зеленоградске</h2>
+    <p class="weather-section-sub">Балтийское море · обновляется в реальном времени</p>
+    <div class="weather-widget-main">
+      <div class="weather-top">
+        <div>
+          <div class="weather-city">Зеленоградск, сейчас</div>
+          <div class="weather-temp" id="w-temp">—°</div>
+          <div class="weather-desc" id="w-desc">Загружаем...</div>
+          <div class="weather-meta-line">
+            <span id="w-feels"></span>
+            <span>💨 <span id="w-wind">—</span></span>
+            <span>💧 <span id="w-humidity">—</span></span>
+            <span>🌊 <span id="w-water">—</span></span>
+          </div>
+        </div>
+        <div id="w-icon">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="rgba(46,56,77,0.25)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+        </div>
       </div>
-      <div id="weather-updated" style="font-size:12px;color:var(--muted)"></div>
-    </div>
-
-    <div class="weather-main-grid">
-      <!-- Текущая погода -->
-      <div class="weather-now">
-        <div class="weather-icon-big" id="w-icon">
-          <svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(62,112,87,0.3)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
-        </div>
-        <div class="weather-temp-big" id="w-temp">—°</div>
-        <div class="weather-desc-big" id="w-desc">Загружаем...</div>
-        <div class="weather-feels" id="w-feels"></div>
-      </div>
-
-      <!-- Детали -->
-      <div class="weather-details">
-        <div class="weather-detail-card">
-          <div class="wd-icon">💨</div>
-          <div class="wd-val" id="w-wind">—</div>
-          <div class="wd-label">Ветер</div>
-        </div>
-        <div class="weather-detail-card">
-          <div class="wd-icon">💧</div>
-          <div class="wd-val" id="w-humidity">—</div>
-          <div class="wd-label">Влажность</div>
-        </div>
-        <div class="weather-detail-card">
-          <div class="wd-icon">🌊</div>
-          <div class="wd-val" id="w-water">—</div>
-          <div class="wd-label">Вода</div>
-        </div>
+      <div class="weather-days" id="w-forecast">
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
       </div>
     </div>
-
-    <!-- Прогноз 5 дней -->
-    <div class="weather-forecast" id="w-forecast"></div>
   </div>
 </section>
 
@@ -1020,12 +993,10 @@ function showFallbackCards() {
 
 // ── WEATHER ──
 var OWM_KEY = '96ae9fe213f50f5bc55e4ff3d65ac3cd';
-var CITY_ID = '554234'; // Зеленоградск, Калининград
+var CITY_ID = '554234';
 var dayNamesW = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-var monthNamesW = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
 
 function loadWeather() {
-  // Текущая погода
   fetch('https://api.openweathermap.org/data/2.5/weather?id=' + CITY_ID + '&appid=' + OWM_KEY + '&units=metric&lang=ru')
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -1033,22 +1004,16 @@ function loadWeather() {
       var feels = Math.round(d.main.feels_like);
       var desc = d.weather[0].description;
       var icon = d.weather[0].icon;
-      var wind = Math.round(d.wind.speed);
-      var humidity = d.main.humidity;
-
-      document.getElementById('w-temp').textContent = temp + '°';
+      document.getElementById('w-temp').textContent = (temp>0?'+':'') + temp + '°';
       document.getElementById('w-desc').textContent = desc.charAt(0).toUpperCase() + desc.slice(1);
-      document.getElementById('w-feels').textContent = 'Ощущается как ' + feels + '°';
+      document.getElementById('w-feels').textContent = 'Ощущается ' + (feels>0?'+':'') + feels + '°';
       document.getElementById('w-icon').innerHTML = '<img src="https://openweathermap.org/img/wn/' + icon + '@2x.png" style="width:72px;height:72px">';
-      document.getElementById('w-wind').textContent = wind + ' м/с';
-      document.getElementById('w-humidity').textContent = humidity + '%';
-
-      // Время обновления
-      var now = new Date();
-      document.getElementById('weather-updated').textContent = 'Обновлено ' + now.getHours() + ':' + String(now.getMinutes()).padStart(2,'0');
+      document.getElementById('w-wind').textContent = Math.round(d.wind.speed) + ' м/с';
+      document.getElementById('w-humidity').textContent = d.main.humidity + '%';
+      var waterTemp = temp > 10 ? temp - 3 : temp - 1;
+      document.getElementById('w-water').textContent = waterTemp + '°C';
     }).catch(function(){});
 
-  // Прогноз 5 дней
   fetch('https://api.openweathermap.org/data/2.5/forecast?id=' + CITY_ID + '&appid=' + OWM_KEY + '&units=metric&lang=ru')
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -1059,33 +1024,20 @@ function loadWeather() {
         if (!days[key]) days[key] = { date: date, temps: [], icon: item.weather[0].icon };
         days[key].temps.push(item.main.temp);
       });
-
       var keys = Object.keys(days).slice(0, 5);
-      var html = keys.map(function(k) {
+      document.getElementById('w-forecast').innerHTML = keys.map(function(k) {
         var day = days[k];
         var max = Math.round(Math.max.apply(null, day.temps));
         var min = Math.round(Math.min.apply(null, day.temps));
         var name = dayNamesW[day.date.getDay()];
-        var dateStr = day.date.getDate() + ' ' + monthNamesW[day.date.getMonth()];
-        return '<div class="wf-day">' +
-          '<div class="wf-name">' + name + '<br><span style="font-weight:400;font-size:10px">' + dateStr + '</span></div>' +
-          '<div class="wf-icon"><img src="https://openweathermap.org/img/wn/' + day.icon + '.png"></div>' +
-          '<div class="wf-temp-max">+' + max + '°</div>' +
-          '<div class="wf-temp-min">+' + min + '°</div>' +
+        return '<div class="weather-day">' +
+          '<div class="weather-day-name">' + name + '</div>' +
+          '<img src="https://openweathermap.org/img/wn/' + day.icon + '.png" style="width:32px;height:32px;display:block;margin:4px auto">' +
+          '<div class="weather-day-temp">' + (max>0?'+':'') + max + '°</div>' +
+          '<div style="font-size:11px;color:var(--muted)">' + (min>0?'+':'') + min + '°</div>' +
           '</div>';
       }).join('');
-      document.getElementById('w-forecast').innerHTML = html;
     }).catch(function(){});
-
-  // Температура воды (Балтийское море у Зеленоградска)
-  fetch('https://api.openweathermap.org/data/2.5/weather?lat=54.96&lon=20.48&appid=' + OWM_KEY + '&units=metric')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      // Приблизительная температура воды — на 2-3° ниже воздуха летом
-      var airTemp = Math.round(d.main.temp);
-      var waterTemp = airTemp > 10 ? airTemp - 3 : airTemp - 1;
-      document.getElementById('w-water').textContent = waterTemp + '°C';
-    }).catch(function(){ document.getElementById('w-water').textContent = '—'; });
 }
 
 loadWeather();
