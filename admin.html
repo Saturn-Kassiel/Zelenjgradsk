@@ -376,6 +376,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <button class="filter-tab" data-filter="done" onclick="filterBookings('done',this)">Завершённые</button>
         <button class="filter-tab" data-filter="cancelled" onclick="filterBookings('cancelled',this)">Отменённые</button>
         <div class="filter-right">
+          <div style="display:flex;align-items:center;gap:6px">
+            <select id="booking-period" class="period-select" onchange="renderBookings(bookingFilter)" style="font-size:13px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none">
+              <option value="">Все периоды</option>
+            </select>
+            <select id="booking-obj-filter" class="period-select" onchange="renderBookings(bookingFilter)" style="font-size:13px;padding:7px 12px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none">
+              <option value="">Все объекты</option>
+              <option value="1">Балтийский бриз</option>
+              <option value="2">Янтарный закат</option>
+            </select>
+          </div>
           <div class="search-box">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
             <input type="text" placeholder="Поиск гостя..." oninput="searchBookings(this.value)">
@@ -1117,6 +1127,26 @@ function loadBookings() {
     renderBookings(bookingFilter);
     renderAdminCal();
     updateDashboard();
+    // Заполняем периоды
+    populatePeriods();
+  });
+}
+
+function populatePeriods() {
+  var sel = document.getElementById('booking-period');
+  if (!sel) return;
+  var months = {};
+  bookings.forEach(function(b) {
+    if (b.in && b.in.length >= 7) months[b.in.substr(0,7)] = true;
+  });
+  var sorted = Object.keys(months).sort().reverse();
+  var current = sel.value;
+  sel.innerHTML = '<option value="">Все периоды</option>';
+  sorted.forEach(function(m) {
+    var parts = m.split('-');
+    var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+    var label = monthNames[parseInt(parts[1])] + ' ' + parts[0];
+    sel.innerHTML += '<option value="'+m+'"'+(m===current?' selected':'')+'>'+label+'</option>';
   });
 }
 
@@ -1124,10 +1154,14 @@ function renderBookings(filter, search) {
   filter = filter || bookingFilter;
   search = (search || '').toLowerCase();
   var tbody = document.getElementById('bookings-body');
+  var period = document.getElementById('booking-period') ? document.getElementById('booking-period').value : '';
+  var objFilter = document.getElementById('booking-obj-filter') ? document.getElementById('booking-obj-filter').value : '';
   var list = bookings.filter(function(b) {
-    if (b.status === 'blocked') return false; // блокировки не показываем в списке
+    if (b.status === 'blocked') return false;
     if (filter !== 'all' && b.status !== filter) return false;
     if (search && b.name.toLowerCase().indexOf(search) === -1 && b.phone.indexOf(search) === -1) return false;
+    if (period && b.in && b.in.substr(0,7) !== period) return false;
+    if (objFilter && b.obj !== objFilter) return false;
     return true;
   });
   tbody.innerHTML = '';
