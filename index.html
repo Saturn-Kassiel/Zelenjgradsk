@@ -827,8 +827,8 @@ function renderCards(props) {
         var d = new Date(dateIn);
         while (d < dateOut) {
           var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
-          // Для гостей: только confirmed = occupied, pending не показываем
-          if (status === 'confirmed') calData[objId].statuses[key] = 'occupied';
+          // blocked и confirmed показываем гостям как занятые
+          if (status === 'confirmed' || status === 'blocked') calData[objId].statuses[key] = 'occupied';
           d.setDate(d.getDate()+1);
         }
       });
