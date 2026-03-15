@@ -681,13 +681,17 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
           <input type="date" class="form-input" id="f-checkin" onchange="gRecalc();this.style.borderColor=''">
         </div>
         <div class="form-group">
-          <label class="form-label">Ночей <span style="color:#E05252">*</span></label>
-          <div style="display:flex;align-items:center;gap:6px">
-            <button type="button" onclick="gChangeNights(-1)" style="width:32px;height:38px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:16px;cursor:pointer;flex-shrink:0">−</button>
-            <input type="number" class="form-input" id="f-nights" value="3" min="1" max="90" style="text-align:center;font-weight:600" oninput="gRecalc()">
-            <button type="button" onclick="gChangeNights(1)" style="width:32px;height:38px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:16px;cursor:pointer;flex-shrink:0">+</button>
-          </div>
+          <label class="form-label">Дата выезда</label>
+          <input type="date" class="form-input" id="f-checkout-vis" onchange="gFromCheckout()">
         </div>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:var(--bg);border-radius:10px;border:1px solid var(--silver);margin-bottom:12px">
+        <span style="font-size:12px;color:var(--muted);flex-shrink:0">Ночей:</span>
+        <button type="button" onclick="gChangeNights(-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--silver);background:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">−</button>
+        <input type="number" id="f-nights" value="3" min="1" max="90" style="width:56px;text-align:center;font-weight:700;font-family:Manrope,sans-serif;font-size:16px;border:1.5px solid var(--silver);border-radius:8px;padding:4px 8px;outline:none" oninput="gRecalc()">
+        <button type="button" onclick="gChangeNights(1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid var(--silver);background:white;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0">+</button>
+        <span id="f-nights-label" style="font-size:12px;color:var(--muted)">ночи</span>
       </div>
 
       <input type="hidden" id="f-checkout">
@@ -1104,6 +1108,17 @@ function gFormatPhone(input) {
   }
 }
 
+function gFromCheckout() {
+  var inVal = document.getElementById('f-checkin').value;
+  var outVal = document.getElementById('f-checkout-vis').value;
+  if (!inVal || !outVal) return;
+  var nights = Math.round((new Date(outVal) - new Date(inVal)) / 86400000);
+  if (nights < 1) { document.getElementById('f-checkout-vis').value = ''; return; }
+  document.getElementById('f-nights').value = nights;
+  document.getElementById('f-checkout').value = outVal;
+  gRecalc();
+}
+
 function gChangeNights(delta) {
   var el = document.getElementById('f-nights');
   var v = Math.max(1, Math.min(90, (parseInt(el.value)||1) + delta));
@@ -1124,7 +1139,12 @@ function gRecalc() {
   var inDate = new Date(inVal);
   var outDate = new Date(inVal);
   outDate.setDate(outDate.getDate() + nights);
-  document.getElementById('f-checkout').value = outDate.toISOString().split('T')[0];
+  var outStr = outDate.toISOString().split('T')[0];
+  document.getElementById('f-checkout').value = outStr;
+  var visEl = document.getElementById('f-checkout-vis');
+  if (visEl) visEl.value = outStr;
+  var nlabel = document.getElementById('f-nights-label');
+  if (nlabel) nlabel.textContent = gNightWord(nights);
 
   // Проверяем занятость
   if (objId && calData[parseInt(objId)]) {
