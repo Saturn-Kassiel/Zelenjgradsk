@@ -787,6 +787,18 @@ function splitCSVLine(line) {
   return result;
 }
 
+function parseGDate(val) {
+  if (!val) return null;
+  var s = String(val).trim();
+  if (s.indexOf('T') !== -1) {
+    var d = new Date(s);
+    if (!isNaN(d)) return new Date(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate());
+  }
+  var p = s.split('-');
+  if (p.length === 3) return new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+  return null;
+}
+
 function renderCards(props) {
   allPropsData = props;
   var grid = document.getElementById('cards-grid');
@@ -798,6 +810,28 @@ function renderCards(props) {
     if (!calData[id]) calData[id] = { year: new Date().getFullYear(), month: new Date().getMonth(), statuses: {} };
     propNames[id] = { name: p.name, addr: p.address };
   });
+
+  // Загружаем бронирования для блокировки дат
+  fetch(APPS_URL + '?sheet=bookings')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      (d.data||[]).forEach(function(b){
+        var objId = parseInt(String(b.obj_id||b['obj_id ']).trim())||1;
+        var status = String(b.status||'').trim();
+        if (status==='cancelled') return;
+        var dateIn = parseGDate(b.date_in);
+        var dateOut = parseGDate(b.date_out);
+        if (!dateIn || !dateOut) return;
+        if (!calData[objId]) calData[objId] = { year: new Date().getFullYear(), month: new Date().getMonth(), statuses: {} };
+        var d = new Date(dateIn);
+        while (d < dateOut) {
+          var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+          calData[objId].statuses[key] = status==='pending' ? 'pending' : 'occupied';
+          d.setDate(d.getDate()+1);
+        }
+      });
+    }).catch(function(){});
+
 
   props.forEach(function(p, idx) {
     var id = parseInt(p.id) || (idx + 1);
@@ -1275,13 +1309,14 @@ function submitForm() {
   if (!obj.value) { obj.style.borderColor='var(--danger)'; ok=false; }
   if (!ok) return;
 
-  // Сохраняем в bookings
   var nights = parseInt(document.getElementById('f-nights').value)||1;
   var checkout = document.getElementById('f-checkout').value;
   var guests = document.getElementById('f-guests').value;
   var comment = document.getElementById('f-comment').value;
   var id = Date.now();
-  var row = [id, obj.value, name.value.trim(), phone.value.trim(), checkin.value, checkout, guests, 0, 'new', comment];
+  // Телефон сохраняем как текст - пробел в начале чтобы Sheets не интерпретировал как формулу
+  var phoneSave = ' ' + phone.value.trim();
+  var row = [id, obj.value, name.value.trim(), phoneSave, checkin.value, checkout, guests, 0, 'new', comment];
 
   fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
     .catch(function(){});
