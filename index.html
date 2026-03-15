@@ -645,6 +645,7 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
       <div class="modal-label">Заявка на бронирование</div>
       <h2 class="modal-title">Забронировать апартаменты</h2>
       <p class="modal-subtitle">Заполните форму — свяжемся в течение 30 минут</p>
+
       <div class="modal-prop-info">
         <div class="modal-prop-icon" id="modal-icon">
           <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -654,39 +655,72 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
           <div class="modal-prop-addr" id="modal-prop-addr">Зеленоградск, Калининградская обл.</div>
         </div>
       </div>
+
       <div class="form-group">
         <label class="form-label">Объект</label>
-        <select class="form-select" id="prop-select" onchange="updateModalProp()">
+        <select class="form-select" id="prop-select" onchange="updateModalProp();gRecalc()">
           <option value="">— Выберите объект —</option>
-          <option value="1">Апартаменты «Балтийский бриз» — 3 500 ₽/ночь</option>
-          <option value="2">Апартаменты «Янтарный» — 5 200 ₽/ночь</option>
         </select>
       </div>
+
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Имя</label><input type="text" class="form-input" placeholder="Ваше имя" id="f-name"></div>
-        <div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" placeholder="+7 (000) 000-00-00" id="f-phone"></div>
+        <div class="form-group">
+          <label class="form-label">Имя <span style="color:#E05252">*</span></label>
+          <input type="text" class="form-input" placeholder="Имя и фамилия" id="f-name" oninput="this.style.borderColor=''">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Телефон <span style="color:#E05252">*</span></label>
+          <input type="tel" class="form-input" placeholder="+7 (000) 000-00-00" id="f-phone" oninput="gFormatPhone(this)">
+          <div id="f-phone-hint" style="font-size:11px;margin-top:3px;display:none"></div>
+        </div>
       </div>
+
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Дата заезда</label><input type="date" class="form-input" id="f-checkin"></div>
-        <div class="form-group"><label class="form-label">Дата выезда</label><input type="date" class="form-input" id="f-checkout"></div>
+        <div class="form-group">
+          <label class="form-label">Дата заезда <span style="color:#E05252">*</span></label>
+          <input type="date" class="form-input" id="f-checkin" onchange="gRecalc();this.style.borderColor=''">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Ночей <span style="color:#E05252">*</span></label>
+          <div style="display:flex;align-items:center;gap:6px">
+            <button type="button" onclick="gChangeNights(-1)" style="width:32px;height:38px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:16px;cursor:pointer;flex-shrink:0">−</button>
+            <input type="number" class="form-input" id="f-nights" value="3" min="1" max="90" style="text-align:center;font-weight:600" oninput="gRecalc()">
+            <button type="button" onclick="gChangeNights(1)" style="width:32px;height:38px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;font-size:16px;cursor:pointer;flex-shrink:0">+</button>
+          </div>
+        </div>
       </div>
+
+      <input type="hidden" id="f-checkout">
+
+      <!-- Дата выезда и статус дат -->
+      <div id="f-dates-info" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:10px;font-size:13px"></div>
+
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Гостей</label>
-          <select class="form-select" id="f-guests">
+          <select class="form-select" id="f-guests" onchange="gRecalc()">
             <option value="1">1 гость</option><option value="2" selected>2 гостя</option>
             <option value="3">3 гостя</option><option value="4">4 гостя</option>
           </select>
         </div>
         <div class="form-group">
           <label class="form-label">Откуда узнали</label>
-          <select class="form-select"><option>Авито</option><option>Яндекс</option><option>Рекомендация</option><option>Другое</option></select>
+          <select class="form-select" id="f-source">
+            <option>Авито</option><option>Яндекс</option><option>Рекомендация</option><option>Другое</option>
+          </select>
         </div>
       </div>
+
+      <!-- Расчёт стоимости -->
+      <div id="f-calc" style="display:none;background:var(--bg);border-radius:12px;padding:12px 14px;margin-bottom:14px;font-size:13px">
+        <div id="f-calc-rows"></div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Комментарий (необязательно)</label>
-        <textarea class="form-textarea" placeholder="Особые пожелания..."></textarea>
+        <textarea class="form-textarea" id="f-comment" placeholder="Особые пожелания..."></textarea>
       </div>
+
       <button class="btn-submit" onclick="submitForm()">Отправить заявку →</button>
       <p class="privacy-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
     </div>
@@ -750,6 +784,7 @@ function splitCSVLine(line) {
 }
 
 function renderCards(props) {
+  allPropsData = props;
   var grid = document.getElementById('cards-grid');
   grid.innerHTML = '';
 
@@ -1041,6 +1076,132 @@ function toggleCalendar(id) {
 }
 
 var propNames = {};
+var allPropsData = [];
+var gPromoData = null;
+
+// ── УМНАЯ ФОРМА ГОСТЯ ──
+function gFormatPhone(input) {
+  var v = input.value.replace(/\D/g, '');
+  if (v.startsWith('8')) v = '7' + v.slice(1);
+  if (!v.startsWith('7')) v = '7' + v;
+  v = v.slice(0, 11);
+  var f = '+7';
+  if (v.length > 1) f += ' (' + v.slice(1,4);
+  if (v.length >= 4) f += ') ' + v.slice(4,7);
+  if (v.length >= 7) f += '-' + v.slice(7,9);
+  if (v.length >= 9) f += '-' + v.slice(9,11);
+  input.value = f;
+  var hint = document.getElementById('f-phone-hint');
+  var digits = v.length;
+  if (digits === 11) {
+    input.style.borderColor = 'var(--teal)';
+    hint.textContent = '✓ Номер корректен';
+    hint.style.color = 'var(--teal)';
+    hint.style.display = 'block';
+  } else {
+    input.style.borderColor = '';
+    hint.style.display = 'none';
+  }
+}
+
+function gChangeNights(delta) {
+  var el = document.getElementById('f-nights');
+  var v = Math.max(1, Math.min(90, (parseInt(el.value)||1) + delta));
+  el.value = v;
+  gRecalc();
+}
+
+function gRecalc() {
+  var inVal = document.getElementById('f-checkin').value;
+  var nights = parseInt(document.getElementById('f-nights').value) || 1;
+  var objId = document.getElementById('prop-select').value;
+  var infoEl = document.getElementById('f-dates-info');
+  var calcEl = document.getElementById('f-calc');
+  var calcRows = document.getElementById('f-calc-rows');
+
+  if (!inVal) { if(infoEl) infoEl.style.display='none'; calcEl.style.display='none'; return; }
+
+  var inDate = new Date(inVal);
+  var outDate = new Date(inVal);
+  outDate.setDate(outDate.getDate() + nights);
+  document.getElementById('f-checkout').value = outDate.toISOString().split('T')[0];
+
+  // Проверяем занятость
+  if (objId && calData[parseInt(objId)]) {
+    var st = calData[parseInt(objId)].statuses || {};
+    var d = new Date(inDate); var busyDays = [];
+    while (d < outDate) {
+      var key = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+      if (st[key]==='occupied'||st[key]==='pending') busyDays.push(d.getDate()+'.'+String(d.getMonth()+1).padStart(2,'0'));
+      d.setDate(d.getDate()+1);
+    }
+    if (busyDays.length > 0) {
+      infoEl.style.display='block';
+      infoEl.style.background='rgba(224,82,82,0.08)';
+      infoEl.style.border='1px solid rgba(224,82,82,0.3)';
+      infoEl.style.color='var(--danger)';
+      infoEl.innerHTML='⚠️ Дни '+busyDays.join(', ')+' уже заняты';
+    } else {
+      infoEl.style.display='none';
+    }
+  }
+
+  // Расчёт стоимости
+  if (!objId) { calcEl.style.display='none'; return; }
+  var prop = allPropsData.find(function(p){ return String(p.id)===String(objId); });
+  if (!prop) { calcEl.style.display='none'; return; }
+  var regularPrice = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.'))||0);
+
+  // Промо
+  var hasPromo = gPromoData && gPromoData.obj_id===String(objId) && gPromoData.price && gPromoData.date_from && gPromoData.date_to;
+  var rows = [];
+  if (!hasPromo) {
+    rows.push({ label: regularPrice.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights), amount: regularPrice*nights });
+  } else {
+    var pFrom = gPromoData.date_from; var pTo = gPromoData.date_to;
+    var rN=0; var pN=0; var dd=new Date(inDate);
+    while(dd<outDate){ if(dd>=pFrom&&dd<pTo)pN++;else rN++; dd.setDate(dd.getDate()+1); }
+    if(rN>0) rows.push({ label: regularPrice.toLocaleString('ru')+' ₽ × '+rN+' '+gNightWord(rN), amount: regularPrice*rN });
+    if(pN>0) rows.push({ label: (gPromoData.label||'Акция')+': '+gPromoData.price.toLocaleString('ru')+' ₽ × '+pN+' '+gNightWord(pN), amount: gPromoData.price*pN, isPromo:true });
+  }
+
+  var total = rows.reduce(function(s,r){return s+r.amount;},0);
+  calcRows.innerHTML = '';
+  rows.forEach(function(r) {
+    var el = document.createElement('div');
+    el.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:'+(r.isPromo?'var(--teal)':'var(--muted)');
+    el.innerHTML='<span>'+r.label+'</span><span>'+r.amount.toLocaleString('ru')+' ₽</span>';
+    calcRows.appendChild(el);
+  });
+  var totEl = document.createElement('div');
+  totEl.style.cssText = 'display:flex;justify-content:space-between;font-weight:700;color:var(--charcoal);border-top:1px solid var(--silver);padding-top:8px;margin-top:4px';
+  totEl.innerHTML='<span>Предварительно</span><span>'+total.toLocaleString('ru')+' ₽</span>';
+  calcRows.appendChild(totEl);
+  calcEl.style.display = 'block';
+}
+
+function gNightWord(n) { if(n===1)return'ночь';if(n<5)return'ночи';return'ночей'; }
+
+function gParseDate(val) {
+  if(!val) return null;
+  var s=String(val).trim();
+  if(s.indexOf('T')!==-1){var d=new Date(s);if(!isNaN(d))return new Date(Date.UTC(d.getUTCFullYear(),d.getUTCMonth(),d.getUTCDate()));}
+  var p=s.split('-');if(p.length===3)return new Date(Date.UTC(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])));
+  return null;
+}
+
+function loadGPromo() {
+  fetch(APPS_URL + '?sheet=promo')
+    .then(function(r){return r.json();})
+    .then(function(d){
+      var rows=(d.data||[]).map(function(row){var c={};Object.keys(row).forEach(function(k){c[k.trim()]=row[k];});return c;})
+        .filter(function(r){var a=String(r.active).toLowerCase();return(a==='true'||a==='1')&&r.price&&r.date_from&&r.date_to;});
+      if(rows.length){
+        var r=rows[0];
+        gPromoData={obj_id:String(r.obj_id||'1'),price:Math.round(parseFloat(String(r.price).replace(/\s/g,'').replace(',','.'))||0),date_from:gParseDate(r.date_from),date_to:gParseDate(r.date_to),label:String(r.label||'Спецпредложение')};
+      }
+    }).catch(function(){});
+}
 
 function openModal(propId) {
   var overlay = document.getElementById('modal-overlay');
@@ -1049,9 +1210,11 @@ function openModal(propId) {
   if (propId) {
     document.getElementById('prop-select').value = propId;
     updateModalProp();
+    gRecalc();
   }
   var today = new Date().toISOString().split('T')[0];
   document.getElementById('f-checkin').value = today;
+  gRecalc();
 }
 
 function closeModal() {
@@ -1060,6 +1223,9 @@ function closeModal() {
   setTimeout(function() {
     document.getElementById('form-screen').style.display = 'block';
     document.getElementById('success-screen').classList.remove('show');
+    document.getElementById('f-calc').style.display = 'none';
+    document.getElementById('f-dates-info').style.display = 'none';
+    document.getElementById('f-phone-hint').style.display = 'none';
   }, 300);
 }
 
@@ -1073,18 +1239,40 @@ function updateModalProp() {
     document.getElementById('modal-prop-name').textContent = propNames[val].name;
     document.getElementById('modal-prop-addr').textContent = propNames[val].addr;
   }
+  gRecalc();
 }
 
 function submitForm() {
-  if (!document.getElementById('f-name').value || !document.getElementById('f-phone').value) {
-    alert('Пожалуйста, заполните имя и телефон');
-    return;
-  }
+  var name = document.getElementById('f-name');
+  var phone = document.getElementById('f-phone');
+  var checkin = document.getElementById('f-checkin');
+  var obj = document.getElementById('prop-select');
+  var ok = true;
+
+  if (!name.value.trim()) { name.style.borderColor='var(--danger)'; ok=false; }
+  if (!phone.value.trim() || phone.value.replace(/\D/g,'').length!==11) { phone.style.borderColor='var(--danger)'; ok=false; }
+  if (!checkin.value) { checkin.style.borderColor='var(--danger)'; ok=false; }
+  if (!obj.value) { obj.style.borderColor='var(--danger)'; ok=false; }
+  if (!ok) return;
+
+  // Сохраняем в bookings
+  var nights = parseInt(document.getElementById('f-nights').value)||1;
+  var checkout = document.getElementById('f-checkout').value;
+  var guests = document.getElementById('f-guests').value;
+  var comment = document.getElementById('f-comment').value;
+  var id = Date.now();
+  var row = [id, obj.value, name.value.trim(), phone.value.trim(), checkin.value, checkout, guests, 0, 'new', comment];
+
+  fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
+    .catch(function(){});
+
   document.getElementById('form-screen').style.display = 'none';
   document.getElementById('success-screen').classList.add('show');
 }
 
 document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
+
+loadGPromo();
 
 // Feature cards subtle entrance
 document.querySelectorAll('.feature-card').forEach(function(el, i) {
