@@ -367,11 +367,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <!-- ══ BOOKINGS ══ -->
     <div class="page active" id="page-bookings">
       <div class="filter-bar">
-        <button class="filter-tab active" onclick="filterBookings('all',this)">Все</button>
-        <button class="filter-tab" onclick="filterBookings('new',this)">Новые</button>
-        <button class="filter-tab" onclick="filterBookings('confirmed',this)">Подтверждённые</button>
-        <button class="filter-tab" onclick="filterBookings('pending',this)">На рассмотрении</button>
-        <button class="filter-tab" onclick="filterBookings('done',this)">Завершённые</button>
+        <button class="filter-tab active" data-filter="all" onclick="filterBookings('all',this)">Все</button>
+        <button class="filter-tab" data-filter="new" onclick="filterBookings('new',this)">Новые</button>
+        <button class="filter-tab" data-filter="confirmed" onclick="filterBookings('confirmed',this)">Подтверждённые</button>
+        <button class="filter-tab" data-filter="pending" onclick="filterBookings('pending',this)">На рассмотрении</button>
+        <button class="filter-tab" data-filter="done" onclick="filterBookings('done',this)">Завершённые</button>
         <div class="filter-right">
           <div class="search-box">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -1108,9 +1108,25 @@ function renderBookings(filter, search) {
       '</div></td>';
     tbody.appendChild(tr);
   });
+  // Значок в сайдбаре — всегда количество новых
+  var newCount = bookings.filter(function(b){ return b.status==='new'; }).length;
   var badge = document.getElementById('new-badge');
-  var count = list.length;
-  if (count > 0) { badge.textContent = count; badge.style.display = ''; } else badge.style.display = 'none';
+  if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; } else badge.style.display = 'none';
+
+  // Значок на активной вкладке — количество в текущем фильтре
+  document.querySelectorAll('.filter-tab').forEach(function(tab) {
+    var tabBadge = tab.querySelector('.tab-badge');
+    if (!tabBadge) {
+      tabBadge = document.createElement('span');
+      tabBadge.className = 'tab-badge';
+      tabBadge.style.cssText = 'margin-left:5px;background:var(--teal);color:white;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700';
+      tab.appendChild(tabBadge);
+    }
+    var tabFilter = tab.dataset.filter || 'all';
+    var count = tabFilter === 'all' ? bookings.length : bookings.filter(function(b){ return b.status===tabFilter; }).length;
+    if (count > 0) { tabBadge.textContent = count; tabBadge.style.display = 'inline'; }
+    else tabBadge.style.display = 'none';
+  });
 }
 
 function filterBookings(filter, btn) {
@@ -1357,7 +1373,7 @@ function saveBooking() {
   if (!nbValidate()) return;
   var obj = document.getElementById('nb-obj').value;
   var name = document.getElementById('nb-name').value.trim();
-  var phone = ' ' + document.getElementById('nb-phone').value.trim();
+  var phone = document.getElementById('nb-phone').value.trim();
   var inD = document.getElementById('nb-in').value;
   var outD = document.getElementById('nb-out').value;
   var row;
