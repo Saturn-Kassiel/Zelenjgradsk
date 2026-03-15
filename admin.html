@@ -1574,12 +1574,24 @@ function parseCSVAdmin(text) {
   var rows = [];
   for (var i=1;i<lines.length;i++) {
     if (!lines[i].trim()) continue;
-    var vals = lines[i].split(',');
+    var vals = splitCSVLineAdmin(lines[i]);
     var obj={};
     headers.forEach(function(h,idx){ obj[h]=(vals[idx]||'').replace(/^"|"$/g,'').trim(); });
     if (obj.id && obj.name) rows.push(obj);
   }
   return rows;
+}
+
+function splitCSVLineAdmin(line) {
+  var result=[]; var cur=''; var inQ=false;
+  for(var i=0;i<line.length;i++){
+    var c=line[i];
+    if(c==='"'){inQ=!inQ;}
+    else if(c===','&&!inQ){result.push(cur);cur='';}
+    else{cur+=c;}
+  }
+  result.push(cur);
+  return result;
 }
 
 function applyPromoToForm() {
