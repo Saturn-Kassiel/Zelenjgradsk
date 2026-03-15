@@ -1653,16 +1653,6 @@ function savePromo() {
   var label = type==='special' ? (document.getElementById('promo-label').value||'') : '';
   var row = [true, obj, price, from, to, label];
 
-  // Всегда обновляем строку 2 (rowNum=2, первая строка данных)
-  apiWrite('updateRow', 'promo', row, undefined, function(d){
-    if (!d || d.error) {
-      // Если строки нет — добавляем
-      apiWrite('append', 'promo', row, undefined, function(){ showToast('Промо сохранено'); });
-    } else {
-      showToast('Промо сохранено');
-    }
-  });
-  // Передаём rowNum в body
   var body = { action: 'updateRow', sheet: 'promo', row: row, rowNum: 2 };
   fetch(API, { method: 'POST', body: JSON.stringify(body) })
     .then(function(r){ return r.json(); })
@@ -1672,7 +1662,9 @@ function savePromo() {
       } else {
         showToast('Промо сохранено ✓');
       }
-    });
+    })
+    .catch(function(){ showToast('Ошибка сохранения'); });
+
   promoData = { id: promoData.id, active: true, obj_id: obj, price: price, date_from: from, date_to: to, label: label };
 }
 
