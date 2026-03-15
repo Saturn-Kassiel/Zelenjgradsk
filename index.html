@@ -888,7 +888,7 @@ function loadPromo(allProps) {
 
 function renderPromoCard(promo, allProps) {
   var prop = null;
-  if (promo) {
+  if (promo && promo.obj_id) {
     prop = allProps.find(function(p){ return String(p.id)===String(promo.obj_id); }) || allProps[0];
   } else {
     prop = allProps[0];
@@ -896,8 +896,8 @@ function renderPromoCard(promo, allProps) {
   if (!prop) return;
 
   var isPromo = promo && promo.price;
-  var price = isPromo ? Math.round(parseFloat(String(promo.price).replace(/\s/g,'').replace(',','.'))) : Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')));
-  var regularPrice = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')));
+  var regularPrice = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')) || 0);
+  var price = isPromo ? Math.round(parseFloat(String(promo.price).replace(/\s/g,'').replace(',','.'))) : regularPrice;
 
   // Изображение
   var imgEl = document.getElementById('hero-promo-img');
@@ -936,7 +936,7 @@ function renderPromoCard(promo, allProps) {
     periodEl.textContent = 'Акция: ' + formatPromoDate(promo.date_from) + ' — ' + formatPromoDate(promo.date_to);
     // Обратный отсчёт
     var countdown = document.getElementById('hero-promo-countdown');
-    var end = new Date(promo.date_to);
+    var end = new Date(String(promo.date_to).indexOf('T')!==-1 ? promo.date_to : promo.date_to+'T00:00:00Z');
     var now = new Date();
     var diff = end - now;
     if (diff > 0) {
@@ -953,11 +953,16 @@ function renderPromoCard(promo, allProps) {
   document.getElementById('hero-promo-btn').href = 'property.html?id=' + prop.id;
 }
 
-function formatPromoDate(str) {
-  if (!str) return '';
-  var p = String(str).split('-');
+function formatPromoDate(val) {
+  if (!val) return '';
+  var s = String(val).trim();
+  if (s.indexOf('T') !== -1) {
+    var d = new Date(s);
+    if (!isNaN(d)) return d.getUTCDate()+'.'+String(d.getUTCMonth()+1).padStart(2,'0')+'.'+d.getUTCFullYear();
+  }
+  var p = s.split('-');
   if (p.length === 3) return p[2]+'.'+p[1]+'.'+p[0];
-  return str;
+  return s;
 }
 
 loadProperties();
