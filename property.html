@@ -615,33 +615,39 @@ header {
     <div>
       <div class="booking-card">
         <div class="booking-price">
-          <span class="booking-price-amount">3 500</span>
+          <span class="booking-price-amount" id="prop-price-display">—</span>
           <span class="booking-price-period">₽ / ночь</span>
         </div>
-        <div class="booking-dates">
-          <div class="booking-date-field">
-            <div class="booking-date-label">Заезд</div>
-            <div class="booking-date-val" id="date-in">Выберите дату</div>
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--silver);border-radius:14px;overflow:hidden;margin-bottom:12px">
+          <div style="padding:12px 14px;border-right:1px solid var(--silver);cursor:pointer" onclick="document.getElementById('bc-checkin').showPicker&&document.getElementById('bc-checkin').showPicker()">
+            <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Заезд</div>
+            <input type="date" id="bc-checkin" style="border:none;background:transparent;font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--charcoal);outline:none;width:100%;cursor:pointer" onchange="bcRecalc()">
           </div>
-          <div class="booking-date-field">
-            <div class="booking-date-label">Выезд</div>
-            <div class="booking-date-val" id="date-out">Выберите дату</div>
+          <div style="padding:12px 14px;cursor:pointer" onclick="document.getElementById('bc-checkout').showPicker&&document.getElementById('bc-checkout').showPicker()">
+            <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Выезд</div>
+            <input type="date" id="bc-checkout" style="border:none;background:transparent;font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--charcoal);outline:none;width:100%;cursor:pointer" onchange="bcRecalc()">
           </div>
         </div>
-        <div class="booking-guests">
+
+        <div style="border:1.5px solid var(--silver);border-radius:14px;padding:12px 14px;margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
           <div>
-            <div class="booking-guests-label">Гости</div>
-            <div class="booking-guests-val">2 гостя</div>
+            <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Гости</div>
+            <select id="bc-guests" style="border:none;background:transparent;font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--charcoal);outline:none;cursor:pointer" onchange="bcRecalc()">
+              <option>1 гость</option>
+              <option selected>2 гостя</option>
+              <option>3 гостя</option>
+              <option>4 гостя</option>
+            </select>
           </div>
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--muted)"><polyline points="6 9 12 15 18 9"/></svg>
         </div>
+
         <button class="btn-book-main" onclick="openModal()">Забронировать</button>
         <p class="booking-note">Без предоплаты — подтверждение в течение 30 мин</p>
-        <div class="booking-divider"></div>
-        <div class="booking-calc">
-          <div class="booking-calc-row"><span>3 500 ₽ × 3 ночи</span><span>10 500 ₽</span></div>
-          <div class="booking-calc-row"><span>Уборка</span><span>1 000 ₽</span></div>
-          <div class="booking-calc-row total"><span>Итого</span><span>11 500 ₽</span></div>
+
+        <div id="bc-calc" style="display:none">
+          <div class="booking-divider"></div>
+          <div class="booking-calc" id="bc-calc-rows"></div>
         </div>
       </div>
     </div>
@@ -689,14 +695,134 @@ header {
 </div>
 
 <script>
+// ── PROMO & PRICING ──
+var APPS_URL = 'https://script.google.com/macros/s/AKfycbzTplV_-2I8A3FbJpetzapDbI6EG5zYoZ1I10rucKpHa2iBnOPF1_oSOpTLCi0EGeL7fA/exec';
+var propData = { price: 0, id: 1 };
+var promoData = null; // { obj_id, price, date_from, date_to }
+
+function loadPromoForProp() {
+  fetch(APPS_URL + '?sheet=promo')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var rows = (d.data||[]).map(function(row){
+        var clean={};
+        Object.keys(row).forEach(function(k){clean[k.trim()]=row[k];});
+        return clean;
+      }).filter(function(r){
+        var a = String(r.active).toLowerCase();
+        return (a==='true'||a==='1') && r.price && r.date_from && r.date_to;
+      });
+      if (rows.length) {
+        var r = rows[0];
+        promoData = {
+          obj_id: String(r.obj_id||'1'),
+          price: Math.round(parseFloat(String(r.price).replace(/\s/g,'').replace(',','.'))||0),
+          date_from: parseSheetDateStr(r.date_from),
+          date_to: parseSheetDateStr(r.date_to),
+          label: String(r.label||'Спецпредложение')
+        };
+      }
+      bcRecalc();
+    })
+    .catch(function(){});
+}
+
+function parseSheetDateStr(val) {
+  if (!val) return null;
+  var s = String(val).trim();
+  if (s.indexOf('T') !== -1) {
+    var d = new Date(s);
+    if (!isNaN(d)) {
+      return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+    }
+  }
+  var p = s.split('-');
+  if (p.length===3) return new Date(Date.UTC(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])));
+  return null;
+}
+
+// Умный расчёт стоимости с учётом промо
+function calcPrice(dateIn, dateOut, regularPrice) {
+  var result = { rows: [], total: 0, hasPromo: false };
+  if (!dateIn || !dateOut || dateOut <= dateIn) return result;
+
+  var propId = String(getPropId());
+  var hasPromo = promoData && promoData.obj_id === propId && promoData.date_from && promoData.date_to;
+
+  if (!hasPromo) {
+    var nights = Math.round((dateOut - dateIn) / 86400000);
+    result.rows.push({ label: regularPrice.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights), amount: regularPrice * nights });
+    result.total = regularPrice * nights;
+    return result;
+  }
+
+  // Разбиваем по периодам
+  var promoFrom = promoData.date_from;
+  var promoTo = promoData.date_to;
+  var promoPrice = promoData.price;
+
+  var regularNights = 0;
+  var promoNights = 0;
+  var d = new Date(dateIn);
+
+  while (d < dateOut) {
+    var isInPromo = d >= promoFrom && d < promoTo;
+    if (isInPromo) promoNights++; else regularNights++;
+    d.setDate(d.getDate() + 1);
+  }
+
+  if (regularNights > 0) {
+    var amt = regularPrice * regularNights;
+    result.rows.push({ label: regularPrice.toLocaleString('ru') + ' ₽ × ' + regularNights + ' ' + nightWord(regularNights), amount: amt });
+    result.total += amt;
+  }
+  if (promoNights > 0) {
+    var amt2 = promoPrice * promoNights;
+    result.rows.push({ label: promoData.label + ': ' + promoPrice.toLocaleString('ru') + ' ₽ × ' + promoNights + ' ' + nightWord(promoNights), amount: amt2, isPromo: true });
+    result.total += amt2;
+    result.hasPromo = true;
+  }
+  return result;
+}
+
+function bcRecalc() {
+  var inVal = document.getElementById('bc-checkin').value;
+  var outVal = document.getElementById('bc-checkout').value;
+  var calcEl = document.getElementById('bc-calc');
+  var rowsEl = document.getElementById('bc-calc-rows');
+
+  if (!inVal || !outVal) { calcEl.style.display='none'; return; }
+
+  var dateIn = new Date(inVal);
+  var dateOut = new Date(outVal);
+  if (dateOut <= dateIn) { calcEl.style.display='none'; return; }
+
+  var calc = calcPrice(dateIn, dateOut, propData.price);
+  if (!calc.rows.length) { calcEl.style.display='none'; return; }
+
+  rowsEl.innerHTML = '';
+  calc.rows.forEach(function(r) {
+    var row = document.createElement('div');
+    row.className = 'booking-calc-row';
+    if (r.isPromo) row.style.color = 'var(--teal)';
+    row.innerHTML = '<span>' + r.label + '</span><span>' + r.amount.toLocaleString('ru') + ' ₽</span>';
+    rowsEl.appendChild(row);
+  });
+
+  // Итого
+  var total = document.createElement('div');
+  total.className = 'booking-calc-row total';
+  total.innerHTML = '<span>Итого</span><span>' + calc.total.toLocaleString('ru') + ' ₽</span>';
+  rowsEl.appendChild(total);
+
+  calcEl.style.display = 'block';
+}
+
+function nightWord(n) { if(n===1) return 'ночь'; if(n<5) return 'ночи'; return 'ночей'; }
+
 // CALENDAR
-var calState = { year: 2025, month: 2 };
-var statuses = {
-  '2025-3-5':'occupied','2025-3-6':'occupied','2025-3-7':'occupied',
-  '2025-3-10':'pending','2025-3-11':'pending',
-  '2025-3-18':'blocked','2025-3-19':'blocked','2025-3-20':'blocked',
-  '2025-3-25':'occupied','2025-3-26':'occupied','2025-3-27':'occupied'
-};
+var calState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+var statuses = {};
 // ── GOOGLE SHEETS LOADER ──
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpX_qFLBkNJP0nCfjv4zXytaCk76X2apVxp4UW6EducTF0-aUupARazcoDSNxcwbRdnMJHKSRH3ozt/pub?output=csv';
 
@@ -750,6 +876,20 @@ function setGalleryImg(elId, url, gradient) {
 function applyPropData(prop) {
   // Заголовок страницы
   document.title = prop.name + ' — Зеленоградск';
+
+  // Цена
+  var price = Math.round(parseFloat(String(prop.price||'0').replace(/\s/g,'').replace(',','.')) || 0);
+  propData.price = price;
+  propData.id = parseInt(prop.id) || 1;
+  var priceEl = document.getElementById('prop-price-display');
+  if (priceEl) priceEl.textContent = price.toLocaleString('ru');
+
+  // Цена в карточке бронирования
+  var bookingPriceEl = document.querySelector('.booking-price-amount');
+  if (bookingPriceEl) bookingPriceEl.textContent = price.toLocaleString('ru');
+
+  // Загружаем промо после получения данных объекта
+  loadPromoForProp();
 
   // Галерея
   var img1 = driveDirectUrl(prop.image_1);
