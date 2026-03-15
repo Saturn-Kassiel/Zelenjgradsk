@@ -875,9 +875,12 @@ function loadPromo(allProps) {
     .then(function(d){
       var rows = (d.data||[]).map(function(row){
         var clean={};
-        Object.keys(row).forEach(function(k){clean[k.trim()]=row[k];});
+        Object.keys(row).forEach(function(k){clean[k.trim()]=typeof row[k]==='string'?row[k].trim():row[k];});
         return clean;
-      }).filter(function(r){ return String(r.active).toLowerCase()==='true' && r.obj_id; });
+      }).filter(function(r){
+        var a = String(r.active).toLowerCase();
+        return a==='true' || a==='1' || a==='yes' || r.active===true;
+      });
       renderPromoCard(rows.length ? rows[0] : null, allProps);
     })
     .catch(function(){ renderPromoCard(null, allProps); });
