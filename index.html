@@ -1081,7 +1081,24 @@ function showFallbackCards() {
   grid.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--muted);font-size:14px">Не удалось загрузить данные.</div>';
 }
 
-// ── WEATHER ──
+// ── WEATHER SVG ICONS ──
+function getWeatherSvg(icon, size) {
+  size = size || 40;
+  var code = icon.replace('n','d'); // ночные = дневные
+  var svgs = {
+    '01d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="14" fill="#FFD93D"/><g stroke="#FFB300" stroke-width="3" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/><line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/><line x1="14" y1="14" x2="18" y2="18"/><line x1="46" y1="46" x2="50" y2="50"/><line x1="50" y1="14" x2="46" y2="18"/><line x1="18" y1="46" x2="14" y2="50"/></g></svg>',
+    '02d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="24" cy="30" r="10" fill="#FFD93D"/><g stroke="#FFB300" stroke-width="2.5" stroke-linecap="round"><line x1="24" y1="10" x2="24" y2="15"/><line x1="10" y1="30" x2="15" y2="30"/><line x1="14" y1="16" x2="18" y2="20"/></g><rect x="18" y="34" width="30" height="16" rx="8" fill="#C8DCF0"/><ellipse cx="26" cy="34" rx="10" ry="8" fill="#D8EAF8"/><ellipse cx="38" cy="32" rx="12" ry="9" fill="#E0EFFE"/></svg>',
+    '03d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="30" width="44" height="20" rx="10" fill="#C8DCF0"/><ellipse cx="24" cy="30" rx="14" ry="11" fill="#D8EAF8"/><ellipse cx="40" cy="28" rx="16" ry="12" fill="#E0EFFE"/></svg>',
+    '04d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="6" y="34" width="40" height="18" rx="9" fill="#B0C4D8"/><ellipse cx="20" cy="34" rx="13" ry="10" fill="#C0D0E0"/><ellipse cx="36" cy="32" rx="15" ry="11" fill="#C8D8E8"/><rect x="16" y="30" width="38" height="18" rx="9" fill="#D0DEF0"/><ellipse cx="30" cy="30" rx="14" ry="10" fill="#D8E6F4"/><ellipse cx="46" cy="28" rx="14" ry="11" fill="#E0ECF8"/></svg>',
+    '09d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="20" width="42" height="18" rx="9" fill="#B0C8E0"/><ellipse cx="22" cy="20" rx="13" ry="10" fill="#C0D4EC"/><ellipse cx="40" cy="18" rx="15" ry="11" fill="#CADCf0"/><g stroke="#5BA0D0" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="42" x2="19" y2="52"/><line x1="32" y1="44" x2="29" y2="54"/><line x1="42" y1="42" x2="39" y2="52"/></g></svg>',
+    '10d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="20" cy="20" r="9" fill="#FFD93D" opacity="0.9"/><rect x="12" y="24" width="38" height="16" rx="8" fill="#B8D0E8"/><ellipse cx="22" cy="24" rx="12" ry="9" fill="#C8DCF0"/><ellipse cx="38" cy="22" rx="14" ry="10" fill="#D0E4F4"/><g stroke="#4A90D9" stroke-width="2.5" stroke-linecap="round"><line x1="24" y1="42" x2="21" y2="52"/><line x1="34" y1="44" x2="31" y2="54"/><line x1="44" y1="42" x2="41" y2="52"/></g></svg>',
+    '11d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="42" height="18" rx="9" fill="#8EA0B8"/><ellipse cx="20" cy="16" rx="13" ry="10" fill="#9EB0C8"/><ellipse cx="38" cy="14" rx="15" ry="11" fill="#A8BCD0"/><g stroke="#4A90D9" stroke-width="2" stroke-linecap="round"><line x1="24" y1="38" x2="21" y2="46"/><line x1="34" y1="40" x2="31" y2="48"/><line x1="44" y1="38" x2="41" y2="46"/></g><polyline points="28,42 32,34 30,42 36,34" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    '13d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="18" width="42" height="16" rx="8" fill="#C8D8F0"/><ellipse cx="22" cy="18" rx="13" ry="10" fill="#D4E2F6"/><ellipse cx="40" cy="16" rx="15" ry="11" fill="#DCEAf8"/><g fill="#A0B8D8"><circle cx="22" cy="42" r="2.5"/><circle cx="32" cy="46" r="2.5"/><circle cx="42" cy="42" r="2.5"/><circle cx="27" cy="52" r="2"/><circle cx="37" cy="50" r="2"/></g></svg>',
+    '50d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><g stroke="#A0B4C8" stroke-width="2.5" stroke-linecap="round" opacity="0.7"><line x1="14" y1="28" x2="50" y2="28"/><line x1="10" y1="36" x2="54" y2="36"/><line x1="14" y1="44" x2="50" y2="44"/></g></svg>'
+  };
+  return svgs[code] || svgs['03d'];
+}
+
 var OWM_KEY = '96ae9fe213f50f5bc55e4ff3d65ac3cd';
 var CITY_ID = '554234';
 var dayNamesW = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
@@ -1097,10 +1114,10 @@ function loadWeather() {
       document.getElementById('w-temp').textContent = (temp>0?'+':'') + temp + '°';
       document.getElementById('w-desc').textContent = desc.charAt(0).toUpperCase() + desc.slice(1);
       document.getElementById('w-feels').textContent = 'Ощущается ' + (feels>0?'+':'') + feels + '°';
-      document.getElementById('w-icon').innerHTML = '<img src="https://openweathermap.org/img/wn/' + icon + '@2x.png" style="width:72px;height:72px">';
+      document.getElementById('w-icon').innerHTML = getWeatherSvg(icon, 72);
       document.getElementById('w-wind').textContent = Math.round(d.wind.speed) + ' м/с';
       document.getElementById('w-humidity').textContent = d.main.humidity + '%';
-      var waterTemp = temp > 10 ? temp - 3 : temp - 1;
+      var waterTemp = Math.max(2, Math.min(22, temp > 15 ? temp - 3 : temp - 1));
       document.getElementById('w-water').textContent = waterTemp + '°C';
     }).catch(function(){});
 
@@ -1122,7 +1139,7 @@ function loadWeather() {
         var name = dayNamesW[day.date.getDay()];
         return '<div class="weather-day">' +
           '<div class="weather-day-name">' + name + '</div>' +
-          '<img src="https://openweathermap.org/img/wn/' + day.icon + '.png" style="width:32px;height:32px;display:block;margin:4px auto">' +
+          '<div style="margin:4px 0">'+getWeatherSvg(day.icon, 32)+'</div>' +
           '<div class="weather-day-temp">' + (max>0?'+':'') + max + '°</div>' +
           '<div style="font-size:11px;color:var(--muted)">' + (min>0?'+':'') + min + '°</div>' +
           '</div>';
