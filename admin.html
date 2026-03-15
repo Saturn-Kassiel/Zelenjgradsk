@@ -852,7 +852,7 @@ function driveDirectUrl(url) {
 }
 
 
-var API = 'https://script.google.com/macros/s/AKfycbyB3F47JlN8jmxiPX8EaYAOwTM16W69a1vkaC5Qi3O7iP093uikjzwG1uvVuWYE2ia2hg/exec';
+var API = 'https://script.google.com/macros/s/AKfycbzTplV_-2I8A3FbJpetzapDbI6EG5zYoZ1I10rucKpHa2iBnOPF1_oSOpTLCi0EGeL7fA/exec';
 
 function apiRead(sheet, callback) {
   fetch(API + '?sheet=' + sheet)
@@ -1657,10 +1657,10 @@ function savePromo() {
   fetch(API, { method: 'POST', body: JSON.stringify(body) })
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if (!d || d.error) {
-        apiWrite('append', 'promo', row, undefined, function(){ showToast('Промо сохранено'); });
-      } else {
+      if (d && d.ok) {
         showToast('Промо сохранено ✓');
+      } else {
+        showToast('Ошибка: ' + (d && d.error ? d.error : 'неизвестная'));
       }
     })
     .catch(function(){ showToast('Ошибка сохранения'); });
