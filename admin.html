@@ -1109,13 +1109,8 @@ function renderBookings(filter, search) {
     tbody.appendChild(tr);
   });
   var badge = document.getElementById('new-badge');
-  var filteredCount = list.length;
-  if (filter === 'all') {
-    var newCount = bookings.filter(function(b){ return b.status==='new'; }).length;
-    if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; } else badge.style.display = 'none';
-  } else {
-    if (filteredCount > 0) { badge.textContent = filteredCount; badge.style.display = ''; } else badge.style.display = 'none';
-  }
+  var count = list.length;
+  if (count > 0) { badge.textContent = count; badge.style.display = ''; } else badge.style.display = 'none';
 }
 
 function filterBookings(filter, btn) {
