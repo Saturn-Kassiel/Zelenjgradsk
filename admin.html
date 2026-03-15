@@ -933,7 +933,81 @@ function closeSidebar() {
   document.getElementById('overlay-bg').classList.remove('show');
 }
 
-// ── BOOKINGS ──
+// ── PROMO-AWARE PRICE CALC ──
+var adminPromoData = null;
+
+function loadAdminPromo() {
+  fetch(API + '?sheet=promo')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var rows = (d.data||[]).map(function(row){
+        var clean={};
+        Object.keys(row).forEach(function(k){clean[k.trim()]=row[k];});
+        return clean;
+      }).filter(function(r){
+        var a = String(r.active).toLowerCase();
+        return (a==='true'||a==='1') && r.price && r.date_from && r.date_to;
+      });
+      if (rows.length) {
+        var r = rows[0];
+        adminPromoData = {
+          obj_id: String(r.obj_id||'1'),
+          price: Math.round(parseFloat(String(r.price).replace(/\s/g,'').replace(',','.'))||0),
+          date_from: parseAdminDate(r.date_from),
+          date_to: parseAdminDate(r.date_to),
+          label: String(r.label||'Спецпредложение')
+        };
+      }
+    }).catch(function(){});
+}
+
+function parseAdminDate(val) {
+  if (!val) return null;
+  var s = String(val).trim();
+  if (s.indexOf('T') !== -1) {
+    var d = new Date(s);
+    if (!isNaN(d)) return new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()));
+  }
+  var p = s.split('-');
+  if (p.length===3) return new Date(Date.UTC(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])));
+  return null;
+}
+
+function calcAdminPrice(dateIn, dateOut, regularPrice, objId) {
+  var result = { rows: [], total: 0, hasPromo: false };
+  var hasPromo = adminPromoData && adminPromoData.obj_id===String(objId) && adminPromoData.date_from && adminPromoData.date_to && adminPromoData.price;
+
+  if (!hasPromo) {
+    var nights = Math.round((dateOut - dateIn) / 86400000);
+    result.rows.push({ label: regularPrice.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights), amount: regularPrice * nights });
+    result.total = regularPrice * nights;
+    return result;
+  }
+
+  var promoFrom = adminPromoData.date_from;
+  var promoTo = adminPromoData.date_to;
+  var promoPrice = adminPromoData.price;
+  var regularNights = 0; var promoNights = 0;
+  var d = new Date(dateIn);
+  while (d < dateOut) {
+    if (d >= promoFrom && d < promoTo) promoNights++; else regularNights++;
+    d.setDate(d.getDate()+1);
+  }
+  if (regularNights > 0) {
+    var amt = regularPrice * regularNights;
+    result.rows.push({ label: regularPrice.toLocaleString('ru') + ' ₽ × ' + regularNights + ' ' + nightWord(regularNights), amount: amt });
+    result.total += amt;
+  }
+  if (promoNights > 0) {
+    var amt2 = promoPrice * promoNights;
+    result.rows.push({ label: adminPromoData.label + ': ' + promoPrice.toLocaleString('ru') + ' ₽ × ' + promoNights + ' ' + nightWord(promoNights), amount: amt2 });
+    result.total += amt2;
+    result.hasPromo = true;
+  }
+  return result;
+}
+
+
 var bookingFilter = 'all';
 
 function parseSheetDate(val) {
@@ -1184,14 +1258,24 @@ function nbRecalc() {
     surchargeRow.style.display = 'none';
   }
 
-  // Автоподсчёт суммы
+  // Умный расчёт с учётом промо
   var price = objPrices[obj] || 0;
-  var total = price * nights + surcharge;
+  var inDate2 = new Date(inVal);
+  var outDate2 = new Date(inVal);
+  outDate2.setDate(outDate2.getDate() + nights);
+  var calc = calcAdminPrice(inDate2, outDate2, price, obj);
+  var total = calc.total + surcharge;
+
   amountEl.value = total;
-  var hint = price.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights);
+  var hint = '';
+  calc.rows.forEach(function(r, i) {
+    if (i > 0) hint += ' + ';
+    hint += r.label + ' = ' + r.amount.toLocaleString('ru') + ' ₽';
+  });
   if (surcharge > 0) hint += ' + ' + surcharge.toLocaleString('ru') + ' ₽ (наценка)';
-  hint += ' = ' + total.toLocaleString('ru') + ' ₽';
+  hint += ' → Итого: ' + total.toLocaleString('ru') + ' ₽';
   hintEl.textContent = hint;
+  hintEl.style.color = calc.hasPromo ? 'var(--teal)' : 'var(--muted)';
 }
 
 function nbValidatePhone(val) {
@@ -1725,6 +1809,7 @@ loadExpenses();
 loadSupplies();
 loadCleaning();
 loadPromoAdmin();
+loadAdminPromo();
 </script>
 </body>
 </html>
