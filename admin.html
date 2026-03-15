@@ -133,6 +133,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .ss-new { background: rgba(208,232,255,0.6); color: var(--indigo); }
 .ss-confirmed { background: var(--success-light); color: var(--success); }
 .ss-pending { background: var(--warning-light); color: var(--warning); }
+.ss-cancelled { background: rgba(224,82,82,0.1); color: var(--danger); }
+.ss-done { background: rgba(62,112,87,0.1); color: var(--teal); }
 .ss-cancelled { background: var(--danger-light); color: var(--danger); }
 .ss-done { background: var(--silver); color: var(--muted); }
 .action-btns { display: flex; gap: 6px; }
@@ -372,6 +374,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <button class="filter-tab" data-filter="confirmed" onclick="filterBookings('confirmed',this)">Подтверждённые</button>
         <button class="filter-tab" data-filter="pending" onclick="filterBookings('pending',this)">На рассмотрении</button>
         <button class="filter-tab" data-filter="done" onclick="filterBookings('done',this)">Завершённые</button>
+        <button class="filter-tab" data-filter="cancelled" onclick="filterBookings('cancelled',this)">Отменённые</button>
         <div class="filter-right">
           <div class="search-box">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
@@ -798,6 +801,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
           <option value="new">Новая</option>
           <option value="confirmed">Подтверждена</option>
           <option value="pending">На рассмотрении</option>
+          <option value="done">Завершена</option>
+          <option value="cancelled">Отменена</option>
         </select>
       </div>
     </div>
@@ -1130,17 +1135,30 @@ function renderBookings(filter, search) {
   list.forEach(function(b) {
     var inD = formatDate(b.in); var outD = formatDate(b.out);
     var nights = Math.round((new Date(b.out) - new Date(b.in)) / 86400000);
-    var statusOptions = ['new','confirmed','pending','cancelled','done'];
     var statusLabels = { new:'Новая', confirmed:'Подтверждена', pending:'Рассматривается', cancelled:'Отменена', done:'Завершена' };
-    var opts = statusOptions.map(function(s) { return '<option value="'+s+'"'+(b.status===s?' selected':'')+'>'+statusLabels[s]+'</option>'; }).join('');
+
+    // Доступные переходы статусов
+    var allowedTransitions = {
+      'new':       ['new', 'confirmed', 'pending'],
+      'pending':   ['pending', 'new', 'confirmed'],
+      'confirmed': ['confirmed', 'done', 'cancelled'],
+      'cancelled': ['cancelled'],
+      'done':      ['done']
+    };
+    var allowed = allowedTransitions[b.status] || [b.status];
+    var opts = allowed.map(function(s) {
+      return '<option value="'+s+'"'+(b.status===s?' selected':'')+'>'+statusLabels[s]+'</option>';
+    }).join('');
+    var isDisabled = b.status==='cancelled' || b.status==='done';
     var tr = document.createElement('tr');
+    if (b.status === 'cancelled') tr.style.opacity = '0.6';
     tr.innerHTML =
       '<td><div class="guest-name">'+b.name+'</div><div class="guest-phone">'+b.phone+'</div></td>' +
       '<td><span style="font-size:12px;font-weight:500;padding:4px 10px;border-radius:20px;background:'+(b.obj==='1'?'rgba(62,112,87,0.1)':'rgba(82,105,171,0.1)')+';color:'+(b.obj==='1'?'var(--teal)':'var(--indigo)')+'">'+b.objName+'</span></td>' +
       '<td><div class="date-range">'+inD+' — '+outD+'</div><div class="nights">'+nights+' '+nightWord(nights)+'</div></td>' +
       '<td>'+b.guests+'</td>' +
       '<td><span style="font-family:Manrope,sans-serif;font-weight:700">'+b.amount.toLocaleString('ru')+' ₽</span>'+(b.comment?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+b.comment+'</div>':'')+'</td>' +
-      '<td><select class="status-select ss-'+b.status+'" onchange="changeStatus(\''+b.id+'\',this)">'+opts+'</select></td>' +
+      '<td><select class="status-select ss-'+b.status+'"'+(isDisabled?' disabled style="opacity:0.7;cursor:default"':'')+' onchange="changeStatus(\''+b.id+'\',this)">'+opts+'</select></td>' +
       '<td><div class="action-btns">' +
         '<button class="icon-btn" onclick="editBooking(\''+b.id+'\')" title="Редактировать"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
         '<button class="icon-btn danger" onclick="deleteBooking(\''+b.id+'\')" title="Удалить"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>' +
