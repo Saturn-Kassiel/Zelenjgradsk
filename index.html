@@ -711,6 +711,195 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
   </div>
 </section>
 
+<!-- GALLERY SECTION -->
+<section id="gallery-city" style="padding:72px 24px;background:var(--bg);border-top:1px solid var(--silver)">
+  <div style="max-width:1200px;margin:0 auto">
+    <div style="display:flex;align-items:baseline;justify-content:space-between;margin-bottom:36px;flex-wrap:wrap;gap:12px">
+      <div>
+        <h2 style="font-family:Manrope,sans-serif;font-size:32px;font-weight:800;color:var(--charcoal);letter-spacing:-0.5px;margin-bottom:6px">Виды <span style="color:var(--teal)">Зеленоградска</span></h2>
+        <p style="font-size:14px;color:var(--muted)">Балтийское побережье · пляжи · янтарный берег</p>
+      </div>
+      <div style="display:flex;gap:8px" id="gal-tabs">
+        <button onclick="galFilter('all',this)" class="gal-tab gal-active">Все</button>
+        <button onclick="galFilter('sea',this)" class="gal-tab">Море</button>
+        <button onclick="galFilter('city',this)" class="gal-tab">Город</button>
+        <button onclick="galFilter('nature',this)" class="gal-tab">Природа</button>
+      </div>
+    </div>
+
+    <div id="gal-grid" style="columns:3;column-gap:12px;transition:opacity 0.3s">
+      <!-- filled by JS -->
+    </div>
+  </div>
+</section>
+
+<!-- GALLERY LIGHTBOX -->
+<div id="gal-lb" style="display:none;position:fixed;inset:0;z-index:9000;background:rgba(20,26,40,0.93);backdrop-filter:blur(8px);align-items:center;justify-content:center;flex-direction:column" onclick="galLbClose(event)">
+  <button onclick="galLbClose()" style="position:absolute;top:20px;right:24px;background:rgba(255,255,255,0.12);border:none;color:white;width:40px;height:40px;border-radius:50%;font-size:20px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">×</button>
+  <button id="gal-lb-prev" onclick="galLbNav(-1)" style="position:absolute;left:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:white;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">‹</button>
+  <img id="gal-lb-img" src="" alt="" style="max-width:90vw;max-height:80vh;object-fit:contain;border-radius:14px;box-shadow:0 32px 80px rgba(0,0,0,0.6);transition:opacity 0.2s">
+  <div id="gal-lb-cap" style="margin-top:16px;color:rgba(255,255,255,0.75);font-size:13px;font-family:Manrope,sans-serif;text-align:center"></div>
+  <button id="gal-lb-next" onclick="galLbNav(1)" style="position:absolute;right:16px;top:50%;transform:translateY(-50%);background:rgba(255,255,255,0.12);border:none;color:white;width:44px;height:44px;border-radius:50%;font-size:22px;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:background 0.2s" onmouseover="this.style.background='rgba(255,255,255,0.22)'" onmouseout="this.style.background='rgba(255,255,255,0.12)'">›</button>
+</div>
+
+<style>
+.gal-tab {
+  padding: 7px 16px;
+  border-radius: 50px;
+  border: 1.5px solid var(--silver);
+  background: white;
+  color: var(--muted);
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
+.gal-tab:hover { border-color: var(--teal); color: var(--teal); }
+.gal-active { background: var(--teal) !important; color: white !important; border-color: var(--teal) !important; }
+
+.gal-item {
+  break-inside: avoid;
+  margin-bottom: 12px;
+  border-radius: 14px;
+  overflow: hidden;
+  position: relative;
+  cursor: pointer;
+  display: block;
+  transition: transform 0.3s, box-shadow 0.3s;
+}
+.gal-item:hover { transform: translateY(-3px); box-shadow: 0 16px 40px rgba(62,112,87,0.18); }
+.gal-item img {
+  width: 100%;
+  display: block;
+  border-radius: 14px;
+  transition: transform 0.5s;
+}
+.gal-item:hover img { transform: scale(1.04); }
+.gal-item .gal-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(20,35,50,0.6) 0%, transparent 50%);
+  border-radius: 14px;
+  opacity: 0;
+  transition: opacity 0.3s;
+  display: flex;
+  align-items: flex-end;
+  padding: 16px;
+}
+.gal-item:hover .gal-overlay { opacity: 1; }
+.gal-cap {
+  color: white;
+  font-family: Manrope, sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.gal-tag-badge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  font-family: Manrope, sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.7px;
+  text-transform: uppercase;
+  padding: 3px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(6px);
+}
+@media (max-width: 768px) {
+  #gal-grid { columns: 2 !important; }
+}
+@media (max-width: 480px) {
+  #gal-grid { columns: 1 !important; }
+}
+</style>
+
+<script>
+var galPhotos = [
+  { tag: 'sea', src: 'https://images.unsplash.com/photo-1507525428034-b723cf961d3e?w=800&q=80', cap: 'Балтийский пляж', badgeColor: '#D0E8FF', badgeText: 'Море', badgeTextColor: 'var(--indigo)' },
+  { tag: 'city', src: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80', cap: 'Набережная Зеленоградска', badgeColor: '#E2F0D9', badgeText: 'Город', badgeTextColor: 'var(--teal)' },
+  { tag: 'nature', src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80', cap: 'Куршская коса', badgeColor: '#E6E6FA', badgeText: 'Природа', badgeTextColor: 'var(--indigo)' },
+  { tag: 'sea', src: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80', cap: 'Закат над Балтикой', badgeColor: '#D0E8FF', badgeText: 'Море', badgeTextColor: 'var(--indigo)' },
+  { tag: 'city', src: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=800&q=80', cap: 'Уютные улочки', badgeColor: '#E2F0D9', badgeText: 'Город', badgeTextColor: 'var(--teal)' },
+  { tag: 'sea', src: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', cap: 'Янтарный берег', badgeColor: '#FFF0D9', badgeText: 'Янтарь', badgeTextColor: '#B07D1A' },
+  { tag: 'nature', src: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=800&q=80', cap: 'Балтийские дюны', badgeColor: '#E6E6FA', badgeText: 'Природа', badgeTextColor: 'var(--indigo)' },
+  { tag: 'sea', src: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&q=80', cap: 'Волны Балтийского моря', badgeColor: '#D0E8FF', badgeText: 'Море', badgeTextColor: 'var(--indigo)' },
+  { tag: 'city', src: 'https://images.unsplash.com/photo-1467226632440-65f0b4957563?w=800&q=80', cap: 'Морской променад', badgeColor: '#E2F0D9', badgeText: 'Город', badgeTextColor: 'var(--teal)' },
+];
+
+var galCurrentFilter = 'all';
+var galLbIndex = 0;
+var galFiltered = [];
+
+function galRender(filter) {
+  galFiltered = filter === 'all' ? galPhotos : galPhotos.filter(function(p){ return p.tag === filter; });
+  var grid = document.getElementById('gal-grid');
+  grid.style.opacity = '0';
+  setTimeout(function() {
+    grid.innerHTML = galFiltered.map(function(p, i) {
+      return '<div class="gal-item" onclick="galLbOpen(' + i + ')" style="animation:galFadeIn 0.4s ease ' + (i * 0.05) + 's both">' +
+        '<img src="' + p.src + '" alt="' + p.cap + '" loading="lazy">' +
+        '<div class="gal-overlay"><div class="gal-cap">' + p.cap + '</div></div>' +
+        '<div class="gal-tag-badge" style="background:' + p.badgeColor + ';color:' + p.badgeTextColor + '">' + p.badgeText + '</div>' +
+        '</div>';
+    }).join('');
+    grid.style.opacity = '1';
+  }, 150);
+}
+
+function galFilter(tag, btn) {
+  galCurrentFilter = tag;
+  document.querySelectorAll('.gal-tab').forEach(function(t){ t.classList.remove('gal-active'); });
+  btn.classList.add('gal-active');
+  galRender(tag);
+}
+
+function galLbOpen(idx) {
+  galLbIndex = idx;
+  var lb = document.getElementById('gal-lb');
+  lb.style.display = 'flex';
+  document.body.style.overflow = 'hidden';
+  galLbShow();
+}
+
+function galLbShow() {
+  var p = galFiltered[galLbIndex];
+  var img = document.getElementById('gal-lb-img');
+  img.style.opacity = '0';
+  img.src = p.src.replace('w=800', 'w=1200');
+  img.onload = function(){ img.style.opacity = '1'; };
+  document.getElementById('gal-lb-cap').textContent = p.cap + ' · ' + (galLbIndex + 1) + ' / ' + galFiltered.length;
+}
+
+function galLbNav(dir) {
+  galLbIndex = (galLbIndex + dir + galFiltered.length) % galFiltered.length;
+  galLbShow();
+}
+
+function galLbClose(e) {
+  if (e && e.target !== document.getElementById('gal-lb') && e.target !== e.currentTarget) return;
+  document.getElementById('gal-lb').style.display = 'none';
+  document.body.style.overflow = '';
+}
+
+document.addEventListener('keydown', function(e) {
+  if (document.getElementById('gal-lb').style.display === 'flex') {
+    if (e.key === 'ArrowRight') galLbNav(1);
+    if (e.key === 'ArrowLeft') galLbNav(-1);
+    if (e.key === 'Escape') { document.getElementById('gal-lb').style.display = 'none'; document.body.style.overflow = ''; }
+  }
+});
+
+(function() {
+  var style = document.createElement('style');
+  style.textContent = '@keyframes galFadeIn { from { opacity:0; transform:translateY(12px); } to { opacity:1; transform:none; } }';
+  document.head.appendChild(style);
+  galRender('all');
+})();
+</script>
+
 <section class="features-section" id="about">
   <div class="features-inner">
     <h2 class="features-title">Почему выбирают нас</h2>
