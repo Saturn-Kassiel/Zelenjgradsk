@@ -1148,10 +1148,11 @@ function loadWeather() {
 }
 
 loadWeather();
-loadBookingsForCal();
 
 
 var APPS_URL = 'https://script.google.com/macros/s/AKfycbyljA9MRoh8CpLWIM03eCQtX2n39CFElfiLIh4IIug7JxS9jwxUTiQrQHubfXAu4U4f/exec';
+
+loadBookingsForCal();
 
 function loadPromo(allProps) {
   fetch(APPS_URL + '?sheet=promo')
