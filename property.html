@@ -204,6 +204,7 @@ header {
 /* Rules */
 .rules-list { display: flex; flex-direction: column; gap: 8px; }
 .rule-item { display: flex; align-items: flex-start; gap: 10px; padding: 10px 12px; border-radius: 10px; font-size: 13px; line-height: 1.5; }
+.rule-item svg { flex-shrink: 0; margin-top: 2px; }
 .rule-item.allowed { background: rgba(184,245,210,0.25); color: var(--charcoal); }
 .rule-item.forbidden { background: rgba(209,107,107,0.08); color: var(--charcoal); }
 .rule-icon { flex-shrink: 0; margin-top: 1px; }
@@ -317,7 +318,7 @@ header {
 </header>
 
 <!-- GUEST TOGGLE BAR -->
-<div class="guest-toggle-bar">
+<div class="guest-toggle-bar" id="guest-toggle-bar" style="display:none">
   <div class="guest-toggle-inner">
     <div class="guest-toggle-text">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
@@ -578,7 +579,7 @@ header {
         </div>
 
         <button class="btn-book-main" onclick="openModal()">Забронировать</button>
-        <p class="booking-note">Без предоплаты — подтверждение в течение 30 мин</p>
+        <p class="booking-note">Без предоплаты — подтверждение управляющего</p>
 
         <div id="bc-calc" style="display:none">
           <div class="booking-divider"></div>
@@ -623,7 +624,7 @@ header {
     <div class="success-screen" id="success-screen">
       <div class="success-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
       <h2 class="success-title">Заявка отправлена!</h2>
-      <p class="success-text">Мы свяжемся с вами в течение 30 минут по указанному номеру.</p>
+      <p class="success-text">Мы свяжемся с вами для подтверждения бронирования.</p>
       <button class="btn-book-main" style="margin-top:20px" onclick="closeModal()">Закрыть</button>
     </div>
   </div>
@@ -1131,6 +1132,12 @@ function loadPropWeather() {
 }
 
 loadPropWeather();
+// Показываем демо-переключатель только при ?demo=1
+if (window.location.search.indexOf('demo=1') !== -1) {
+  var demoBar = document.getElementById('guest-toggle-bar');
+  if (demoBar) demoBar.style.display = '';
+}
+
 loadPropBookings();
 initGuestAccess();
 </script>
