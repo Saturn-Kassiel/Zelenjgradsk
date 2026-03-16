@@ -423,7 +423,7 @@ header {
       </div>
 
       <!-- ── GUEST SECTION ── -->
-      <div class="guest-section" id="guest-section">
+      <div class="guest-section" id="guest-section" style="scroll-margin-top:80px">
 
         <!-- HEADER -->
         <div class="guest-header">
@@ -995,7 +995,62 @@ function changeMonth(delta) {
 renderCalendar();
 
 // GUEST TOGGLE
-function toggleGuestMode() {
+// ── ДОСТУП ГОСТЯ ──
+function initGuestAccess() {
+  var params = new URLSearchParams(window.location.search);
+  var bookingId = params.get('booking');
+  if (!bookingId) return;
+
+  // Проверяем бронирование через Apps Script
+  fetch(APPS_URL + '?sheet=bookings')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var rows = (d.data||[]).map(function(b){
+        var c={}; Object.keys(b).forEach(function(k){c[k.trim()]=b[k];}); return c;
+      });
+      var booking = rows.find(function(b){ return String(b.id)===String(bookingId); });
+      if (!booking) return;
+      if (booking.status !== 'confirmed') return;
+
+      // Проверяем период
+      var today = new Date(); today.setHours(0,0,0,0);
+      var dateIn = new Date(String(booking.date_in).indexOf('T')!==-1 ? booking.date_in : booking.date_in+'T00:00:00');
+      var dateOut = new Date(String(booking.date_out).indexOf('T')!==-1 ? booking.date_out : booking.date_out+'T00:00:00');
+      dateIn.setHours(0,0,0,0); dateOut.setHours(0,0,0,0);
+
+      // Открываем за сутки до заезда
+      var dayBefore = new Date(dateIn.getTime() - 86400000);
+      if (today < dayBefore || today >= dateOut) return;
+
+      // Всё ок — открываем блок
+      var track = document.getElementById('toggle-track');
+      var section = document.getElementById('guest-section');
+      var toggleBar = document.querySelector('.guest-toggle-bar');
+      if (track) track.classList.add('on');
+      if (section) section.classList.add('visible');
+      if (toggleBar) {
+        toggleBar.style.background = 'linear-gradient(135deg, #3E7057, #5269AB)';
+        toggleBar.querySelector('.guest-toggle-text span').innerHTML = '🏠 Добро пожаловать, ' + (booking.name ? booking.name.split(' ')[0] : 'гость') + '! Ваш заезд: ' + formatDateRu(dateIn);
+      }
+
+      // Прокручиваем к блоку если есть якорь
+      if (window.location.hash === '#guest') {
+        setTimeout(function() {
+          if (section) {
+            var top = section.getBoundingClientRect().top + window.pageYOffset - 80;
+            window.scrollTo({ top: top, behavior: 'smooth' });
+          }
+        }, 500);
+      }
+    }).catch(function(){});
+}
+
+function formatDateRu(date) {
+  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
+  return date.getDate() + ' ' + months[date.getMonth()];
+}
+
+
   var track = document.getElementById('toggle-track');
   var section = document.getElementById('guest-section');
   var isOn = track.classList.contains('on');
@@ -1119,6 +1174,7 @@ function loadPropWeather() {
 }
 
 loadPropWeather();
+initGuestAccess();
 </script>
 </body>
 </html>
