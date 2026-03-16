@@ -1403,8 +1403,8 @@ var gPromoData = null;
 var gCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
 var gMonthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
-function gCalPrev() { gCalState.month--; if(gCalState.month<0){gCalState.month=11;gCalState.year--;} gRenderCal(); }
-function gCalNext() { gCalState.month++; if(gCalState.month>11){gCalState.month=0;gCalState.year++;} gRenderCal(); }
+function gCalPrev() { gCalState.month--; if(gCalState.month<0){gCalState.month=11;gCalState.year--;} setTimeout(gRenderCal,0); }
+function gCalNext() { gCalState.month++; if(gCalState.month>11){gCalState.month=0;gCalState.year++;} setTimeout(gRenderCal,0); }
 
 function gRenderCal() {
   var titleEl = document.getElementById('g-cal-title');
@@ -1412,22 +1412,24 @@ function gRenderCal() {
   if (!titleEl || !grid) return;
 
   var y = gCalState.year, m = gCalState.month;
+  titleEl.textContent = gMonthNames[m] + ' ' + y;
+
   var selEl = document.getElementById('prop-select');
-  var objId = selEl && selEl.value ? parseInt(selEl.value) : (allPropsData && allPropsData.length ? parseInt(allPropsData[0].id) : 1);
-  var objData = calData[objId];
-  var st = (objData && objData.statuses) ? objData.statuses : {};
-  // Также проверяем без ведущих нулей в ключах
-  function getStatus(y, m, d) {
-    return st[y+'-'+m+'-'+d] || st[y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')] || 'free';
+  var objId = (selEl && selEl.value) ? parseInt(selEl.value) : (allPropsData && allPropsData.length ? parseInt(allPropsData[0].id) : 1);
+  if (!objId || isNaN(objId)) objId = 1;
+  var objData = calData[objId] || calData[1] || { statuses: {} };
+  var st = objData.statuses || {};
+
+  function getStatus(yr, mo, dy) {
+    return st[yr+'-'+mo+'-'+dy] || st[yr+'-'+String(mo).padStart(2,'0')+'-'+String(dy).padStart(2,'0')] || 'free';
   }
 
-  var inVal = document.getElementById('f-checkin').value;
-  var nights = parseInt(document.getElementById('f-nights').value) || 1;
+  var inVal = document.getElementById('f-checkin') ? document.getElementById('f-checkin').value : '';
+  var nights = document.getElementById('f-nights') ? (parseInt(document.getElementById('f-nights').value) || 1) : 1;
   var selIn = inVal ? new Date(inVal) : null;
   var selOut = selIn ? new Date(selIn.getTime() + nights*86400000) : null;
   var today = new Date(); today.setHours(0,0,0,0);
 
-  titleEl.textContent = gMonthNames[m] + ' ' + y;
   grid.innerHTML = '';
 
   var firstDay = new Date(y, m, 1).getDay();
@@ -1666,7 +1668,7 @@ function openModal(propId) {
   document.getElementById('f-calc').style.display = 'none';
   document.getElementById('f-dates-info').style.display = 'none';
   gCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
-  setTimeout(function(){ gRenderCal(); }, 50);
+  setTimeout(function(){ gRenderCal(); }, 200);
 }
 
 function closeModal() {
