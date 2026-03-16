@@ -783,7 +783,7 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
     <div id="form-screen">
       <div class="modal-label">Заявка на бронирование</div>
       <h2 class="modal-title">Забронировать апартаменты</h2>
-      <p class="modal-subtitle">Заполните форму — свяжемся в течение 30 минут</p>
+      <p class="modal-subtitle">Заполните форму — свяжемся для подтверждения</p>
 
       <div class="modal-prop-info">
         <div class="modal-prop-icon" id="modal-icon">
@@ -1412,8 +1412,14 @@ function gRenderCal() {
   if (!titleEl || !grid) return;
 
   var y = gCalState.year, m = gCalState.month;
-  var objId = parseInt(document.getElementById('prop-select').value) || (allPropsData.length ? parseInt(allPropsData[0].id) : 1);
-  var st = (calData[objId] && calData[objId].statuses) || {};
+  var selEl = document.getElementById('prop-select');
+  var objId = selEl && selEl.value ? parseInt(selEl.value) : (allPropsData && allPropsData.length ? parseInt(allPropsData[0].id) : 1);
+  var objData = calData[objId];
+  var st = (objData && objData.statuses) ? objData.statuses : {};
+  // Также проверяем без ведущих нулей в ключах
+  function getStatus(y, m, d) {
+    return st[y+'-'+m+'-'+d] || st[y+'-'+String(m).padStart(2,'0')+'-'+String(d).padStart(2,'0')] || 'free';
+  }
 
   var inVal = document.getElementById('f-checkin').value;
   var nights = parseInt(document.getElementById('f-nights').value) || 1;
@@ -1436,7 +1442,7 @@ function gRenderCal() {
   for (var day = 1; day <= daysInMonth; day++) {
     var date = new Date(y, m, day);
     var key = y+'-'+(m+1)+'-'+day;
-    var status = st[key] || 'free';
+    var status = getStatus(y, m+1, day);
     var isPast = date < today;
     var isSelIn = selIn && date.getTime() === selIn.getTime();
     var isSelected = selIn && selOut && date >= selIn && date < selOut;
@@ -1660,7 +1666,7 @@ function openModal(propId) {
   document.getElementById('f-calc').style.display = 'none';
   document.getElementById('f-dates-info').style.display = 'none';
   gCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
-  gRenderCal();
+  setTimeout(function(){ gRenderCal(); }, 50);
 }
 
 function closeModal() {
