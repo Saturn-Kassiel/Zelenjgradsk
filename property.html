@@ -400,6 +400,62 @@ header {
         </div>
       </div>
 
+      <!-- RULES (открытый блок) -->
+      <div class="section-block">
+        <div class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          Правила проживания
+        </div>
+        <div class="rules-list">
+          <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Курение запрещено</div>
+          <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Животные — по согласованию</div>
+          <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Шум после 23:00 запрещён</div>
+          <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Заезд с 14:00, выезд до 12:00</div>
+          <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg> Ранний/поздний заезд — по договорённости</div>
+        </div>
+      </div>
+
+      <!-- NEARBY (открытый блок) -->
+      <div class="section-block">
+        <div class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
+          Что рядом
+        </div>
+        <div class="nearby-tabs">
+          <button class="nearby-tab active" onclick="switchTab(this,'cafe')">Кафе</button>
+          <button class="nearby-tab" onclick="switchTab(this,'shop')">Магазины</button>
+          <button class="nearby-tab" onclick="switchTab(this,'pharm')">Аптеки</button>
+          <button class="nearby-tab" onclick="switchTab(this,'sight')">Достопримечательности</button>
+        </div>
+        <div class="nearby-panel active" id="panel-cafe">
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Кофейня «Балтика»</div><div class="nearby-dist">180 м · открыто до 22:00</div></div></div>
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Ресторан «Янтарь»</div><div class="nearby-dist">320 м · кухня до 23:00</div></div></div>
+        </div>
+        <div class="nearby-panel" id="panel-shop">
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="nearby-name">Пятёрочка</div><div class="nearby-dist">200 м · 8:00–22:00</div></div></div>
+        </div>
+        <div class="nearby-panel" id="panel-pharm">
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптека «Здоровье»</div><div class="nearby-dist">250 м · 9:00–20:00</div></div></div>
+        </div>
+        <div class="nearby-panel" id="panel-sight">
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Пляж Балтийского моря</div><div class="nearby-dist">400 м пешком</div></div></div>
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Набережная и пирс</div><div class="nearby-dist">600 м пешком</div></div></div>
+        </div>
+      </div>
+
+      <!-- HOW TO GET HERE (открытый блок) -->
+      <div class="section-block">
+        <div class="block-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          Как добраться
+        </div>
+        <div style="display:flex;flex-direction:column;gap:10px">
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div><div class="nearby-name">Аэропорт Храброво</div><div class="nearby-dist">~55 км · 50 мин на авто или такси</div></div></div>
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div><div><div class="nearby-name">Из Калининграда</div><div class="nearby-dist">~35 км · автобус №122 или авто 30–40 мин</div></div></div>
+          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="13" rx="2"/><path d="M16 17l3 4"/><path d="M8 17l-3 4"/><path d="M1 10h22"/></svg></div><div><div class="nearby-name">Ж/д вокзал Зеленоградск</div><div class="nearby-dist">2 км · 5 мин на такси</div></div></div>
+        </div>
+      </div>
+
       <!-- CALENDAR -->
       <div class="section-block">
         <div class="block-title">
@@ -417,175 +473,57 @@ header {
         <div class="cal-legend">
           <div class="legend-item"><div class="legend-dot ld-free"></div>Свободно</div>
           <div class="legend-item"><div class="legend-dot ld-occupied"></div>Занято</div>
-          
-          
         </div>
       </div>
 
-      <!-- ── GUEST SECTION ── -->
+      <!-- GUEST SECTION (закрытый) -->
       <div class="guest-section" id="guest-section" style="scroll-margin-top:80px">
-
-        <!-- HEADER -->
         <div class="guest-header">
           <div class="guest-header-icon">
-            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
           </div>
           <div class="guest-header-text">
-            <h2>Добро пожаловать!</h2>
-            <p>Вся информация для вашего комфортного пребывания</p>
+            <h2 id="guest-welcome-title">Информация для заезда</h2>
+            <p id="guest-welcome-sub">Всё необходимое для вашего пребывания</p>
           </div>
         </div>
-
-        <!-- CHECKIN TIMES + WIFI -->
         <div class="guest-grid">
           <div class="guest-card">
             <div class="guest-card-header">
-              <div class="guest-card-icon gci-teal">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-              </div>
+              <div class="guest-card-icon gci-teal"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg></div>
               <div class="guest-card-title">Время заезда и выезда</div>
             </div>
             <div class="time-row">
-              <div class="time-item">
-                <div class="time-label">Заезд</div>
-                <div class="time-value">14:00</div>
-                <div class="time-sub">или раньше по договорённости</div>
-              </div>
-              <div class="time-item">
-                <div class="time-label">Выезд</div>
-                <div class="time-value">12:00</div>
-                <div class="time-sub">поздний выезд — за доп. плату</div>
-              </div>
+              <div class="time-item"><div class="time-label">Заезд</div><div class="time-value">14:00</div><div class="time-sub">или раньше по договорённости</div></div>
+              <div class="time-item"><div class="time-label">Выезд</div><div class="time-value">12:00</div><div class="time-sub">поздний выезд — за доп. плату</div></div>
             </div>
           </div>
-
           <div class="guest-card">
             <div class="guest-card-header">
-              <div class="guest-card-icon gci-indigo">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>
-              </div>
+              <div class="guest-card-icon gci-indigo"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg></div>
               <div class="guest-card-title">Wi-Fi и доступ</div>
             </div>
-            <div class="wifi-item">
-              <div>
-                <div class="wifi-label">Сеть Wi-Fi</div>
-                <div class="wifi-value">Baltiysky_Briz</div>
-              </div>
-              <button class="copy-btn" onclick="copyText('Baltiysky_Briz', this)">Скопировать</button>
-            </div>
-            <div class="wifi-item">
-              <div>
-                <div class="wifi-label">Пароль</div>
-                <div class="wifi-value">Sea2024!</div>
-              </div>
-              <button class="copy-btn" onclick="copyText('Sea2024!', this)">Скопировать</button>
-            </div>
-            <div class="wifi-item">
-              <div>
-                <div class="wifi-label">Код подъезда</div>
-                <div class="wifi-value">1847#</div>
-              </div>
-              <button class="copy-btn" onclick="copyText('1847#', this)">Скопировать</button>
-            </div>
+            <div class="wifi-item"><div><div class="wifi-label">Сеть Wi-Fi</div><div class="wifi-value">Baltiysky_Briz</div></div><button class="copy-btn" onclick="copyText('Baltiysky_Briz', this)">Скопировать</button></div>
+            <div class="wifi-item"><div><div class="wifi-label">Пароль</div><div class="wifi-value">Sea2024!</div></div><button class="copy-btn" onclick="copyText('Sea2024!', this)">Скопировать</button></div>
+            <div class="wifi-item"><div><div class="wifi-label">Код подъезда</div><div class="wifi-value">1847#</div></div><button class="copy-btn" onclick="copyText('1847#', this)">Скопировать</button></div>
           </div>
         </div>
-
-        <!-- ADDRESS -->
         <div class="guest-card full" style="margin-bottom:16px">
           <div class="guest-card-header">
-            <div class="guest-card-icon gci-sky">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            </div>
-            <div class="guest-card-title">Адрес и как добраться</div>
+            <div class="guest-card-icon gci-sky"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg></div>
+            <div class="guest-card-title">Точный адрес и как попасть</div>
           </div>
-          <div class="address-text">ул. Балтийская, 12, кв. 34</div>
-          <div class="address-sub">Зеленоградск, Калининградская область, 238530<br>Подъезд со стороны ул. Морской, домофон — кв. 34</div>
-          <div class="map-placeholder">
-            <div class="map-pin">
-              <div class="map-pin-dot"></div>
-              <div class="map-pin-label">Апартаменты</div>
-            </div>
-          </div>
+          <div class="address-text">ул. Театральная, д. 2, кв. 17</div>
+          <div class="address-sub">Зеленоградск, Калининградская область, 238530<br>Подъезд со стороны двора, домофон — кв. 17</div>
+          <div class="map-placeholder"><div class="map-pin"><div class="map-pin-dot"></div><div class="map-pin-label">Апартаменты</div></div></div>
           <button class="btn-map" onclick="alert('Откроется в Яндекс.Картах или Google Maps')">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Открыть в картах
           </button>
         </div>
-
-        <!-- RULES -->
-        <div class="guest-card full" style="margin-bottom:16px">
-          <div class="guest-card-header">
-            <div class="guest-card-icon gci-lilac">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-            </div>
-            <div class="guest-card-title">Правила проживания</div>
-          </div>
-          <div class="rules-list">
-            <div class="rule-item allowed"><svg class="rule-icon ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Тихий час с 23:00 до 8:00</div>
-            <div class="rule-item allowed"><svg class="rule-icon ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Размещение согласно количеству гостей в брони</div>
-            <div class="rule-item allowed"><svg class="rule-icon ok" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg> Соблюдать чистоту в апартаментах</div>
-            <div class="rule-item forbidden"><svg class="rule-icon no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Курение запрещено (в том числе на балконе)</div>
-            <div class="rule-item forbidden"><svg class="rule-icon no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Вечеринки и шумные мероприятия запрещены</div>
-            <div class="rule-item forbidden"><svg class="rule-icon no" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg> Животные без согласования запрещены</div>
-          </div>
-        </div>
-
-        <!-- NEARBY -->
-        <div class="guest-card full" style="margin-bottom:16px">
-          <div class="guest-card-header">
-            <div class="guest-card-icon gci-mint">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <div class="guest-card-title">Что рядом</div>
-          </div>
-          <div class="nearby-tabs">
-            <button class="nearby-tab active" onclick="switchTab(this,'cafe')">Кафе</button>
-            <button class="nearby-tab" onclick="switchTab(this,'shop')">Магазины</button>
-            <button class="nearby-tab" onclick="switchTab(this,'pharm')">Аптеки</button>
-            <button class="nearby-tab" onclick="switchTab(this,'sight')">Достопримечательности</button>
-          </div>
-          <div class="nearby-panel active" id="panel-cafe">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Кофейня «Балтика»</div><div class="nearby-dist">180 м · открыто до 22:00</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Ресторан «Янтарь»</div><div class="nearby-dist">320 м · кухня до 23:00</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Пиццерия «Маре»</div><div class="nearby-dist">400 м · открыто до 00:00</div></div></div>
-          </div>
-          <div class="nearby-panel" id="panel-shop">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="nearby-name">Пятёрочка</div><div class="nearby-dist">200 м · 8:00–22:00</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="nearby-name">Магазин «Балтийский»</div><div class="nearby-dist">350 м · 9:00–21:00</div></div></div>
-          </div>
-          <div class="nearby-panel" id="panel-pharm">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптека «Здоровье»</div><div class="nearby-dist">250 м · 9:00–20:00</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптечный пункт «36.6»</div><div class="nearby-dist">600 м · круглосуточно</div></div></div>
-          </div>
-          <div class="nearby-panel" id="panel-sight">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Пляж Балтийского моря</div><div class="nearby-dist">400 м пешком</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Набережная и пирс</div><div class="nearby-dist">600 м пешком</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Кёнигсбергский кот (арт-объект)</div><div class="nearby-dist">800 м пешком</div></div></div>
-          </div>
-        </div>
-
-        <!-- EXCURSIONS -->
-        <div class="guest-card full" style="margin-bottom:16px">
-          <div class="guest-card-header">
-            <div class="guest-card-icon gci-indigo">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
-            </div>
-            <div class="guest-card-title">Экскурсии и маршруты</div>
-          </div>
-          <div class="excursion-grid">
-            <div class="excursion-card"><div class="excursion-name">Куршская коса</div><div class="excursion-meta"><span>~40 км</span><span>Природный заповедник</span></div></div>
-            <div class="excursion-card"><div class="excursion-name">Калининград</div><div class="excursion-meta"><span>~45 км</span><span>Исторический центр</span></div></div>
-            <div class="excursion-card"><div class="excursion-name">Янтарный</div><div class="excursion-meta"><span>~25 км</span><span>Янтарный карьер</span></div></div>
-            <div class="excursion-card"><div class="excursion-name">Светлогорск</div><div class="excursion-meta"><span>~15 км</span><span>Курортный город</span></div></div>
-          </div>
-        </div>
-
-        <!-- WEATHER -->
         <div class="guest-card full">
           <div class="guest-card-header">
-            <div class="guest-card-icon gci-sky">
-              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
-            </div>
+            <div class="guest-card-icon gci-sky"><svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>
             <div class="guest-card-title">Погода в Зеленоградске</div>
           </div>
           <div class="weather-widget" id="pw-widget">
@@ -597,23 +535,13 @@ header {
                 <div style="font-size:12px;color:var(--muted);margin-top:2px" id="pw-feels"></div>
               </div>
               <div style="text-align:center">
-                <div id="pw-icon"><svg width="56" height="56" viewBox="0 0 24 24" fill="none" stroke="rgba(46,56,77,0.3)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg></div>
-                <div style="display:flex;gap:12px;margin-top:8px;font-size:12px;color:var(--muted)">
-                  <span>💨 <span id="pw-wind">—</span></span>
-                  <span>💧 <span id="pw-humidity">—</span></span>
-                </div>
+                <div id="pw-icon"></div>
+                <div style="display:flex;gap:12px;margin-top:8px;font-size:12px;color:var(--muted)"><span>💨 <span id="pw-wind">—</span></span><span>💧 <span id="pw-humidity">—</span></span></div>
               </div>
             </div>
-            <div class="weather-days" id="pw-forecast">
-              <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
-              <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
-              <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
-              <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
-              <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
-            </div>
+            <div class="weather-days" id="pw-forecast"></div>
           </div>
         </div>
-
       </div><!-- /guest-section -->
 
     </div><!-- /left column -->
@@ -830,6 +758,30 @@ function nightWord(n) { if(n===1) return 'ночь'; if(n<5) return 'ночи'; 
 // CALENDAR
 var calState = { year: new Date().getFullYear(), month: new Date().getMonth() };
 var statuses = {};
+
+function loadPropBookings() {
+  var propId = getPropId();
+  fetch(APPS_URL + '?sheet=bookings')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      (d.data||[]).forEach(function(b){
+        var c={}; Object.keys(b).forEach(function(k){c[k.trim()]=b[k];});
+        if (parseInt(c.obj_id)!==propId) return;
+        var s = String(c.status||'').trim();
+        if (s==='cancelled'||s==='new'||s==='done') return;
+        var dateIn = c.date_in ? new Date(String(c.date_in).indexOf('T')!==-1 ? c.date_in : c.date_in+'T00:00:00') : null;
+        var dateOut = c.date_out ? new Date(String(c.date_out).indexOf('T')!==-1 ? c.date_out : c.date_out+'T00:00:00') : null;
+        if (!dateIn||!dateOut) return;
+        var d2 = new Date(dateIn);
+        while(d2 < dateOut) {
+          var key = d2.getFullYear()+'-'+(d2.getMonth()+1)+'-'+d2.getDate();
+          if (s==='confirmed'||s==='blocked') statuses[key]='occupied';
+          d2.setDate(d2.getDate()+1);
+        }
+      });
+      renderCalendar();
+    }).catch(function(){});
+}
 // ── GOOGLE SHEETS LOADER ──
 var SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vSpX_qFLBkNJP0nCfjv4zXytaCk76X2apVxp4UW6EducTF0-aUupARazcoDSNxcwbRdnMJHKSRH3ozt/pub?output=csv';
 
@@ -1028,10 +980,15 @@ function initGuestAccess() {
       var toggleBar = document.querySelector('.guest-toggle-bar');
       if (track) track.classList.add('on');
       if (section) section.classList.add('visible');
-      if (toggleBar) {
-        toggleBar.style.background = 'linear-gradient(135deg, #3E7057, #5269AB)';
-        toggleBar.querySelector('.guest-toggle-text span').innerHTML = '🏠 Добро пожаловать, ' + (booking.name ? booking.name.split(' ')[0] : 'гость') + '! Ваш заезд: ' + formatDateRu(dateIn);
-      }
+      // Скрываем демо-полосу для гостей по ссылке
+      var toggleBar = document.querySelector('.guest-toggle-bar');
+      if (toggleBar) toggleBar.style.display = 'none';
+
+      // Обновляем заголовок гостевого блока
+      var titleEl = document.getElementById('guest-welcome-title');
+      var subEl = document.getElementById('guest-welcome-sub');
+      if (titleEl) titleEl.textContent = 'Добро пожаловать, ' + (booking.name ? booking.name.split(' ')[0] : 'дорогой гость') + '!';
+      if (subEl) subEl.textContent = 'Ваш заезд ' + formatDateRu(dateIn) + ' · Выезд ' + formatDateRu(dateOut);
 
       // Прокручиваем к блоку если есть якорь
       if (window.location.hash === '#guest') {
@@ -1174,6 +1131,7 @@ function loadPropWeather() {
 }
 
 loadPropWeather();
+loadPropBookings();
 initGuestAccess();
 </script>
 </body>
