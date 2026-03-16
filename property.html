@@ -603,17 +603,36 @@ header {
       <h2 class="modal-title">Балтийский бриз</h2>
       <p class="modal-subtitle">Зеленоградск · 3 500 ₽ / ночь · до 2 гостей</p>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Имя</label><input type="text" class="form-input" id="f-name" placeholder="Ваше имя"></div>
-        <div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" id="f-phone" placeholder="+7 (000) 000-00-00"></div>
+        <div class="form-group">
+          <label class="form-label">Имя <span style="color:#E05252">*</span></label>
+          <input type="text" class="form-input" id="f-name" placeholder="Имя и фамилия" oninput="this.style.borderColor=''">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Телефон <span style="color:#E05252">*</span></label>
+          <input type="tel" class="form-input" id="f-phone" placeholder="+7 (000) 000-00-00" oninput="propFormatPhone(this)" maxlength="18">
+        </div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Дата заезда</label><input type="date" class="form-input" id="f-checkin" onchange="propCalRender()"></div>
-        <div class="form-group"><label class="form-label">Дата выезда</label><input type="date" class="form-input" id="f-checkout" onchange="propCalRender()"></div>
+        <div class="form-group">
+          <label class="form-label">Дата заезда <span style="color:#E05252">*</span></label>
+          <input type="date" class="form-input" id="f-checkin" onchange="propRecalc();propCalRender();this.style.borderColor=''">
+        </div>
+        <div class="form-group">
+          <label class="form-label">Дата выезда</label>
+          <input type="date" class="form-input" id="f-checkout" readonly style="background:#F4F6FB;color:#6B7A99">
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F4F6FB;border-radius:10px;border:1px solid #E1E5F1;margin-bottom:14px">
+        <span style="font-size:12px;color:#6B7A99;flex-shrink:0">Ночей:</span>
+        <button type="button" onclick="propChangeNights(-1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid #E1E5F1;background:white;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">−</button>
+        <input type="number" id="prop-nights" value="3" min="1" max="90" style="width:56px;text-align:center;font-weight:700;font-family:Manrope,sans-serif;font-size:16px;border:1.5px solid #E1E5F1;border-radius:8px;padding:4px 8px;outline:none" oninput="propRecalc();propCalRender()">
+        <button type="button" onclick="propChangeNights(1)" style="width:28px;height:28px;border-radius:6px;border:1.5px solid #E1E5F1;background:white;font-size:16px;cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center">+</button>
+        <span id="prop-nights-label" style="font-size:12px;color:#6B7A99"></span>
       </div>
 
       <!-- Мини-календарь занятости -->
-      <div style="border:1.5px solid var(--silver,#E1E5F1);border-radius:14px;overflow:hidden;margin-bottom:14px">
-        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#F4F6FB;border-bottom:1px solid var(--silver,#E1E5F1)">
+      <div style="border:1.5px solid #E1E5F1;border-radius:14px;overflow:hidden;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#F4F6FB;border-bottom:1px solid #E1E5F1">
           <button type="button" onclick="propCalPrev()" style="width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:#6B7A99">‹</button>
           <div id="prop-cal-title" style="font-size:13px;font-weight:600;color:#2E384D"></div>
           <button type="button" onclick="propCalNext()" style="width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:#6B7A99">›</button>
@@ -630,7 +649,7 @@ header {
           </div>
           <div id="prop-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
         </div>
-        <div style="display:flex;gap:12px;padding:6px 14px;border-top:1px solid var(--silver,#E1E5F1);font-size:11px;color:#6B7A99">
+        <div style="display:flex;gap:12px;padding:6px 14px;border-top:1px solid #E1E5F1;font-size:11px;color:#6B7A99">
           <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(62,112,87,0.15);margin-right:4px"></span>Выбрано</span>
           <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(224,82,82,0.12);margin-right:4px"></span>Занято</span>
         </div>
@@ -638,7 +657,7 @@ header {
 
       <div class="form-group">
         <label class="form-label">Гостей</label>
-        <select class="form-select" id="f-guests"><option>1 гость</option><option selected>2 гостя</option></select>
+        <select class="form-select" id="f-guests"><option>1 гость</option><option selected>2 гостя</option><option>3 гостя</option><option>4 гостя</option></select>
       </div>
       <div class="form-group">
         <label class="form-label">Комментарий (необязательно)</label>
@@ -1082,7 +1101,44 @@ function copyText(text, btn) {
 }
 
 // MODAL
-// ── МИНИ-КАЛЕНДАРЬ В ФОРМЕ ──
+// ── ФОРМА ОБЪЕКТА ──
+function propNightWord(n) { return n===1?'ночь':n<5?'ночи':'ночей'; }
+
+function propChangeNights(d) {
+  var el = document.getElementById('prop-nights');
+  var v = Math.max(1, (parseInt(el.value)||1) + d);
+  el.value = v;
+  propRecalc(); propCalRender();
+}
+
+function propRecalc() {
+  var inVal = document.getElementById('f-checkin').value;
+  var nights = parseInt(document.getElementById('prop-nights').value) || 1;
+  var label = document.getElementById('prop-nights-label');
+  if (label) label.textContent = propNightWord(nights);
+  if (!inVal) return;
+  var inDate = new Date(inVal);
+  inDate.setDate(inDate.getDate() + nights);
+  var outStr = inDate.toISOString().split('T')[0];
+  document.getElementById('f-checkout').value = outStr;
+}
+
+function propFormatPhone(input) {
+  var digits = input.value.replace(/\D/g,'');
+  if (digits.length === 0) { input.value = ''; return; }
+  if (digits[0] === '8') digits = '7' + digits.slice(1);
+  if (digits[0] !== '7') digits = '7' + digits;
+  digits = digits.slice(0, 11);
+  var r = '+7';
+  if (digits.length > 1) r += ' (' + digits.slice(1, 4);
+  if (digits.length >= 4) r += ') ' + digits.slice(4, 7);
+  if (digits.length >= 7) r += '-' + digits.slice(7, 9);
+  if (digits.length >= 9) r += '-' + digits.slice(9, 11);
+  input.value = r;
+  input.style.borderColor = '';
+}
+
+
 var propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
 var propMonthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
@@ -1098,9 +1154,9 @@ function propCalRender() {
   titleEl.textContent = propMonthNames[m] + ' ' + y;
 
   var inVal = document.getElementById('f-checkin') ? document.getElementById('f-checkin').value : '';
-  var outVal = document.getElementById('f-checkout') ? document.getElementById('f-checkout').value : '';
+  var nights = document.getElementById('prop-nights') ? (parseInt(document.getElementById('prop-nights').value)||1) : 1;
   var selIn = inVal ? new Date(inVal) : null;
-  var selOut = outVal ? new Date(outVal) : null;
+  var selOut = selIn ? new Date(selIn.getTime() + nights*86400000) : null;
   var today = new Date(); today.setHours(0,0,0,0);
 
   grid.innerHTML = '';
@@ -1130,6 +1186,7 @@ function propCalRender() {
       (function(d){ el.onclick=function(){
         var y2=d.getFullYear(), m2=String(d.getMonth()+1).padStart(2,'0'), d2=String(d.getDate()).padStart(2,'0');
         document.getElementById('f-checkin').value=y2+'-'+m2+'-'+d2;
+        propRecalc();
         propCalRender();
       }; })(date);
     }
@@ -1144,6 +1201,10 @@ function openModal() {
   document.getElementById('f-checkin').value = '';
   var outEl = document.getElementById('f-checkout');
   if (outEl) outEl.value = '';
+  var nightsEl = document.getElementById('prop-nights');
+  if (nightsEl) { nightsEl.value = 3; }
+  var label = document.getElementById('prop-nights-label');
+  if (label) label.textContent = 'ночи';
   propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
   setTimeout(function(){ propCalRender(); }, 300);
 }
@@ -1157,17 +1218,22 @@ function closeModal() {
 }
 function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 function submitForm() {
-  var name = document.getElementById('f-name').value.trim();
-  var phone = document.getElementById('f-phone').value.trim();
-  var checkin = document.getElementById('f-checkin').value;
+  var name = document.getElementById('f-name');
+  var phone = document.getElementById('f-phone');
+  var checkin = document.getElementById('f-checkin');
+  var ok = true;
+
+  if (!name.value.trim()) { name.style.borderColor='#E05252'; ok=false; }
+  if (!phone.value.trim() || phone.value.replace(/\D/g,'').length !== 11) { phone.style.borderColor='#E05252'; ok=false; }
+  if (!checkin.value) { checkin.style.borderColor='#E05252'; ok=false; }
+  if (!ok) return;
+
   var checkout = document.getElementById('f-checkout').value;
-  if (!name || !phone || !checkin) { alert('Заполните имя, телефон и дату заезда'); return; }
   var guests = document.getElementById('f-guests').value;
   var comment = document.getElementById('f-comment').value;
   var id = Date.now();
-  var row = [id, propData.id, name, phone, checkin, checkout||'', guests, 0, 'new', comment];
+  var row = [id, propData.id, name.value.trim(), phone.value.trim(), checkin.value, checkout||'', guests, 0, 'new', comment];
   fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
-    .then(function(){ })
     .catch(function(){});
   document.getElementById('form-screen').style.display = 'none';
   document.getElementById('success-screen').classList.add('show');
