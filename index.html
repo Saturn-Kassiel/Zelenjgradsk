@@ -1324,6 +1324,9 @@ function loadBookingsForCal() {
           d2.setDate(d2.getDate()+1);
         }
       });
+      // Перерисовываем все календари с занятостью
+      Object.keys(calData).forEach(function(id){ if(document.getElementById('cal-grid-'+id)) renderCalendar(parseInt(id)); });
+      gRenderCal();
     }).catch(function(){});
 }
 
@@ -1691,7 +1694,10 @@ function updateModalProp() {
   var val = document.getElementById('prop-select').value;
   if (val && propNames[val]) {
     document.getElementById('modal-prop-name').textContent = propNames[val].name;
-    document.getElementById('modal-prop-addr').textContent = propNames[val].addr;
+    // Показываем только улицу без номера квартиры (убираем "кв. XX")
+    var addr = propNames[val].addr || '';
+    var addrShort = addr.replace(/,?\s*кв\.\s*\d+/i, '').trim();
+    document.getElementById('modal-prop-addr').textContent = addrShort;
   }
   gRecalc();
 }
