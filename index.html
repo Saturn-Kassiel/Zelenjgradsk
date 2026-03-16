@@ -1973,19 +1973,31 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
 @media (max-width: 600px) {
   #chat-widget-box {
     position: fixed !important;
-    bottom: 0 !important; right: 0 !important; left: 0 !important; top: 0 !important;
-    width: 100% !important; height: 100% !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
     border-radius: 0 !important;
-    max-height: 100vh !important;
+    z-index: 9999 !important;
   }
   #chat-widget-btn { bottom: 20px; right: 20px; }
-  #cw-header { padding: 16px 18px; padding-top: max(16px, env(safe-area-inset-top)); }
-  #cw-input-row { padding: 10px 14px; padding-bottom: max(10px, env(safe-area-inset-bottom)); }
+  #cw-header {
+    padding: 16px 18px !important;
+    padding-top: max(16px, env(safe-area-inset-top)) !important;
+    flex-shrink: 0 !important;
+  }
+  #cw-messages { flex: 1 1 0 !important; min-height: 0 !important; overflow-y: auto !important; }
+  #cw-sugs { flex-shrink: 0 !important; }
+  #cw-input-row {
+    flex-shrink: 0 !important;
+    padding: 10px 14px !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
   .cw-bubble { font-size: 16px !important; padding: 11px 15px !important; }
   .cw-sb { font-size: 14px !important; padding: 8px 16px !important; }
   #cw-inp { font-size: 16px !important; padding: 11px 16px !important; }
-  #cw-send { width: 42px !important; height: 42px !important; }
-  #cw-sugs { padding: 8px 12px; gap: 7px; }
+  #cw-send { width: 44px !important; height: 44px !important; }
+  #cw-sugs { padding: 8px 12px !important; gap: 7px !important; }
 }
 
 #cw-header {
@@ -2078,6 +2090,16 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
 <script>
 var cwHistory = [];
 var cwOpen = false;
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', function() {
+    var box = document.getElementById('chat-widget-box');
+    if (!box || !cwOpen || window.innerWidth > 600) return;
+    var h = window.visualViewport.height;
+    box.style.height = h + 'px';
+    box.style.top = (window.visualViewport.offsetTop) + 'px';
+  });
+}
 
 function cwToggle() {
   cwOpen = !cwOpen;
