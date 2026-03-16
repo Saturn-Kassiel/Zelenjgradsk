@@ -2134,11 +2134,18 @@ function cwInit() {
   cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
 }
 
+function cwFormatText(text) {
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--indigo);text-decoration:underline">$1</a>')
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:var(--indigo);text-decoration:underline;word-break:break-all">$1</a>');
+}
+
 function cwAddMsg(text, role) {
   var msgs = document.getElementById('cw-messages');
   var div = document.createElement('div');
   div.className = 'cw-msg ' + role;
-  div.innerHTML = '<div class="cw-bubble">' + text.replace(/\n/g, '<br>') + '</div>';
+  div.innerHTML = '<div class="cw-bubble">' + cwFormatText(text) + '</div>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
