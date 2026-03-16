@@ -871,8 +871,12 @@ function applyPropData(prop) {
   var titleEl = document.querySelector('.prop-title');
   if (titleEl) titleEl.textContent = prop.name;
 
+  // Описание — description_full если есть, иначе description
   var descEl = document.querySelector('.prop-desc');
-  if (descEl && prop.description) descEl.textContent = prop.description;
+  if (descEl) {
+    var fullDesc = prop.description_full || prop.description || '';
+    if (fullDesc) descEl.textContent = fullDesc;
+  }
 
   // Адрес
   var addrEls = document.querySelectorAll('.prop-location');
@@ -881,8 +885,8 @@ function applyPropData(prop) {
   // Цена в карточке бронирования
   var priceEl = document.querySelector('.booking-price-amount');
   if (priceEl && prop.price) {
-    var price = Math.round(parseFloat(prop.price.replace(/\s/g,'').replace(',','.')) || 0);
-    priceEl.textContent = price.toLocaleString('ru');
+    var priceVal = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')) || 0);
+    priceEl.textContent = priceVal.toLocaleString('ru');
   }
 
   // Модалка
@@ -890,7 +894,7 @@ function applyPropData(prop) {
   if (modalTitle) modalTitle.textContent = prop.name;
   var modalSub = document.querySelector('.modal-subtitle');
   if (modalSub && prop.price) {
-    var p2 = Math.round(parseFloat(prop.price.replace(/\s/g,'').replace(',','.')) || 0);
+    var p2 = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')) || 0);
     modalSub.textContent = 'Зеленоградск · ' + p2.toLocaleString('ru') + ' ₽ / ночь · до ' + (prop.guests||'2') + ' гостей';
   }
 }
@@ -902,7 +906,10 @@ function loadPropData() {
     .then(function(text){
       var props = parseCSV(text);
       var prop = props.find(function(p){ return parseInt(p.id) === propId; }) || props[0];
-      if (prop) applyPropData(prop);
+      if (prop) {
+        console.log('propData loaded:', JSON.stringify({id:prop.id, name:prop.name, price:prop.price, image_1:prop.image_1}));
+        applyPropData(prop);
+      }
     })
     .catch(function(e){ console.log('Sheets load error:', e); });
 }
@@ -1050,8 +1057,10 @@ function copyText(text, btn) {
 function openModal() {
   var o = document.getElementById('modal-overlay');
   o.classList.add('open'); document.body.style.overflow = 'hidden';
-  var today = new Date().toISOString().split('T')[0];
-  document.getElementById('f-checkin').value = today;
+  // Не ставим дату по умолчанию — гость выбирает сам
+  document.getElementById('f-checkin').value = '';
+  var outEl = document.getElementById('f-checkout');
+  if (outEl) outEl.value = '';
 }
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
