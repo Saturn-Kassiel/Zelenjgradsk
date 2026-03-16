@@ -719,12 +719,6 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
         <h2 style="font-family:Manrope,sans-serif;font-size:32px;font-weight:800;color:var(--charcoal);letter-spacing:-0.5px;margin-bottom:6px">Виды <span style="color:var(--teal)">Зеленоградска</span></h2>
         <p style="font-size:14px;color:var(--muted)">Балтийское побережье · пляжи · янтарный берег</p>
       </div>
-      <div style="display:flex;gap:8px" id="gal-tabs">
-        <button onclick="galFilter('all',this)" class="gal-tab gal-active">Все</button>
-        <button onclick="galFilter('sea',this)" class="gal-tab">Море</button>
-        <button onclick="galFilter('city',this)" class="gal-tab">Город</button>
-        <button onclick="galFilter('nature',this)" class="gal-tab">Природа</button>
-      </div>
     </div>
 
     <div id="gal-grid" style="columns:3;column-gap:12px;transition:opacity 0.3s">
@@ -818,15 +812,30 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 
 <script>
 var galPhotos = [
-  { tag: 'sea', src: 'https://drive.google.com/file/d/1UQ4QFIYPjLZVKYaciYljKYEU-clu8uLd/view?usp=sharing', cap: 'Балтийский пляж', badgeColor: '#D0E8FF', badgeText: 'Море', badgeTextColor: 'var(--indigo)' },
-  { tag: 'city', src: 'https://images.unsplash.com/photo-1513635269975-59663e0ac1ad?w=800&q=80', cap: 'Набережная Зеленоградска', badgeColor: '#E2F0D9', badgeText: 'Город', badgeTextColor: 'var(--teal)' },
-  { tag: 'nature', src: 'https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=800&q=80', cap: 'Куршская коса', badgeColor: '#E6E6FA', badgeText: 'Природа', badgeTextColor: 'var(--indigo)' },
-  { tag: 'sea', src: 'https://images.unsplash.com/photo-1559827260-dc66d52bef19?w=800&q=80', cap: 'Закат над Балтикой', badgeColor: '#D0E8FF', badgeText: 'Море', badgeTextColor: 'var(--indigo)' },
-  { tag: 'city', src: 'https://images.unsplash.com/photo-1555993539-1732b0258235?w=800&q=80', cap: 'Уютные улочки', badgeColor: '#E2F0D9', badgeText: 'Город', badgeTextColor: 'var(--teal)' },
-  { tag: 'sea', src: 'https://images.unsplash.com/photo-1501854140801-50d01698950b?w=800&q=80', cap: 'Янтарный берег', badgeColor: '#FFF0D9', badgeText: 'Янтарь', badgeTextColor: '#B07D1A' },
-  { tag: 'nature', src: 'https://images.unsplash.com/photo-1504701954957-2010ec3bcec1?w=800&q=80', cap: 'Балтийские дюны', badgeColor: '#E6E6FA', badgeText: 'Природа', badgeTextColor: 'var(--indigo)' },
-  { tag: 'sea', src: 'https://images.unsplash.com/photo-1505118380757-91f5f5632de0?w=800&q=80', cap: 'Волны Балтийского моря', badgeColor: '#D0E8FF', badgeText: 'Море', badgeTextColor: 'var(--indigo)' },
-  { tag: 'city', src: 'https://images.unsplash.com/photo-1467226632440-65f0b4957563?w=800&q=80', cap: 'Морской променад', badgeColor: '#E2F0D9', badgeText: 'Город', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1UQ4QFIYPjLZVKYaciYljKYEU-clu8uLd', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1DsbseWoheeMTmybHkcYLaRX2T6fJHjhY', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1lic7EGu_DysPQkxwOwtvB5lchVEhsLMm', cap: 'Зеленоградск', badgeColor: '#E6E6FA', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1KNhEzbi1dPL-WtldoqDdpQpOB1fxquNz', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1jsFFGnWEHAOiI9GAn4J5RR6SXhzdLYVG', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1k1TYSsGCVIUafxN_EaGl3suSds0Pq0SA', cap: 'Зеленоградск', badgeColor: '#FFF0D9', badgeText: 'Фото', badgeTextColor: '#B07D1A' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1k_jox3Vocl7wJn8rkzvpXHX_tzdWsaGA', cap: 'Зеленоградск', badgeColor: '#E6E6FA', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1lnywZ8ePFEbWffZnk1Y3ppSEjNxV8Wjg', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1a1N2U-Vl10CIx8vEAc1mcKqZof3oDIGh', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1auIlJuaHptwttaj2C8lDDYmJrQHgm4Rn', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1xlW6TkX1hg_Et1qhvWfTrDOWUv1UNipd', cap: 'Зеленоградск', badgeColor: '#E6E6FA', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1o1c34qcLe07erxikkJdksnpDYtETXOZ2', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1TMXkNMFgomFd6scNLcHi4Lwp0r8TqO60', cap: 'Зеленоградск', badgeColor: '#FFF0D9', badgeText: 'Фото', badgeTextColor: '#B07D1A' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1fTk2kWhuxAUhkqPj_hFEa_q5FNYSykeU', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1A-uIyWAPPOwJUbb6a5xY1PM1CgdAgJy4', cap: 'Зеленоградск', badgeColor: '#E6E6FA', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1xkGP8hitp6kAKqf1eap6kCgFbkzvfomE', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/16RYUr2-h-emqS6Xs5uyIad7Y55FvMQJf', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1gIdrXVm-59i6EmMh-qHTPU_hw4dP9_Y2', cap: 'Зеленоградск', badgeColor: '#E6E6FA', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1ZGSNWwhXKgM7UTqI6xkeHjk-OJYViR82', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1WqJcb9fgMKwqCYjTXO1NWIFmZfHYqVlI', cap: 'Зеленоградск', badgeColor: '#FFF0D9', badgeText: 'Фото', badgeTextColor: '#B07D1A' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1JeCpp6txZj1WiNBT_55ryep6buA4RVpc', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1tcVv52hw1eOMCCT2ulc481ogiWX4a0tW', cap: 'Зеленоградск', badgeColor: '#E6E6FA', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/16NCJ5Rz3FzBVNkCXFXdnC2ErptsmldQg', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://lh3.googleusercontent.com/d/1Gaowkm4xH--F5as9bN0MYeABatHBsaZA', cap: 'Зеленоградск', badgeColor: '#D0E8FF', badgeText: 'Фото', badgeTextColor: 'var(--indigo)' },
 ];
 
 var galCurrentFilter = 'all';
