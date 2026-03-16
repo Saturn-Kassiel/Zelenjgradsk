@@ -1970,6 +1970,15 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
 @keyframes chatSlideIn { from { opacity:0; transform:translateY(16px) scale(0.97); } to { opacity:1; transform:none; } }
 #chat-widget-box.open { display: flex; }
 
+@media (max-width: 480px) {
+  #chat-widget-box {
+    bottom: 0 !important; right: 0 !important;
+    width: 100vw !important; height: 100vh !important;
+    border-radius: 0 !important;
+  }
+  #chat-widget-btn { bottom: 16px; right: 16px; }
+}
+
 #cw-header {
   padding: 14px 16px; background: var(--teal);
   display: flex; align-items: center; gap: 10px; flex-shrink: 0;
@@ -2100,7 +2109,6 @@ async function cwSend() {
   inp.value = '';
   cwAddMsg(text, 'user');
   cwHistory.push({role: 'user', content: text});
-  document.getElementById('cw-sugs').style.display = 'none';
   cwTyping();
   try {
     var res = await fetch(APPS_URL, {
