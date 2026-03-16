@@ -603,23 +603,50 @@ header {
       <h2 class="modal-title">Балтийский бриз</h2>
       <p class="modal-subtitle">Зеленоградск · 3 500 ₽ / ночь · до 2 гостей</p>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Имя</label><input type="text" class="form-input" placeholder="Ваше имя"></div>
-        <div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" placeholder="+7 (000) 000-00-00"></div>
+        <div class="form-group"><label class="form-label">Имя</label><input type="text" class="form-input" id="f-name" placeholder="Ваше имя"></div>
+        <div class="form-group"><label class="form-label">Телефон</label><input type="tel" class="form-input" id="f-phone" placeholder="+7 (000) 000-00-00"></div>
       </div>
       <div class="form-row">
-        <div class="form-group"><label class="form-label">Дата заезда</label><input type="date" class="form-input" id="f-checkin"></div>
-        <div class="form-group"><label class="form-label">Дата выезда</label><input type="date" class="form-input"></div>
+        <div class="form-group"><label class="form-label">Дата заезда</label><input type="date" class="form-input" id="f-checkin" onchange="propCalRender()"></div>
+        <div class="form-group"><label class="form-label">Дата выезда</label><input type="date" class="form-input" id="f-checkout" onchange="propCalRender()"></div>
       </div>
+
+      <!-- Мини-календарь занятости -->
+      <div style="border:1.5px solid var(--silver,#E1E5F1);border-radius:14px;overflow:hidden;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:#F4F6FB;border-bottom:1px solid var(--silver,#E1E5F1)">
+          <button type="button" onclick="propCalPrev()" style="width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:#6B7A99">‹</button>
+          <div id="prop-cal-title" style="font-size:13px;font-weight:600;color:#2E384D"></div>
+          <button type="button" onclick="propCalNext()" style="width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:#6B7A99">›</button>
+        </div>
+        <div style="padding:8px">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Пн</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Вт</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Ср</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Чт</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Пт</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Сб</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:#6B7A99;padding:3px 0">Вс</div>
+          </div>
+          <div id="prop-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:6px 14px;border-top:1px solid var(--silver,#E1E5F1);font-size:11px;color:#6B7A99">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(62,112,87,0.15);margin-right:4px"></span>Выбрано</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(224,82,82,0.12);margin-right:4px"></span>Занято</span>
+        </div>
+      </div>
+
       <div class="form-group">
         <label class="form-label">Гостей</label>
-        <select class="form-select"><option>1 гость</option><option selected>2 гостя</option></select>
+        <select class="form-select" id="f-guests"><option>1 гость</option><option selected>2 гостя</option></select>
       </div>
       <div class="form-group">
         <label class="form-label">Комментарий (необязательно)</label>
-        <textarea class="form-input" style="resize:vertical;min-height:72px" placeholder="Особые пожелания..."></textarea>
+        <textarea class="form-input" id="f-comment" style="resize:vertical;min-height:72px" placeholder="Особые пожелания..."></textarea>
       </div>
       <button class="btn-submit" onclick="submitForm()">Отправить заявку →</button>
-      <p class="privacy-note">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
+      <p class="privacy-note">Бронирование вступает в силу после подтверждения управляющего.</p>
+      <p class="privacy-note" style="margin-top:4px">Нажимая кнопку, вы соглашаетесь с обработкой персональных данных.</p>
     </div>
     <div class="success-screen" id="success-screen">
       <div class="success-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
@@ -781,6 +808,7 @@ function loadPropBookings() {
         }
       });
       renderCalendar();
+      console.log('Statuses loaded:', Object.keys(statuses).length, 'days for obj', propId, JSON.stringify(statuses));
     }).catch(function(){});
 }
 // ── GOOGLE SHEETS LOADER ──
@@ -1054,13 +1082,70 @@ function copyText(text, btn) {
 }
 
 // MODAL
+// ── МИНИ-КАЛЕНДАРЬ В ФОРМЕ ──
+var propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+var propMonthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+function propCalPrev() { propCalState.month--; if(propCalState.month<0){propCalState.month=11;propCalState.year--;} propCalRender(); }
+function propCalNext() { propCalState.month++; if(propCalState.month>11){propCalState.month=0;propCalState.year++;} propCalRender(); }
+
+function propCalRender() {
+  var titleEl = document.getElementById('prop-cal-title');
+  var grid = document.getElementById('prop-cal-grid');
+  if (!titleEl || !grid) { setTimeout(propCalRender, 200); return; }
+
+  var y = propCalState.year, m = propCalState.month;
+  titleEl.textContent = propMonthNames[m] + ' ' + y;
+
+  var inVal = document.getElementById('f-checkin') ? document.getElementById('f-checkin').value : '';
+  var outVal = document.getElementById('f-checkout') ? document.getElementById('f-checkout').value : '';
+  var selIn = inVal ? new Date(inVal) : null;
+  var selOut = outVal ? new Date(outVal) : null;
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  grid.innerHTML = '';
+  var firstDay = new Date(y, m, 1).getDay();
+  var offset = firstDay === 0 ? 6 : firstDay - 1;
+  for (var i = 0; i < offset; i++) { var e=document.createElement('div'); grid.appendChild(e); }
+
+  var days = new Date(y, m+1, 0).getDate();
+  for (var day = 1; day <= days; day++) {
+    var date = new Date(y, m, day);
+    var key = y+'-'+(m+1)+'-'+day;
+    var occ = statuses[key] === 'occupied';
+    var isPast = date < today;
+    var isIn = selIn && date.getTime() === selIn.getTime();
+    var isSel = selIn && selOut && date >= selIn && date < selOut;
+
+    var el = document.createElement('div');
+    el.textContent = day;
+    el.style.cssText = 'text-align:center;padding:5px 2px;border-radius:6px;font-size:12px;cursor:pointer;';
+
+    if (isPast) { el.style.color='#AFB9D0'; el.style.opacity='0.4'; }
+    else if (occ) { el.style.background='rgba(224,82,82,0.12)'; el.style.color='#C0392B'; el.style.cursor='default'; }
+    else if (isIn) { el.style.background='#3E7057'; el.style.color='white'; el.style.fontWeight='700'; }
+    else if (isSel) { el.style.background='rgba(62,112,87,0.12)'; el.style.color='#3E7057'; }
+    else {
+      el.style.color='#2E384D';
+      (function(d){ el.onclick=function(){
+        var y2=d.getFullYear(), m2=String(d.getMonth()+1).padStart(2,'0'), d2=String(d.getDate()).padStart(2,'0');
+        document.getElementById('f-checkin').value=y2+'-'+m2+'-'+d2;
+        propCalRender();
+      }; })(date);
+    }
+    if (date.toDateString()===today.toDateString()&&!isIn) el.style.fontWeight='700';
+    grid.appendChild(el);
+  }
+}
+
 function openModal() {
   var o = document.getElementById('modal-overlay');
   o.classList.add('open'); document.body.style.overflow = 'hidden';
-  // Не ставим дату по умолчанию — гость выбирает сам
   document.getElementById('f-checkin').value = '';
   var outEl = document.getElementById('f-checkout');
   if (outEl) outEl.value = '';
+  propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+  setTimeout(function(){ propCalRender(); }, 300);
 }
 function closeModal() {
   document.getElementById('modal-overlay').classList.remove('open');
@@ -1072,6 +1157,18 @@ function closeModal() {
 }
 function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
 function submitForm() {
+  var name = document.getElementById('f-name').value.trim();
+  var phone = document.getElementById('f-phone').value.trim();
+  var checkin = document.getElementById('f-checkin').value;
+  var checkout = document.getElementById('f-checkout').value;
+  if (!name || !phone || !checkin) { alert('Заполните имя, телефон и дату заезда'); return; }
+  var guests = document.getElementById('f-guests').value;
+  var comment = document.getElementById('f-comment').value;
+  var id = Date.now();
+  var row = [id, propData.id, name, phone, checkin, checkout||'', guests, 0, 'new', comment];
+  fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
+    .then(function(){ })
+    .catch(function(){});
   document.getElementById('form-screen').style.display = 'none';
   document.getElementById('success-screen').classList.add('show');
 }
