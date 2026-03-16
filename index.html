@@ -797,7 +797,7 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 
       <div class="form-group">
         <label class="form-label">Объект</label>
-        <select class="form-select" id="prop-select" onchange="updateModalProp();gRecalc()">
+        <select class="form-select" id="prop-select" onchange="updateModalProp();gRecalc();gRenderCal()">
           <option value="">— Выберите объект —</option>
         </select>
       </div>
@@ -835,8 +835,30 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 
       <input type="hidden" id="f-checkout">
 
-      <!-- Дата выезда и статус дат -->
-      <div id="f-dates-info" style="display:none;margin-bottom:12px;padding:10px 14px;border-radius:10px;font-size:13px"></div>
+      <!-- Мини-календарь занятости -->
+      <div style="border:1.5px solid var(--silver);border-radius:14px;overflow:hidden;margin-bottom:14px">
+        <div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:var(--bg);border-bottom:1px solid var(--silver)">
+          <button type="button" onclick="gCalPrev()" style="width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--muted)">‹</button>
+          <div id="g-cal-title" style="font-size:13px;font-weight:600;color:var(--charcoal)"></div>
+          <button type="button" onclick="gCalNext()" style="width:26px;height:26px;border:none;background:transparent;cursor:pointer;font-size:16px;color:var(--muted)">›</button>
+        </div>
+        <div style="padding:8px">
+          <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px">
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Пн</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Вт</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Ср</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Чт</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Пт</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Сб</div>
+            <div style="text-align:center;font-size:10px;font-weight:600;color:var(--muted);padding:3px 0">Вс</div>
+          </div>
+          <div id="g-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
+        </div>
+        <div style="display:flex;gap:12px;padding:6px 14px;border-top:1px solid var(--silver);font-size:11px;color:var(--muted)">
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(62,112,87,0.15);border:1px solid rgba(62,112,87,0.3);margin-right:4px"></span>Выбрано</span>
+          <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:rgba(224,82,82,0.12);margin-right:4px"></span>Занято</span>
+        </div>
+      </div>
 
       <div class="form-row">
         <div class="form-group">
@@ -1377,7 +1399,95 @@ var propNames = {};
 var allPropsData = [];
 var gPromoData = null;
 
-// ── УМНАЯ ФОРМА ГОСТЯ ──
+// ── МИНИ-КАЛЕНДАРЬ В ФОРМЕ ГОСТЯ ──
+var gCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+var gMonthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+
+function gCalPrev() { gCalState.month--; if(gCalState.month<0){gCalState.month=11;gCalState.year--;} gRenderCal(); }
+function gCalNext() { gCalState.month++; if(gCalState.month>11){gCalState.month=0;gCalState.year++;} gRenderCal(); }
+
+function gRenderCal() {
+  var titleEl = document.getElementById('g-cal-title');
+  var grid = document.getElementById('g-cal-grid');
+  if (!titleEl || !grid) return;
+
+  var y = gCalState.year, m = gCalState.month;
+  var objId = parseInt(document.getElementById('prop-select').value) || (allPropsData.length ? parseInt(allPropsData[0].id) : 1);
+  var st = (calData[objId] && calData[objId].statuses) || {};
+
+  var inVal = document.getElementById('f-checkin').value;
+  var nights = parseInt(document.getElementById('f-nights').value) || 1;
+  var selIn = inVal ? new Date(inVal) : null;
+  var selOut = selIn ? new Date(selIn.getTime() + nights*86400000) : null;
+  var today = new Date(); today.setHours(0,0,0,0);
+
+  titleEl.textContent = gMonthNames[m] + ' ' + y;
+  grid.innerHTML = '';
+
+  var firstDay = new Date(y, m, 1).getDay();
+  var offset = firstDay === 0 ? 6 : firstDay - 1;
+  var daysInMonth = new Date(y, m+1, 0).getDate();
+
+  for (var i = 0; i < offset; i++) {
+    var empty = document.createElement('div');
+    grid.appendChild(empty);
+  }
+
+  for (var day = 1; day <= daysInMonth; day++) {
+    var date = new Date(y, m, day);
+    var key = y+'-'+(m+1)+'-'+day;
+    var status = st[key] || 'free';
+    var isPast = date < today;
+    var isSelIn = selIn && date.getTime() === selIn.getTime();
+    var isSelected = selIn && selOut && date >= selIn && date < selOut;
+
+    var el = document.createElement('div');
+    el.textContent = day;
+    el.style.cssText = 'text-align:center;padding:5px 2px;border-radius:6px;font-size:12px;transition:all 0.1s;';
+
+    if (isPast) {
+      el.style.color = 'var(--muted)';
+      el.style.opacity = '0.4';
+    } else if (status === 'occupied') {
+      el.style.background = 'rgba(224,82,82,0.12)';
+      el.style.color = '#C0392B';
+      el.style.cursor = 'default';
+    } else if (isSelIn) {
+      el.style.background = 'var(--teal)';
+      el.style.color = 'white';
+      el.style.fontWeight = '700';
+    } else if (isSelected) {
+      el.style.background = 'rgba(62,112,87,0.12)';
+      el.style.color = 'var(--teal)';
+    } else {
+      el.style.color = 'var(--charcoal)';
+      el.style.cursor = 'pointer';
+      (function(d) {
+        el.onmouseenter = function(){ this.style.background='rgba(62,112,87,0.08)'; };
+        el.onmouseleave = function(){ if(!isSelected) this.style.background=''; };
+        el.onclick = function() { gCalSelectDay(d); };
+      })(date);
+    }
+
+    if (date.toDateString() === today.toDateString() && !isSelIn) {
+      el.style.fontWeight = '700';
+      el.style.outline = '1.5px solid var(--teal)';
+    }
+
+    grid.appendChild(el);
+  }
+}
+
+function gCalSelectDay(date) {
+  var y = date.getFullYear();
+  var m = String(date.getMonth()+1).padStart(2,'0');
+  var d = String(date.getDate()).padStart(2,'0');
+  document.getElementById('f-checkin').value = y+'-'+m+'-'+d;
+  gRecalc();
+  gRenderCal();
+}
+
+
 function gFormatPhone(input) {
   var v = input.value.replace(/\D/g, '');
   if (v.startsWith('8')) v = '7' + v.slice(1);
@@ -1424,6 +1534,11 @@ function gRecalc() {
   var inVal = document.getElementById('f-checkin').value;
   var nights = parseInt(document.getElementById('f-nights').value) || 1;
   var objId = document.getElementById('prop-select').value;
+  if (!objId) {
+    // Пробуем взять из URL (?id=N) или из первого объекта
+    var m = window.location.search.match(/[?&]id=(\d+)/);
+    objId = m ? m[1] : (allPropsData.length ? String(allPropsData[0].id) : '1');
+  }
   var infoEl = document.getElementById('f-dates-info');
   var calcEl = document.getElementById('f-calc');
   var calcRows = document.getElementById('f-calc-rows');
@@ -1439,6 +1554,7 @@ function gRecalc() {
   if (visEl) visEl.value = outStr;
   var nlabel = document.getElementById('f-nights-label');
   if (nlabel) nlabel.textContent = gNightWord(nights);
+  gRenderCal();
 
   // Проверяем занятость
   if (objId && calData[parseInt(objId)]) {
@@ -1543,6 +1659,8 @@ function openModal(propId) {
   document.getElementById('f-nights').value = 3;
   document.getElementById('f-calc').style.display = 'none';
   document.getElementById('f-dates-info').style.display = 'none';
+  gCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+  gRenderCal();
 }
 
 function closeModal() {
