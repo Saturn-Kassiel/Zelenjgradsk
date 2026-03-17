@@ -2118,6 +2118,9 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
       <div class="cw-name">Апартаменты в Зеленоградске</div>
       <div class="cw-sub"><span class="cw-dot"></span>онлайн · обычно отвечает сразу</div>
     </div>
+    <button onclick="cwClear()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s" title="Очистить чат" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
     <button class="cw-close" onclick="cwToggle()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
@@ -2141,6 +2144,14 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
 var cwHistory = [];
 var cwOpen = false;
 var cwWaitingContact = false;
+
+// Загружаем историю из localStorage
+(function() {
+  try {
+    var saved = localStorage.getItem('chat_history');
+    if (saved) cwHistory = JSON.parse(saved);
+  } catch(e) {}
+})();
 
 if (window.visualViewport) {
   window.visualViewport.addEventListener('resize', function() {
@@ -2168,7 +2179,20 @@ function cwToggle() {
 }
 
 function cwInit() {
-  cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
+  if (cwHistory.length > 0) {
+    cwHistory.forEach(function(m) {
+      cwAddMsg(m.content, m.role === 'user' ? 'user' : 'bot');
+    });
+  } else {
+    cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
+  }
+}
+
+function cwClear() {
+  cwHistory = [];
+  try { localStorage.removeItem('chat_history'); } catch(e) {}
+  document.getElementById('cw-messages').innerHTML = '';
+  cwInit();
 }
 
 function cwFormatText(text) {
@@ -2252,6 +2276,7 @@ async function cwSend() {
     if (data.error) { cwAddMsg('Не удалось получить ответ. Напишите нам напрямую.', 'bot'); return; }
     cwHistory.push({role: 'assistant', content: data.reply});
     cwAddMsg(data.reply, 'bot');
+    try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
 
     // Перехват передачи управляющему
     if (data.reply && data.reply.includes('передам администратору')) {
