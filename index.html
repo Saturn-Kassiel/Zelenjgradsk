@@ -2171,6 +2171,21 @@ async function cwSend() {
 
   // Режим ожидания контакта
   if (cwWaitingContact) {
+    // Проверка контакта
+    var digits = text.replace(/\D/g, '');
+    var hasUsername = text.indexOf('@') !== -1;
+    var hasWhatsapp = /whatsapp|вотсап|ватсап/i.test(text);
+    var hasPhone = digits.length >= 10;
+
+    if (!hasUsername && !hasPhone) {
+      if (hasWhatsapp) {
+        cwAddMsg('Напишите номер для WhatsApp — например, +79001234567', 'bot');
+      } else {
+        cwAddMsg('Похоже контакт неполный. Напишите номер телефона, @username в Telegram или номер для WhatsApp', 'bot');
+      }
+      return;
+    }
+
     cwWaitingContact = false;
     cwAddMsg('Управляющий получил ваш контакт и свяжется в ближайшее время 🙏', 'bot');
     var dialogLines = cwHistory.slice(-10).map(function(m) {
