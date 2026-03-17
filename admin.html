@@ -288,6 +288,43 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 }
 .overlay-bg { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.4); z-index: 99; }
 .overlay-bg.show { display: block; }
+
+/* ── LOGIN OVERLAY ── */
+#login-overlay {
+  position: fixed; inset: 0; z-index: 9999;
+  background: var(--charcoal);
+  display: flex; align-items: center; justify-content: center;
+}
+#login-overlay.hidden { display: none; }
+.login-box {
+  background: white; border-radius: 24px; padding: 40px;
+  width: 100%; max-width: 380px;
+  box-shadow: 0 24px 80px rgba(0,0,0,0.4);
+  text-align: center;
+}
+.login-logo { display: flex; align-items: center; justify-content: center; gap: 8px; margin-bottom: 24px; }
+.login-logo-dot { width: 10px; height: 10px; border-radius: 50%; background: linear-gradient(135deg,#B8F5D2,#BFEDF2); }
+.login-logo-text { font-family: Manrope,sans-serif; font-size: 14px; font-weight: 700; color: var(--charcoal); }
+.login-title { font-family: Manrope,sans-serif; font-size: 22px; font-weight: 800; color: var(--charcoal); margin-bottom: 6px; }
+.login-sub { font-size: 13px; color: var(--muted); margin-bottom: 24px; }
+.login-input {
+  font-family: DM Sans,sans-serif; width: 100%; padding: 13px 16px;
+  border-radius: 12px; border: 1.5px solid var(--silver);
+  background: var(--bg); font-size: 15px; color: var(--charcoal);
+  outline: none; text-align: center; letter-spacing: 3px;
+  margin-bottom: 12px; transition: border-color 0.2s;
+}
+.login-input:focus { border-color: var(--teal); }
+.login-input.error { border-color: var(--danger); }
+.login-btn {
+  font-family: DM Sans,sans-serif; font-size: 14px; font-weight: 500;
+  width: 100%; padding: 13px; border-radius: 50px;
+  background: var(--teal); color: white; border: none; cursor: pointer;
+  transition: all 0.2s;
+}
+.login-btn:hover { background: #325f47; }
+.login-btn:disabled { opacity: 0.6; cursor: default; }
+.login-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; }
 </style>
 </head>
 <body>
@@ -2183,6 +2220,65 @@ loadSupplies();
 loadCleaning();
 loadPromoAdmin();
 loadAdminPromo();
+
+// ── AUTH ──
+function loginSubmit() {
+  var pass = document.getElementById('login-password').value.trim();
+  var input = document.getElementById('login-password');
+  var btn = document.getElementById('login-btn');
+  var err = document.getElementById('login-error');
+  if (!pass) return;
+  input.classList.remove('error');
+  err.style.display = 'none';
+  btn.disabled = true;
+  btn.textContent = 'Проверяем...';
+  fetch(API, {
+    method: 'POST',
+    body: JSON.stringify({ action: 'auth', password: pass })
+  })
+  .then(function(r){ return r.json(); })
+  .then(function(d){
+    if (d && d.ok) {
+      document.getElementById('login-overlay').classList.add('hidden');
+    } else {
+      input.classList.add('error');
+      err.style.display = 'block';
+      btn.disabled = false;
+      btn.textContent = 'Войти';
+      input.value = '';
+      input.focus();
+    }
+  })
+  .catch(function(){
+    err.textContent = 'Ошибка соединения';
+    err.style.display = 'block';
+    btn.disabled = false;
+    btn.textContent = 'Войти';
+  });
+}
+
+// Показываем оверлей только если не авторизованы
+(function() {
+  // Страница заблокирована до авторизации — контент уже в DOM но overlay поверх
+  document.getElementById('login-password').focus();
+})();
+
 </script>
+
+<!-- LOGIN OVERLAY -->
+<div id="login-overlay">
+  <div class="login-box">
+    <div class="login-logo">
+      <div class="login-logo-dot"></div>
+      <div class="login-logo-text">Апартаменты в Зеленоградске</div>
+    </div>
+    <div class="login-title">Кабинет управляющего</div>
+    <div class="login-sub">Введите пароль для входа</div>
+    <input type="password" class="login-input" id="login-password" placeholder="••••••••"
+      onkeydown="if(event.key==='Enter')loginSubmit()">
+    <button class="login-btn" id="login-btn" onclick="loginSubmit()">Войти</button>
+    <div class="login-error" id="login-error">Неверный пароль</div>
+  </div>
+</div>
 </body>
 </html>
