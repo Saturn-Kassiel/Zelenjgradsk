@@ -2171,8 +2171,6 @@ async function cwSend() {
   // Режим ожидания контакта
   if (cwWaitingContact) {
     cwWaitingContact = false;
-    document.getElementById('cw-inp').disabled = true;
-    document.getElementById('cw-send').disabled = true;
     cwAddMsg('Управляющий получил ваш контакт и свяжется в ближайшее время 🙏', 'bot');
     var dialogLines = cwHistory.slice(-10).map(function(m) {
       return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
