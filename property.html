@@ -924,6 +924,12 @@ function applyPropData(prop) {
     var url = driveDirectUrl(prop['image_' + i]);
     if (url) photos.push(url);
   }
+  // GitHub Pages override для объектов с локальными фото
+  var GITHUB_BASE = 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/';
+  var githubPhotos = { 1: [] };
+  for (var gi = 1; gi <= 10; gi++) githubPhotos[1].push(GITHUB_BASE + 'kv' + gi + '.webp');
+  var propId = parseInt(prop.id) || 1;
+  if (githubPhotos[propId]) photos = githubPhotos[propId];
   buildGallery(photos);
 
   // Название и описание
