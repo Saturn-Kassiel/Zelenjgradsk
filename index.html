@@ -1410,7 +1410,7 @@ function loadWeather() {
 loadWeather();
 
 
-var APPS_URL = 'https://script.google.com/macros/s/AKfycbyYJNWZZD0W9RGuPoxWed_TLqh7vEFrzHi9MDTm5a3vlYFDHoL2OzSYPh6oacbwSWRg/exec';
+var APPS_URL = 'https://script.google.com/macros/s/AKfycbz5AynM5cqZGs7-ZzYVLvRIQOZi4EYQQhVW3J0WhQpAJQPZLzQz-7JSV_l8hBvj3Obk/exec';
 
 loadBookingsForCal();
 
@@ -2263,6 +2263,8 @@ async function cwSend() {
     }).join('\n');
     fetch(APPS_URL, {
       method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      redirect: 'follow',
       body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
     }).catch(function(){});
     fetch(APPS_URL, {
@@ -2278,11 +2280,10 @@ async function cwSend() {
   }
   cwTyping();
   try {
-    var res = await fetch(APPS_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      redirect: 'follow',
-      body: JSON.stringify({action: 'chat', messages: cwHistory})
+    var chatPayload = encodeURIComponent(JSON.stringify({action: 'chat', messages: cwHistory}));
+    var res = await fetch(APPS_URL + '?payload=' + chatPayload, {
+      method: 'GET',
+      redirect: 'follow'
     });
     var data = await res.json();
     cwRemoveTyping();
