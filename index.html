@@ -1204,6 +1204,52 @@ function parseGDate(val) {
   return null;
 }
 
+
+function isWishlisted(id) {
+  try {
+    var list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    return list.indexOf(String(id)) !== -1;
+  } catch(e) { return false; }
+}
+
+function toggleWishlist(id, btn) {
+  try {
+    var list = JSON.parse(localStorage.getItem('wishlist') || '[]');
+    var idx = list.indexOf(String(id));
+    if (idx === -1) {
+      list.push(String(id));
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="#E05252" stroke="#E05252" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+    } else {
+      list.splice(idx, 1);
+      btn.innerHTML = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>';
+    }
+    localStorage.setItem('wishlist', JSON.stringify(list));
+  } catch(e) {}
+}
+
+function getCardStatus(objId) {
+  var today = new Date(); today.setHours(0,0,0,0);
+  var st = (calData[objId] && calData[objId].statuses) ? calData[objId].statuses : {};
+  // Check if today is occupied
+  var d = new Date(today);
+  var todayKey = d.getFullYear()+'-'+(d.getMonth()+1)+'-'+d.getDate();
+  if (!st[todayKey] || st[todayKey] === 'free') {
+    return '<div class="card-status-badge status-available"><div class="status-dot" style="background:#4CAF50"></div> Свободно</div>';
+  }
+  // Find first free day
+  var check = new Date(today);
+  for (var i = 1; i <= 365; i++) {
+    check.setDate(check.getDate() + 1);
+    var key = check.getFullYear()+'-'+(check.getMonth()+1)+'-'+check.getDate();
+    if (!st[key] || st[key] === 'free') {
+      var months = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+      var dateStr = check.getDate() + ' ' + months[check.getMonth()];
+      return '<div class="card-status-badge" style="background:rgba(255,255,255,0.9);color:#E09A2B"><div class="status-dot" style="background:#E09A2B"></div> Свободно с ' + dateStr + '</div>';
+    }
+  }
+  return '<div class="card-status-badge status-available"><div class="status-dot" style="background:#4CAF50"></div> Свободно</div>';
+}
+
 function renderCards(props) {
   allPropsData = props;
   var grid = document.getElementById('cards-grid');
@@ -1274,8 +1320,8 @@ function renderCards(props) {
       '<a href="' + propUrl + '" style="display:block;text-decoration:none">' +
       '<div class="card-image" style="background:' + grad + '">' +
         imgHtml +
-        '<div class="card-status-badge status-available"><div class="status-dot" style="background:#4CAF50"></div> Свободно</div>' +
-        '<button class="card-wishlist" onclick="event.preventDefault()"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' +
+        getCardStatus(id) +
+        '<button class="card-wishlist" onclick="event.preventDefault();toggleWishlist(' + id + ',this)" id="wishlist-btn-' + id + '"><svg width="16" height="16" viewBox="0 0 24 24" fill="' + (isWishlisted(id) ? '#E05252' : 'none') + '" stroke="' + (isWishlisted(id) ? '#E05252' : 'currentColor') + '" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg></button>' +
       '</div>' +
       '<div class="card-body">' +
         '<div class="card-location"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> ' + (p.address||'Зеленоградск') + '</div>' +
