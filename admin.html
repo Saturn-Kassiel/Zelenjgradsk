@@ -2296,7 +2296,8 @@ function loginSubmit() {
 // Показываем оверлей только если не авторизованы
 (function() {
   // Страница заблокирована до авторизации — контент уже в DOM но overlay поверх
-  document.getElementById('login-password').focus();
+  var pw = document.getElementById('login-password');
+  if (pw) pw.focus();
 })();
 
 </script>
