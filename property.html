@@ -1874,12 +1874,8 @@ async function cwSend() {
     var dialogLines = cwHistory.slice(-10).map(function(m) {
       return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
     }).join('\n');
-    fetch(APPS_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      redirect: 'follow',
-      body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
-    }).catch(function(){});
+    var notifyPayload = encodeURIComponent(JSON.stringify({action: 'notify', contact: text, dialog: dialogLines}));
+    fetch(APPS_URL + '?payload=' + notifyPayload).catch(function(){});
     fetch(APPS_URL, {
       method: 'POST',
       body: JSON.stringify({action: 'append', sheet: 'contacts', row: [new Date().toLocaleDateString('ru-RU'), new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), text, dialogLines]})
@@ -1893,10 +1889,9 @@ async function cwSend() {
   }
   cwTyping();
   try {
-    var res = await fetch(APPS_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({action: 'chat', messages: cwHistory})
+    var chatPayload = encodeURIComponent(JSON.stringify({action: 'chat', messages: cwHistory}));
+    var res = await fetch(APPS_URL + '?payload=' + chatPayload, {
+      redirect: 'follow'
     });
     var data = await res.json();
     cwRemoveTyping();
@@ -1917,14 +1912,8 @@ async function cwSend() {
     var now = new Date();
     var dateStr = now.toLocaleDateString('ru-RU');
     var timeStr = now.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-    fetch(APPS_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'append',
-        sheet: 'chats',
-        row: [dateStr, timeStr, text, data.reply, cwHistory.length]
-      })
-    }).catch(function(){});
+    var chatsPayload = encodeURIComponent(JSON.stringify({action: 'append', sheet: 'chats', row: [dateStr, timeStr, text, data.reply, cwHistory.length]}));
+    fetch(APPS_URL + '?payload=' + chatsPayload).catch(function(){});
   } catch(e) {
     cwRemoveTyping();
     cwAddMsg('Что-то пошло не так. Попробуйте чуть позже.', 'bot');
