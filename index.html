@@ -2266,8 +2266,11 @@ async function cwSend() {
       headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
     }).catch(function(){});
-    var contactsPayload = encodeURIComponent(JSON.stringify({action: 'append', sheet: 'contacts', row: [new Date().toLocaleDateString('ru-RU'), new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), text, dialogLines]}));
-    fetch(APPS_URL + '?payload=' + contactsPayload).catch(function(){});
+    fetch(APPS_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({action: 'append', sheet: 'contacts', row: [new Date().toLocaleDateString('ru-RU'), new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), text, dialogLines]})
+    }).catch(function(){});
     return;
   }
 
