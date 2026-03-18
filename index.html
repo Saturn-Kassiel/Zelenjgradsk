@@ -1104,7 +1104,7 @@ document.addEventListener('keydown', function(e) {
           <label class="form-label">Гостей</label>
           <select class="form-select" id="f-guests" onchange="gRecalc()">
             <option value="1">1 гость</option><option value="2" selected>2 гостя</option>
-            <option value="3">3 гостя</option><option value="4">4 гостя</option>
+            <option value="3">3 гостя (+750 ₽/ночь)</option>
           </select>
         </div>
         <div class="form-group">
@@ -1842,6 +1842,13 @@ function gRecalc() {
     while(dd<outDate){ if(dd>=pFrom&&dd<pTo)pN++;else rN++; dd.setDate(dd.getDate()+1); }
     if(rN>0) rows.push({ label: regularPrice.toLocaleString('ru')+' ₽ × '+rN+' '+gNightWord(rN), amount: regularPrice*rN });
     if(pN>0) rows.push({ label: (gPromoData.label||'Акция')+': '+gPromoData.price.toLocaleString('ru')+' ₽ × '+pN+' '+gNightWord(pN), amount: gPromoData.price*pN, isPromo:true });
+  }
+
+  // Наценка за 3-го гостя
+  var guests3 = parseInt(document.getElementById('f-guests') ? document.getElementById('f-guests').value : '2') || 2;
+  if (guests3 >= 3) {
+    var surcharge = 750 * nights;
+    rows.push({ label: 'Наценка (3-й гость): 750 ₽ × ' + nights + ' ' + gNightWord(nights), amount: surcharge });
   }
 
   var total = rows.reduce(function(s,r){return s+r.amount;},0);
