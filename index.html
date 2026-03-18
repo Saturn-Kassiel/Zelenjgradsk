@@ -2040,9 +2040,10 @@ function submitForm() {
 
   if (typeof cwAddMsg === 'function') {
     setTimeout(function() {
-      if (!cwOpen) cwToggle();
-      setTimeout(function() { cwAddMsg(chatMsg, 'bot'); }, 300);
-    }, 800);
+      cwHistory.push({role: 'assistant', content: chatMsg});
+      try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
+      document.getElementById('chat-widget-btn').classList.add('has-unread');
+    }, 500);
   }
 
   document.getElementById('form-screen').style.display = 'none';
