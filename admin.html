@@ -1273,28 +1273,31 @@ function sendGuestMemo(bookingId, objId, guestName, checkinDate) {
   var accessUrl = base + '?id=' + objId + '&token=' + token;
   var checkinFormatted = checkinDate ? checkinDate.split('-').reverse().join('.') : '—';
 
-  // Save token to bookings sheet
+  var memoText = '🔑 Памятка для гостя ' + guestName + '\nЗаезд: ' + checkinFormatted + '\nСсылка для гостя:\n' + accessUrl;
+
+  // Save token and send Telegram notification
   fetch(API, {
     method: 'POST',
     headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({action: 'saveToken', bookingId: bookingId, token: token})
-  }).catch(function(){});
+    body: JSON.stringify({action: 'saveToken', bookingId: bookingId, token: token, memoText: memoText})
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.ok) {
+        showToast('Памятка отправлена в Telegram! Перешлите гостю.');
+      } else {
+        showToast('Ошибка: ' + (d && d.error ? d.error : 'неизвестно'));
+      }
+    }).catch(function(){ showToast('Ошибка сети'); });
 
-  // Save to localStorage so guest chat sees it
-  var memoMsg = guestName + ', ваша памятка для заезда готова 🔑\n\n' +
-    'Дата заезда: ' + checkinFormatted + '\n' +
-    'Все детали по ссылке:\n' + accessUrl;
-
-  // Store in localStorage with booking key so guest can pick it up
-  try {
-    var memos = JSON.parse(localStorage.getItem('pending_memos') || '[]');
-    memos.push({bookingId: bookingId, msg: memoMsg, ts: Date.now()});
-    localStorage.setItem('pending_memos', JSON.stringify(memos));
-  } catch(e) {}
-
-  // Copy link to clipboard
-  navigator.clipboard.writeText(accessUrl).catch(function(){});
-  showToast('Памятка готова! Ссылка скопирована. Отправьте гостю в мессенджере.');
+  // Copy memo text to clipboard
+  navigator.clipboard.writeText(memoText).catch(function(){
+    var ta = document.createElement('textarea');
+    ta.value = memoText;
+    document.body.appendChild(ta);
+    ta.select();
+    document.execCommand('copy');
+    document.body.removeChild(ta);
+  });
 }
 
 function copyGuestLink(bookingId, objId) {
