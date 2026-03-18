@@ -2018,6 +2018,26 @@ function submitForm() {
   var row = [id, obj.value, name.value.trim(), phone.value.trim(), checkin.value, checkout, guests, 0, 'new', comment];
 
   fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d && d.ok) {
+        try {
+          var objName = propNames[obj.value] ? propNames[obj.value].name : (obj.value === '1' ? 'Заря' : 'Янтарный закат');
+          var checkinFormatted = checkin.value.split('-').reverse().join('.');
+          var checkoutFormatted = checkout.split('-').reverse().join('.');
+          var guestsWord = guests === '1' ? '1 гость' : guests === '2' ? '2 гостя' : '3 гостя';
+          var nightsWord = nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей';
+          var chatMsg = name.value.trim() + ', ваша заявка принята 🙏\n\n' +
+            '🏠 ' + objName + '\n' +
+            '📅 ' + checkinFormatted + ' — ' + checkoutFormatted + ' (' + nights + ' ' + nightsWord + ')\n' +
+            '👤 ' + guestsWord + '\n\n' +
+            'Управляющий свяжется с вами для подтверждения.';
+          cwHistory.push({role: 'assistant', content: chatMsg});
+          try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
+          document.getElementById('chat-widget-btn').classList.add('has-unread');
+        } catch(e) {}
+      }
+    })
     .catch(function(){});
 
   document.getElementById('form-screen').style.display = 'none';
