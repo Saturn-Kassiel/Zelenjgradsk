@@ -1893,6 +1893,7 @@ async function cwSend() {
   try {
     var res = await fetch(APPS_URL, {
       method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({action: 'chat', messages: cwHistory})
     });
     var data = await res.json();
