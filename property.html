@@ -500,6 +500,21 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 #scroll-top.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
 #scroll-top:hover { background: #325f47; transform: translateY(-2px); }
 @media (max-width: 600px) { #scroll-top { bottom: 90px; right: 20px; } }
+
+/* ── SECRET SECTION ── */
+.secret-section {
+  display: none;
+  background: linear-gradient(135deg, rgba(62,112,87,0.06), rgba(82,105,171,0.06));
+  border: 1.5px solid rgba(62,112,87,0.2);
+  border-radius: 20px; padding: 28px; margin: 24px 0;
+}
+.secret-section.visible { display: block; }
+.secret-title { font-family: Manrope,sans-serif; font-size: 18px; font-weight: 700; color: var(--teal); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.secret-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(202,213,240,0.4); }
+.secret-row:last-child { border-bottom: none; }
+.secret-label { font-size: 12px; color: var(--muted); font-weight: 500; min-width: 120px; padding-top: 2px; }
+.secret-value { font-size: 15px; font-weight: 600; color: var(--charcoal); font-family: Manrope,sans-serif; }
+.secret-copy { margin-left: auto; font-size: 11px; color: var(--teal); cursor: pointer; padding: 4px 8px; border-radius: 8px; background: rgba(62,112,87,0.1); border: none; font-family: DM Sans,sans-serif; }
 </style>
 <script src="config.js?v=2"></script>
 </head>
@@ -1703,6 +1718,34 @@ function loadWeather() {
 
 loadWeather();
 </script>
+
+<!-- SECRET SECTION -->
+<div class="secret-section" id="secret-section">
+  <div class="secret-title">🔑 Данные для заезда</div>
+  <div class="secret-row">
+    <span class="secret-label">Адрес</span>
+    <span class="secret-value" id="s-address">—</span>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Квартира</span>
+    <span class="secret-value" id="s-apt">—</span>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Код домофона</span>
+    <span class="secret-value" id="s-door">—</span>
+    <button class="secret-copy" onclick="copySecret('s-door')">Копировать</button>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Wi-Fi сеть</span>
+    <span class="secret-value" id="s-wifi-name">—</span>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Пароль Wi-Fi</span>
+    <span class="secret-value" id="s-wifi-pass">—</span>
+    <button class="secret-copy" onclick="copySecret('s-wifi-pass')">Копировать</button>
+  </div>
+</div>
+
 <footer id="contacts">
   <div class="footer-inner">
     <div class="footer-brand">
@@ -1976,6 +2019,40 @@ function cookieAccept() {
   localStorage.setItem('cookie_accepted', '1');
   document.getElementById('cookie-banner').style.display = 'none';
 }
+</script>
+<script>
+
+// ── SECRET ACCESS ──
+function copySecret(id) {
+  var el = document.getElementById(id);
+  if (el) navigator.clipboard.writeText(el.textContent).then(function(){ 
+    showToast && showToast('Скопировано!');
+  });
+}
+
+function initGuestAccess() {
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('token');
+  var objId = params.get('id');
+  if (!token || !objId) return;
+
+  // Verify token via GAS
+  fetch(APPS_URL + '?action=checkToken&token=' + encodeURIComponent(token) + '&objId=' + objId)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.property) {
+        var p = d.property;
+        document.getElementById('s-address').textContent = p.address_secret || '—';
+        document.getElementById('s-apt').textContent = p.apt_number || '—';
+        document.getElementById('s-door').textContent = p.door_code || '—';
+        document.getElementById('s-wifi-name').textContent = p.wifi_name || '—';
+        document.getElementById('s-wifi-pass').textContent = p.wifi_pass || '—';
+        document.getElementById('secret-section').classList.add('visible');
+        document.getElementById('secret-section').scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    }).catch(function(){});
+}
+
 </script>
 </body>
 </html>
