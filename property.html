@@ -1888,7 +1888,8 @@ async function cwSend() {
 
   cwHistory.push({role: 'user', content: text});
   if (window.innerWidth <= 600) {
-    document.getElementById('cw-sugs').style.display = 'none';
+    var sugs = document.getElementById('cw-sugs');
+    if (sugs) sugs.style.display = 'none';
   }
   cwTyping();
   try {
