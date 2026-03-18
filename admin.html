@@ -327,6 +327,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .login-btn:disabled { opacity: 0.6; cursor: default; }
 .login-error { font-size: 13px; color: var(--danger); margin-top: 10px; display: none; }
 </style>
+<script src="config.js"></script>
 </head>
 <body>
 
@@ -916,7 +917,7 @@ function driveDirectUrl(url) {
 }
 
 
-var API = 'https://script.google.com/macros/s/AKfycbz5AynM5cqZGs7-ZzYVLvRIQOZi4EYQQhVW3J0WhQpAJQPZLzQz-7JSV_l8hBvj3Obk/exec';
+var API = APPS_URL;
 
 function apiRead(sheet, callback) {
   fetch(API + '?sheet=' + sheet)
