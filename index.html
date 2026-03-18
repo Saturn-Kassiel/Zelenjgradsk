@@ -2284,9 +2284,16 @@ async function cwSend() {
     var res = await fetch(APPS_URL, {
       method: 'POST',
       headers: {'Content-Type': 'text/plain'},
+      redirect: 'follow',
       body: JSON.stringify({action: 'chat', messages: cwHistory})
     });
-    var data = await res.json();
+    var rawText = await res.text();
+    var data;
+    try { data = JSON.parse(rawText); } catch(e) {
+      cwRemoveTyping();
+      cwAddMsg('Не удалось получить ответ. Попробуйте ещё раз.', 'bot');
+      return;
+    }
     cwRemoveTyping();
     if (data.error) { cwAddMsg('Не удалось получить ответ. Напишите нам напрямую.', 'bot'); return; }
     cwHistory.push({role: 'assistant', content: data.reply});
