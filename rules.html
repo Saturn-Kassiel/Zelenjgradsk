@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Правила проживания — Апартаменты в Зеленоградске</title>
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --teal: #3E7057; --charcoal: #2E384D; --muted: #5A84A1;
+  --bg: #F4F6FB; --silver: #E1E5F1; --white: #ffffff;
+  --danger: #E05252; --danger-light: rgba(224,82,82,0.08);
+}
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: "DM Sans", sans-serif; background: var(--bg); color: var(--charcoal); }
+body::before {
+  content: ""; position: fixed; inset: 0; z-index: -1;
+  background: radial-gradient(ellipse 80% 50% at 10% 20%, rgba(184,245,210,0.2) 0%, transparent 60%), var(--bg);
+}
+header { position: sticky; top: 0; z-index: 100; background: rgba(244,246,251,0.92); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(202,213,240,0.5); }
+.nav-inner { max-width: 900px; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; height: 64px; padding: 0 32px; }
+.logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+.logo img { width: 32px; height: 32px; object-fit: contain; }
+.logo-text { font-family: "Manrope", sans-serif; font-size: 14px; font-weight: 700; color: var(--teal); }
+.back-btn { font-family: "DM Sans", sans-serif; font-size: 13px; font-weight: 500; color: var(--muted); text-decoration: none; display: flex; align-items: center; gap: 6px; transition: color 0.2s; }
+.back-btn:hover { color: var(--teal); }
+.content { max-width: 900px; margin: 0 auto; padding: 48px 32px 80px; }
+.page-title { font-family: "Manrope", sans-serif; font-size: 36px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.5px; margin-bottom: 8px; }
+.page-date { font-size: 13px; color: var(--muted); margin-bottom: 48px; }
+.doc { background: var(--white); border-radius: 20px; border: 1px solid var(--silver); padding: 40px; }
+h2 { font-family: "Manrope", sans-serif; font-size: 18px; font-weight: 700; color: var(--charcoal); margin: 32px 0 12px; display: flex; align-items: center; gap: 10px; }
+h2:first-child { margin-top: 0; }
+p { font-size: 14px; line-height: 1.8; color: var(--charcoal); margin-bottom: 12px; }
+ul { padding-left: 20px; margin-bottom: 12px; }
+li { font-size: 14px; line-height: 1.8; color: var(--charcoal); margin-bottom: 4px; }
+.rule-ok { background: rgba(62,112,87,0.06); border-left: 3px solid var(--teal); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 16px 0; }
+.rule-no { background: var(--danger-light); border-left: 3px solid var(--danger); border-radius: 0 10px 10px 0; padding: 14px 18px; margin: 16px 0; }
+.rule-no p, .rule-no li { color: #c0392b; }
+.rule-ok p, .rule-ok li { color: var(--teal); }
+footer { background: #2E384D; color: rgba(255,255,255,0.5); padding: 28px 32px; text-align: center; font-size: 12px; }
+footer a { color: rgba(255,255,255,0.5); text-decoration: none; margin: 0 8px; }
+footer a:hover { color: rgba(255,255,255,0.8); }
+@media (max-width: 600px) { .nav-inner { padding: 0 16px; } .content { padding: 32px 16px 60px; } .doc { padding: 24px 20px; } .page-title { font-size: 26px; } }
+</style>
+</head>
+<body>
+<header>
+  <div class="nav-inner">
+    <a href="index.html" class="logo">
+      <img src="https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png" alt="Логотип">
+      <span class="logo-text">Апартаменты в Зеленоградске</span>
+    </a>
+    <a href="index.html" class="back-btn">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      На главную
+    </a>
+  </div>
+</header>
+
+<div class="content">
+  <h1 class="page-title">Правила проживания</h1>
+  <div class="page-date">Последнее обновление: 18 марта 2026 года</div>
+  <div class="doc">
+
+    <h2>Заезд и выезд</h2>
+    <ul>
+      <li>Заезд с 14:00, выезд до 12:00</li>
+      <li>Ранний заезд и поздний выезд — по согласованию с управляющим</li>
+      <li>При заезде проводится осмотр апартаментов совместно с управляющим</li>
+    </ul>
+
+    <h2>Разрешено</h2>
+    <div class="rule-ok">
+      <ul>
+        <li>Проживание гостей согласно заявленному количеству (максимум 3 человека)</li>
+        <li>Пользование всем оборудованием апартаментов по назначению</li>
+        <li>Приготовление пищи на кухне</li>
+        <li>Использование Wi-Fi</li>
+      </ul>
+    </div>
+
+    <h2>Запрещено</h2>
+    <div class="rule-no">
+      <ul>
+        <li>Курение в помещении и на балконе</li>
+        <li>Проведение вечеринок и шумных мероприятий</li>
+        <li>Размещение незарегистрированных гостей</li>
+        <li>Перемещение мебели без согласования</li>
+        <li>Использование открытого огня (свечи, мангал и т.д.)</li>
+      </ul>
+    </div>
+
+    <h2>Тишина</h2>
+    <p>С 23:00 до 08:00 просьба соблюдать тишину. Уровень шума не должен беспокоить соседей.</p>
+
+    <h2>Животные</h2>
+    <p>Размещение с животными — по предварительному согласованию с управляющим. Уточняйте при бронировании.</p>
+
+    <h2>Порядок и уборка</h2>
+    <p>При выезде просим:</p>
+    <ul>
+      <li>Оставить ключи на столе</li>
+      <li>Вынести мусор</li>
+      <li>Помыть посуду или сложить в раковину</li>
+      <li>Выключить все электроприборы и свет</li>
+      <li>Закрыть окна и входную дверь</li>
+    </ul>
+
+    <h2>Ответственность</h2>
+    <p>Гость несёт ответственность за сохранность имущества апартаментов. При обнаружении поломок или неисправностей просим немедленно сообщить управляющему.</p>
+    <p>Ущерб, причинённый имуществу по вине Гостя, возмещается по фактической стоимости.</p>
+
+    <h2>Экстренные контакты</h2>
+    <ul>
+      <li>Скорая помощь: 103</li>
+      <li>Полиция: 102</li>
+      <li>Пожарная охрана: 101</li>
+      <li>Управляющий: уточняется при заселении</li>
+    </ul>
+
+    <p style="margin-top:24px">Бронируя апартаменты, вы соглашаетесь с настоящими правилами. Нарушение правил может повлечь досрочное выселение без возврата оплаты.</p>
+
+  </div>
+</div>
+
+<footer>
+  <p>© 2026 Апартаменты в Зеленоградске &nbsp;·&nbsp;
+  <a href="index.html">На главную</a> &nbsp;·&nbsp;
+  <a href="privacy.html">Политика конфиденциальности</a> &nbsp;·&nbsp;
+  <a href="offer.html">Договор-оферта</a>
+  </p>
+</footer>
+</body>
+</html>
