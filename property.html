@@ -1893,10 +1893,10 @@ async function cwSend() {
   }
   cwTyping();
   try {
-    var chatPayload = encodeURIComponent(JSON.stringify({action: 'chat', messages: cwHistory}));
-    var res = await fetch(APPS_URL + '?payload=' + chatPayload, {
-      method: 'GET',
-      redirect: 'follow'
+    var res = await fetch(APPS_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({action: 'chat', messages: cwHistory})
     });
     var data = await res.json();
     cwRemoveTyping();
