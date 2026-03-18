@@ -2020,6 +2020,29 @@ function submitForm() {
   fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
     .catch(function(){});
 
+  // Сообщение в чат от Алины
+  var objName = propNames[obj.value] ? propNames[obj.value].name : (obj.value === '1' ? 'Балтийский бриз' : 'Янтарный закат');
+  var checkinFormatted = checkin.value ? checkin.value.split('-').reverse().join('.') : '—';
+  var checkoutFormatted = checkout ? checkout.split('-').reverse().join('.') : '—';
+  var guestsWord = guests === '1' ? '1 гость' : guests === '2' ? '2 гостя' : '3 гостя';
+  var nightsWord = nights === 1 ? 'ночь' : nights < 5 ? 'ночи' : 'ночей';
+  var totalEl = document.getElementById('f-calc-rows');
+  var totalText = '';
+  if (totalEl) {
+    var lastRow = totalEl.lastElementChild;
+    if (lastRow) totalText = ', ' + lastRow.querySelector('span:last-child').textContent;
+  }
+  var chatMsg = name.value.trim() + ', ваша заявка принята 🙏\n\n' +
+    '🏠 ' + objName + '\n' +
+    '📅 ' + checkinFormatted + ' — ' + checkoutFormatted + ' (' + nights + ' ' + nightsWord + ')\n' +
+    '👤 ' + guestsWord + totalText + '\n\n' +
+    'Управляющий свяжется с вами для подтверждения.';
+
+  if (typeof cwAddMsg === 'function') {
+    if (!cwOpen) cwToggle();
+    setTimeout(function() { cwAddMsg(chatMsg, 'bot'); }, 400);
+  }
+
   document.getElementById('form-screen').style.display = 'none';
   document.getElementById('success-screen').classList.add('show');
 }
