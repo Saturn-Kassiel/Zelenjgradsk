@@ -2039,8 +2039,10 @@ function submitForm() {
     'Управляющий свяжется с вами для подтверждения.';
 
   if (typeof cwAddMsg === 'function') {
-    if (!cwOpen) cwToggle();
-    setTimeout(function() { cwAddMsg(chatMsg, 'bot'); }, 400);
+    setTimeout(function() {
+      if (!cwOpen) cwToggle();
+      setTimeout(function() { cwAddMsg(chatMsg, 'bot'); }, 300);
+    }, 800);
   }
 
   document.getElementById('form-screen').style.display = 'none';
