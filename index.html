@@ -811,6 +811,7 @@ var galPhotos = [
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/25.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/26.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/29.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/30.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/31.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/33.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/34.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
@@ -819,6 +820,7 @@ var galPhotos = [
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/37.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/39.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/40.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
+  { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/41.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/42.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/43.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
   { tag: 'all', src: 'https://saturn-kassiel.github.io/Zelenjgradsk/img/city/44.webp', cap: 'Зеленоградск', badgeColor: '#E2F0D9', badgeText: 'Фото', badgeTextColor: 'var(--teal)' },
@@ -2278,6 +2280,7 @@ async function cwSend() {
   try {
     var res = await fetch(APPS_URL, {
       method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
       body: JSON.stringify({action: 'chat', messages: cwHistory})
     });
     var data = await res.json();
