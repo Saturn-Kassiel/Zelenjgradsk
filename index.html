@@ -2076,6 +2076,15 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
   transition: transform 0.2s, box-shadow 0.2s;
 }
 #chat-widget-btn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(62,112,87,0.45); }
+#chat-unread-badge {
+  position: absolute; top: -4px; right: -4px;
+  width: 18px; height: 18px; border-radius: 50%;
+  background: #E05252; border: 2px solid white;
+  display: none; align-items: center; justify-content: center;
+  font-size: 10px; font-weight: 700; color: white;
+  animation: badgePop 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes badgePop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 #chat-widget-btn svg { transition: opacity 0.2s; }
 #chat-widget-btn .icon-close { display: none; }
 
@@ -2202,7 +2211,8 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
 #cw-send:hover { opacity: 0.88; }
 </style>
 
-<button id="chat-widget-btn" onclick="cwToggle()" aria-label="Открыть чат">
+<button id="chat-widget-btn" onclick="cwToggle()" aria-label="Открыть чат" style="position:relative">
+  <div id="chat-unread-badge"></div>
   <svg class="icon-chat" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
   <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
 </button>
@@ -2267,6 +2277,11 @@ function cwToggle() {
     document.body.style.width = cwOpen ? '100%' : '';
   }
   if (cwOpen && cwHistory.length === 0) cwInit();
+  // Скрываем значок при открытии чата
+  if (cwOpen) {
+    var badge = document.getElementById('chat-unread-badge');
+    if (badge) badge.style.display = 'none';
+  }
 }
 
 function cwInit() {
@@ -2379,6 +2394,11 @@ async function cwSend() {
     cwHistory.push({role: 'assistant', content: data.reply});
     cwAddMsg(data.reply, 'bot');
     try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
+    // Показываем значок если чат закрыт
+    if (!cwOpen) {
+      var badge = document.getElementById('chat-unread-badge');
+      if (badge) { badge.style.display = 'flex'; badge.textContent = '!'; }
+    }
 
     // Перехват передачи управляющему
     if (data.reply && data.reply.includes('передам администратору')) {
