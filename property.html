@@ -608,7 +608,7 @@ html { overflow-x: hidden; }
             <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
             Зеленоградск, Калининградская область
           </div>
-          <h1 class="prop-title">...</h1>
+          <h1 class="prop-title" style="visibility:hidden">...</h1>
           <div class="prop-tags">
             <span class="prop-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 4v16"/><path d="M2 8h18a2 2 0 0 1 2 2v10"/><path d="M2 17h20"/><path d="M6 8v9"/></svg> 1 спальня</span>
             <span class="prop-tag"><svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg> До 2 гостей</span>
@@ -1148,6 +1148,72 @@ function setGalleryImg(elId, url, gradient) {
   }
 }
 
+function buildGallery(photos) {
+  if (!photos || photos.length === 0) return;
+
+  // Главное фото
+  var main = document.getElementById('gallery-main');
+  if (main && photos[0]) {
+    main.innerHTML = '<img src="' + photos[0] + '" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\'\'"/>';
+  }
+
+  // Второе фото
+  var sub1 = document.getElementById('gallery-sub-1');
+  if (sub1 && photos[1]) {
+    sub1.innerHTML = '<img src="' + photos[1] + '" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\'\'"/>';
+  }
+
+  // Третье фото
+  var sub2 = document.getElementById('gallery-sub-2');
+  if (sub2 && photos[2]) {
+    sub2.innerHTML = '<img src="' + photos[2] + '" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.innerHTML=\'\'"/>';
+  }
+
+  // Счётчик всех фото
+  if (photos.length > 1) {
+    var countEl = document.getElementById('gallery-count');
+    if (countEl) { countEl.textContent = 'Все фото · ' + photos.length; countEl.style.display = 'block'; }
+    var allBtn = document.getElementById('gallery-all-btn');
+    if (allBtn) {
+      allBtn.style.display = 'flex';
+      var lbl = document.getElementById('gallery-all-label');
+      if (lbl) lbl.textContent = 'Все фото · ' + photos.length;
+    }
+  }
+
+  // Лайтбокс — сохраняем все фото
+  window._galleryPhotos = photos;
+}
+
+// Лайтбокс
+var _lbIdx = 0;
+function openLightbox(idx) {
+  var photos = window._galleryPhotos;
+  if (!photos || photos.length === 0) return;
+  _lbIdx = idx || 0;
+  var lb = document.getElementById('lightbox');
+  lb.style.display = 'flex';
+  lbShow();
+}
+function closeLightbox() { document.getElementById('lightbox').style.display = 'none'; }
+function closeLightboxOutside(e) { if (e.target === document.getElementById('lightbox')) closeLightbox(); }
+function lbShow() {
+  var photos = window._galleryPhotos || [];
+  if (!photos.length) return;
+  document.getElementById('lb-img').src = photos[_lbIdx];
+  document.getElementById('lb-counter').textContent = (_lbIdx + 1) + ' / ' + photos.length;
+  // Превью
+  var thumbs = document.getElementById('lb-thumbs');
+  if (thumbs) {
+    thumbs.innerHTML = photos.map(function(p, i) {
+      return '<img src="' + p + '" onclick="lbGoTo(' + i + ')" style="height:56px;width:80px;object-fit:cover;border-radius:6px;cursor:pointer;opacity:' + (i===_lbIdx?'1':'0.5') + ';transition:opacity 0.2s;flex-shrink:0">';
+    }).join('');
+  }
+}
+function lbPrev(e) { if(e) e.stopPropagation(); var photos = window._galleryPhotos||[]; _lbIdx = (_lbIdx - 1 + photos.length) % photos.length; lbShow(); }
+function lbNext(e) { if(e) e.stopPropagation(); var photos = window._galleryPhotos||[]; _lbIdx = (_lbIdx + 1) % photos.length; lbShow(); }
+function lbGoTo(i) { _lbIdx = i; lbShow(); }
+
 function applyPropData(prop) {
   // Заголовок страницы
   document.title = prop.name + ' — Зеленоградск';
@@ -1176,7 +1242,7 @@ function applyPropData(prop) {
 
   // Название и описание
   var titleEl = document.querySelector('.prop-title');
-  if (titleEl) titleEl.textContent = prop.name;
+  if (titleEl) { titleEl.textContent = prop.name; titleEl.style.visibility = 'visible'; }
 
   // Описание — description_full если есть, иначе description
   var descEl = document.querySelector('.prop-desc');
@@ -1262,6 +1328,7 @@ renderCalendar();
 
 
 loadPropBookings();
+loadPropData();
 </script>
 <!-- WEATHER SECTION -->
 <section class="weather-section" id="weather">
