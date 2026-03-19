@@ -681,7 +681,7 @@ html { overflow-x: hidden; }
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></polyline></svg>
           Удобства
         </div>
-        <div class="amenities-grid">
+        <div class="amenities-grid" id="amenities-grid">
           <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg> Wi-Fi</div>
           <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg> Парковка</div>
           <div class="amenity-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-2 2"/><circle cx="10" cy="14" r="6"/><path d="M16 14h2a2 2 0 0 1 0 4h-2"/></svg> Кухня</div>
@@ -697,7 +697,7 @@ html { overflow-x: hidden; }
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
           Правила проживания
         </div>
-        <div class="rules-list">
+        <div class="rules-list" id="rules-list">
           <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Курение запрещено</div>
           <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Животные — по согласованию</div>
           <div class="rule-item"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--danger)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg> Шум после 23:00 запрещён</div>
@@ -712,25 +712,26 @@ html { overflow-x: hidden; }
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Что рядом
         </div>
-        <div class="nearby-tabs">
-          <button class="nearby-tab active" onclick="switchTab(this,'cafe')">Кафе</button>
-          <button class="nearby-tab" onclick="switchTab(this,'shop')">Магазины</button>
-          <button class="nearby-tab" onclick="switchTab(this,'pharm')">Аптеки</button>
-          <button class="nearby-tab" onclick="switchTab(this,'sight')">Достопримечательности</button>
-        </div>
-        <div class="nearby-panel active" id="panel-cafe">
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Кофейня «Балтика»</div><div class="nearby-dist">180 м · открыто до 22:00</div></div></div>
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/><line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/></svg></div><div><div class="nearby-name">Ресторан «Янтарь»</div><div class="nearby-dist">320 м · кухня до 23:00</div></div></div>
-        </div>
-        <div class="nearby-panel" id="panel-shop">
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg></div><div><div class="nearby-name">Пятёрочка</div><div class="nearby-dist">200 м · 8:00–22:00</div></div></div>
-        </div>
-        <div class="nearby-panel" id="panel-pharm">
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптека «Здоровье»</div><div class="nearby-dist">250 м · 9:00–20:00</div></div></div>
-        </div>
-        <div class="nearby-panel" id="panel-sight">
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Пляж Балтийского моря</div><div class="nearby-dist">400 м пешком</div></div></div>
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Набережная и пирс</div><div class="nearby-dist">600 м пешком</div></div></div>
+        <div id="nearby-container">
+          <div class="nearby-tabs">
+            <button class="nearby-tab active" onclick="switchNearbyTab(this,'panel-cafe')">Кафе</button>
+            <button class="nearby-tab" onclick="switchNearbyTab(this,'panel-shop')">Магазины</button>
+            <button class="nearby-tab" onclick="switchNearbyTab(this,'panel-pharm')">Аптеки</button>
+            <button class="nearby-tab" onclick="switchNearbyTab(this,'panel-sight')">Достопримечательности</button>
+          </div>
+          <div class="nearby-panel active" id="panel-cafe">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div class="nearby-name">Кофейня «Балтика»</div><div class="nearby-dist">180 м · открыто до 22:00</div></div></div>
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div class="nearby-name">Ресторан «Янтарь»</div><div class="nearby-dist">320 м · кухня до 23:00</div></div></div>
+          </div>
+          <div class="nearby-panel" id="panel-shop">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div><div><div class="nearby-name">Пятёрочка</div><div class="nearby-dist">200 м · 8:00–22:00</div></div></div>
+          </div>
+          <div class="nearby-panel" id="panel-pharm">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптека «Здоровье»</div><div class="nearby-dist">250 м · 9:00–20:00</div></div></div>
+          </div>
+          <div class="nearby-panel" id="panel-sight">
+            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Пляж Балтийского моря</div><div class="nearby-dist">400 м пешком</div></div></div>
+          </div>
         </div>
       </div>
 
@@ -740,7 +741,7 @@ html { overflow-x: hidden; }
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Как добраться
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px">
+        <div style="display:flex;flex-direction:column;gap:10px" id="directions-list">
           <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div><div class="nearby-name">Аэропорт Храброво</div><div class="nearby-dist">~55 км · 50 мин на авто или такси</div></div></div>
           <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div><div><div class="nearby-name">Из Калининграда</div><div class="nearby-dist">~35 км · автобус №122 или авто 30–40 мин</div></div></div>
           <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="13" rx="2"/><path d="M16 17l3 4"/><path d="M8 17l-3 4"/><path d="M1 10h22"/></svg></div><div><div class="nearby-name">Ж/д вокзал Зеленоградск</div><div class="nearby-dist">2 км · 5 мин на такси</div></div></div>
@@ -1247,14 +1248,12 @@ function applyPropData(prop) {
   var priceEl = document.getElementById('prop-price-display');
   if (priceEl) priceEl.textContent = price.toLocaleString('ru');
 
-  // Цена в карточке бронирования
   var bookingPriceEl = document.querySelector('.booking-price-amount');
   if (bookingPriceEl) bookingPriceEl.textContent = price.toLocaleString('ru');
 
-  // Загружаем промо после получения данных объекта
   loadPromoForProp();
 
-  // Галерея — до 10 фото
+  // Галерея
   var photos = [];
   for (var i = 1; i <= 10; i++) {
     var url = driveDirectUrl(prop['image_' + i]);
@@ -1262,11 +1261,11 @@ function applyPropData(prop) {
   }
   buildGallery(photos);
 
-  // Название и описание
+  // Название
   var titleEl = document.querySelector('.prop-title');
   if (titleEl) { titleEl.textContent = prop.name; titleEl.style.visibility = 'visible'; }
 
-  // Описание — description_full если есть, иначе description
+  // Описание
   var descEl = document.querySelector('.prop-desc');
   if (descEl) {
     var fullDesc = prop.description_full || prop.description || '';
@@ -1277,13 +1276,6 @@ function applyPropData(prop) {
   var addrEls = document.querySelectorAll('.prop-location');
   addrEls.forEach(function(el){ if (prop.address) el.innerHTML = el.innerHTML.replace(/Зеленоградск.*$/, prop.address); });
 
-  // Цена в карточке бронирования
-  var priceEl = document.querySelector('.booking-price-amount');
-  if (priceEl && prop.price) {
-    var priceVal = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')) || 0);
-    priceEl.textContent = priceVal.toLocaleString('ru');
-  }
-
   // Модалка
   var modalTitle = document.querySelector('.modal-title');
   if (modalTitle) modalTitle.textContent = prop.name;
@@ -1292,6 +1284,118 @@ function applyPropData(prop) {
     var p2 = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.')) || 0);
     modalSub.textContent = 'Зеленоградск · ' + p2.toLocaleString('ru') + ' ₽ / ночь · до ' + (prop.guests||'2') + ' гостей';
   }
+
+  // ── УДОБСТВА ──
+  var amenitiesEl = document.getElementById('amenities-grid');
+  if (amenitiesEl) {
+    var amenities = prop.amenities || prop.features || '';
+    if (amenities) {
+      var items = amenities.split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+      amenitiesEl.innerHTML = items.map(function(item){
+        var icon = getAmenityIcon(item);
+        return '<div class="amenity-item">'+icon+' '+item+'</div>';
+      }).join('');
+    }
+  }
+
+  // ── ПРАВИЛА ──
+  var rulesEl = document.getElementById('rules-list');
+  if (rulesEl && prop.rules) {
+    var rules = prop.rules.split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+    if (rules.length) {
+      rulesEl.innerHTML = rules.map(function(rule){
+        var isAllow = rule.startsWith('+');
+        var text = isAllow ? rule.substr(1).trim() : rule.replace(/^-\s*/, '').trim();
+        var color = isAllow ? 'var(--teal)' : 'var(--danger)';
+        var svg = isAllow
+          ? '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>'
+          : '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="'+color+'" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>';
+        return '<div class="rule-item">'+svg+' '+text+'</div>';
+      }).join('');
+    }
+  }
+
+  // ── ЧТО РЯДОМ ──
+  var nearbyEl = document.getElementById('nearby-container');
+  if (nearbyEl && prop.nearby) {
+    var nearby;
+    try { nearby = typeof prop.nearby === 'string' ? JSON.parse(prop.nearby) : prop.nearby; } catch(e) { nearby = []; }
+    if (nearby && nearby.length) {
+      var categories = {};
+      nearby.forEach(function(item){
+        var cat = item.cat || 'other';
+        if (!categories[cat]) categories[cat] = [];
+        categories[cat].push(item);
+      });
+      var catNames = { cafe:'Кафе', shop:'Магазины', pharm:'Аптеки', sight:'Достопримечательности', other:'Прочее' };
+      var catIcons = {
+        cafe: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>',
+        shop: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>',
+        pharm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
+        sight: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
+        other: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>'
+      };
+      var cats = Object.keys(categories);
+      nearbyEl.innerHTML =
+        '<div class="nearby-tabs">' + cats.map(function(cat, i){
+          return '<button class="nearby-tab'+(i===0?' active':'')+'" onclick="switchNearbyTab(this,\'nearby-panel-'+cat+'\')">'+( catNames[cat]||cat)+'</button>';
+        }).join('') + '</div>' +
+        cats.map(function(cat, i){
+          return '<div class="nearby-panel'+(i===0?' active':'')+'" id="nearby-panel-'+cat+'">' +
+            categories[cat].map(function(item){
+              return '<div class="nearby-item"><div class="nearby-icon">'+(catIcons[cat]||catIcons.other)+'</div><div><div class="nearby-name">'+item.name+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
+            }).join('') +
+          '</div>';
+        }).join('');
+    }
+  }
+
+  // ── КАК ДОБРАТЬСЯ ──
+  var directionsEl = document.getElementById('directions-list');
+  if (directionsEl && prop.directions) {
+    var directions;
+    try { directions = typeof prop.directions === 'string' ? JSON.parse(prop.directions) : prop.directions; } catch(e) { directions = []; }
+    if (directions && directions.length) {
+      var dirIcons = {
+        plane: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>',
+        bus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4"/><line x1="3" y1="15" x2="21" y2="15"/></svg>',
+        train: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="13" rx="2"/><path d="M16 17l3 4"/><path d="M8 17l-3 4"/><path d="M1 10h22"/></svg>',
+        car: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="15" height="13"/><polygon points="16 8 20 8 23 11 23 16 16 16 16 8"/><circle cx="5.5" cy="18.5" r="2.5"/><circle cx="18.5" cy="18.5" r="2.5"/></svg>'
+      };
+      directionsEl.innerHTML = directions.map(function(item){
+        var icon = dirIcons[item.icon] || dirIcons.car;
+        return '<div class="nearby-item"><div class="nearby-icon">'+icon+'</div><div><div class="nearby-name">'+item.name+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
+      }).join('');
+    }
+  }
+}
+
+function switchNearbyTab(btn, panelId) {
+  var container = btn.closest('.section-block') || document.getElementById('nearby-container');
+  if (!container) return;
+  container.querySelectorAll('.nearby-tab').forEach(function(t){ t.classList.remove('active'); });
+  container.querySelectorAll('.nearby-panel').forEach(function(p){ p.classList.remove('active'); });
+  btn.classList.add('active');
+  var panel = document.getElementById(panelId);
+  if (panel) panel.classList.add('active');
+}
+
+var AMENITY_ICONS = {
+  'wi-fi': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.55a11 11 0 0 1 14.08 0"/><path d="M1.42 9a16 16 0 0 1 21.16 0"/><path d="M8.53 16.11a6 6 0 0 1 6.95 0"/><line x1="12" y1="20" x2="12.01" y2="20"/></svg>',
+  'парковка': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 17V7h4a3 3 0 0 1 0 6H9"/></svg>',
+  'кухня': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6l-2 2"/><circle cx="10" cy="14" r="6"/></svg>',
+  'стиральная': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>',
+  'кондиционер': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>',
+  'телевизор': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="15" rx="2"/><polyline points="17 2 12 7 7 2"/></svg>',
+  'заезд': '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>'
+};
+
+function getAmenityIcon(item) {
+  var lower = item.toLowerCase();
+  for (var key in AMENITY_ICONS) {
+    if (lower.indexOf(key) !== -1) return AMENITY_ICONS[key];
+  }
+  return '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>';
 }
 
 function loadPropData() {
