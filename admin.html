@@ -407,7 +407,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div class="topbar-right">
       <button class="btn btn-outline" id="topbar-secondary" onclick="topbarSecondary()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        PDF-отчёт
+        Экспорт в Excel
       </button>
       <button class="btn btn-primary" id="topbar-primary" onclick="topbarPrimary()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
@@ -767,52 +767,77 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-dashboard">
       <!-- Фильтр периода -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px">
-        <select id="dash-period" class="period-select" onchange="updateDashboard()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none;font-family:DM Sans,sans-serif">
-        </select>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <select id="dash-period" class="period-select" onchange="updateDashboard()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none;font-family:DM Sans,sans-serif"></select>
         <span id="dash-period-label" style="font-size:13px;color:var(--muted)"></span>
       </div>
 
-      <div class="stats-grid">
+      <!-- КАРТОЧКИ СТАТИСТИКИ -->
+      <div class="stats-grid" style="margin-bottom:16px">
         <div class="stat-card">
-          <div class="stat-card-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
-            <span id="dash-income-label">Доход</span>
-          </div>
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg><span id="dash-income-label">Доход</span></div>
           <div class="stat-card-icon si-teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg></div>
           <div class="stat-card-value" id="dash-income">— ₽</div>
           <div class="stat-card-sub" id="dash-income-sub">подтверждённые брони</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
-            Занятость
-          </div>
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Расходы</div>
+          <div class="stat-card-icon si-warning"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-card-value" id="dash-expenses-val">— ₽</div>
+          <div class="stat-card-sub" id="dash-expenses-sub">за период</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>Прибыль</div>
+          <div class="stat-card-icon si-mint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg></div>
+          <div class="stat-card-value" id="dash-profit">— ₽</div>
+          <div class="stat-card-sub" id="dash-profit-sub">доход минус расходы</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>Занятость</div>
           <div class="stat-card-icon si-indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg></div>
           <div class="stat-card-value" id="dash-occ">—%</div>
           <div class="stat-card-sub" id="dash-occ-sub">ночей занято</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            Бронирований
-          </div>
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>Бронирований</div>
           <div class="stat-card-icon si-mint"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg></div>
           <div class="stat-card-value" id="dash-bookings">—</div>
-          <div class="stat-card-sub" id="dash-bookings-sub">в выбранном периоде</div>
+          <div class="stat-card-sub" id="dash-bookings-sub">в периоде</div>
         </div>
         <div class="stat-card">
-          <div class="stat-card-label">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
-            Отменено
-          </div>
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>Средний чек</div>
+          <div class="stat-card-icon si-teal"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg></div>
+          <div class="stat-card-value" id="dash-avg">— ₽</div>
+          <div class="stat-card-sub" id="dash-avg-sub">за бронь</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>Ср. длина пребывания</div>
+          <div class="stat-card-icon si-indigo"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg></div>
+          <div class="stat-card-value" id="dash-avg-nights">—</div>
+          <div class="stat-card-sub">ночей на бронь</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-card-label"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="var(--muted)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg>Отменено</div>
           <div class="stat-card-icon si-warning"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="15" y1="9" x2="9" y2="15"/><line x1="9" y1="9" x2="15" y2="15"/></svg></div>
           <div class="stat-card-value" id="dash-cancelled">—</div>
           <div class="stat-card-sub" id="dash-cancelled-sub">отменённых броней</div>
         </div>
       </div>
 
+      <!-- ГРАФИКИ -->
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
+        <!-- График выручки по месяцам -->
+        <div class="dash-card" style="grid-column:1/-1">
+          <div class="dash-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/></svg>
+            Выручка по месяцам — последние 6 месяцев
+          </div>
+          <div id="dash-revenue-chart" style="padding:8px 0"></div>
+        </div>
+      </div>
+
       <div class="dash-grid">
+        <!-- По объектам -->
         <div class="dash-card">
           <div class="dash-card-title">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/></svg>
@@ -820,7 +845,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
           </div>
           <div id="dash-by-obj"></div>
         </div>
+
+        <!-- Расходы по категориям -->
         <div class="dash-card">
+          <div class="dash-card-title">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+            Расходы по категориям
+          </div>
+          <div id="dash-expenses-cats"></div>
+        </div>
+
+        <!-- Ближайшие заезды -->
+        <div class="dash-card" style="grid-column:1/-1">
           <div class="dash-card-title">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
             Ближайшие заезды
@@ -1338,7 +1374,7 @@ function topbarPrimary() {
   else if (currentPage === 'supplies') openAddSupply();
   else if (currentPage === 'expenses') { showPage('expenses'); }
 }
-function topbarSecondary() { showToast('PDF-отчёт формируется...'); }
+function topbarSecondary() { exportToExcel(); }
 
 // ── MOBILE SIDEBAR ──
 function toggleSidebar() {
@@ -2296,104 +2332,184 @@ function updateDashboard() {
   var parts = period.split('-');
   var year = parseInt(parts[0]), month = parseInt(parts[1]);
   var daysInMonth = new Date(year, month, 0).getDate();
-  var monthStart = period + '-01';
-  var monthEnd = period + '-' + String(daysInMonth).padStart(2,'0');
-
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   document.getElementById('dash-income-label').textContent = 'Доход — ' + monthNames[month];
 
-  // Фильтруем бронирования периода (не заблокированные)
   var periodBookings = bookings.filter(function(b) {
     return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
   });
 
-  // Доход — только подтверждённые и завершённые
-  var income = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; })
-    .reduce(function(s,b){return s+b.amount;},0);
+  // Доход
+  var confirmedB = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; });
+  var income = confirmedB.reduce(function(s,b){ return s+b.amount; }, 0);
   document.getElementById('dash-income').textContent = income.toLocaleString('ru') + ' ₽';
-  var confirmedCount = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).length;
-  document.getElementById('dash-income-sub').textContent = confirmedCount + ' подтверждённых броней';
+  document.getElementById('dash-income-sub').textContent = confirmedB.length + ' подтверждённых броней';
 
-  // Занятость — считаем занятые ночи (confirmed + blocked) за месяц по обоим объектам
-  var occupiedNights = {1:0, 2:0};
+  // Расходы за период
+  var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
+  var totalExpenses = periodExpenses.reduce(function(s,e){ return s + parseInt(e.amount||0); }, 0);
+  document.getElementById('dash-expenses-val').textContent = totalExpenses.toLocaleString('ru') + ' ₽';
+  document.getElementById('dash-expenses-sub').textContent = periodExpenses.length + ' расходов за период';
+
+  // Прибыль
+  var profit = income - totalExpenses;
+  document.getElementById('dash-profit').textContent = profit.toLocaleString('ru') + ' ₽';
+  document.getElementById('dash-profit').style.color = profit >= 0 ? 'var(--teal)' : 'var(--danger)';
+  document.getElementById('dash-profit-sub').textContent = profit >= 0 ? 'доход минус расходы' : 'убыток за период';
+
+  // Занятость
+  var objIds = Object.keys(promoObjNames).map(Number);
+  var occupiedNights = {};
+  objIds.forEach(function(id){ occupiedNights[id] = 0; });
   bookings.forEach(function(b) {
     if (b.status!=='confirmed' && b.status!=='blocked') return;
     if (!b.in || !b.out) return;
-    var d = new Date(b.in); var end = new Date(b.out);
+    var d = new Date(b.in), end = new Date(b.out);
     var obj = parseInt(b.obj)||1;
     while(d < end) {
-      var k = d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
-      if (k === period) { occupiedNights[obj]=(occupiedNights[obj]||0)+1; }
+      if (d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0') === period) {
+        occupiedNights[obj] = (occupiedNights[obj]||0) + 1;
+      }
       d.setDate(d.getDate()+1);
     }
   });
-  var totalOcc = (occupiedNights[1]||0) + (occupiedNights[2]||0);
-  var totalPossible = daysInMonth * 2; // 2 объекта
+  var totalOcc = objIds.reduce(function(s,id){ return s+(occupiedNights[id]||0); }, 0);
+  var totalPossible = daysInMonth * Math.max(objIds.length, 1);
   var occPct = Math.round(totalOcc / totalPossible * 100);
   document.getElementById('dash-occ').textContent = occPct + '%';
   document.getElementById('dash-occ-sub').textContent = totalOcc + ' из ' + totalPossible + ' ночей';
 
-  // Счётчик бронирований
+  // Бронирований
   document.getElementById('dash-bookings').textContent = periodBookings.length;
-  var upcoming = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='new'; }).length;
-  document.getElementById('dash-bookings-sub').textContent = upcoming + ' активных';
+  document.getElementById('dash-bookings-sub').textContent = confirmedB.length + ' активных';
+
+  // Средний чек
+  var avgCheck = confirmedB.length ? Math.round(income / confirmedB.length) : 0;
+  document.getElementById('dash-avg').textContent = avgCheck.toLocaleString('ru') + ' ₽';
+  document.getElementById('dash-avg-sub').textContent = 'за ' + confirmedB.length + ' броней';
+
+  // Средняя длина пребывания
+  var totalNightsAll = confirmedB.reduce(function(s,b){
+    return s + (b.in && b.out ? Math.round((new Date(b.out)-new Date(b.in))/86400000) : 0);
+  }, 0);
+  var avgNights = confirmedB.length ? (totalNightsAll / confirmedB.length).toFixed(1) : '—';
+  document.getElementById('dash-avg-nights').textContent = avgNights;
 
   // Отменённые
   var cancelled = periodBookings.filter(function(b){ return b.status==='cancelled'; }).length;
   document.getElementById('dash-cancelled').textContent = cancelled;
   document.getElementById('dash-cancelled-sub').textContent = cancelled > 0 ? 'потеряно броней' : 'отлично!';
 
-  // По объектам
-  var objData = {
-    '1': { name:'Балтийский бриз', color:'var(--teal)', nights:occupiedNights[1]||0, income:0 },
-    '2': { name:'Янтарный закат', color:'var(--indigo)', nights:occupiedNights[2]||0, income:0 }
-  };
-  periodBookings.forEach(function(b) {
-    if(b.status==='confirmed'||b.status==='done') {
-      if(objData[b.obj]) objData[b.obj].income += b.amount;
-    }
-  });
-  var objHtml = Object.keys(objData).map(function(id) {
-    var o = objData[id];
-    var pct = Math.round(o.nights / daysInMonth * 100);
+  // По объектам — динамически
+  var objColors = ['var(--teal)','var(--indigo)','var(--warning)','#9b6bb5'];
+  var objHtml = objIds.map(function(id, i) {
+    var name = promoObjNames[String(id)] || ('Объект ' + id);
+    var color = objColors[i % objColors.length];
+    var nights = occupiedNights[id] || 0;
+    var pct = Math.round(nights / daysInMonth * 100);
+    var objIncome = 0;
+    confirmedB.forEach(function(b){ if(parseInt(b.obj)===id) objIncome += b.amount; });
     return '<div class="obj-row">' +
-      '<div class="obj-row-dot" style="background:'+o.color+'"></div>' +
-      '<div class="obj-row-name">'+o.name+'</div>' +
-      '<div class="obj-row-stat">'+o.nights+' '+nightWord(o.nights)+' · '+pct+'%</div>' +
-      '<div class="obj-row-income">'+o.income.toLocaleString('ru')+' ₽</div>' +
-      '</div>';
+      '<div class="obj-row-dot" style="background:'+color+'"></div>' +
+      '<div class="obj-row-name">'+name+'</div>' +
+      '<div class="obj-row-stat">'+nights+' '+nightWord(nights)+' · '+pct+'%</div>' +
+      '<div class="obj-row-income">'+objIncome.toLocaleString('ru')+' ₽</div>' +
+    '</div>';
   }).join('');
   document.getElementById('dash-by-obj').innerHTML = objHtml || '<div style="color:var(--muted);font-size:13px;padding:12px 0">Нет данных</div>';
 
-  // Ближайшие заезды — следующие 30 дней
+  // Расходы по категориям
+  var catTotals = {};
+  periodExpenses.forEach(function(e){
+    var cat = e.category || 'other';
+    catTotals[cat] = (catTotals[cat]||0) + parseInt(e.amount||0);
+  });
+  var catLabels = { cleaning:'Клининг', supplies:'Расходники', repair:'Ремонт', utilities:'Коммунальные', other:'Прочее' };
+  var catColors2 = { cleaning:'#3E7057', supplies:'#5269AB', repair:'#E09A2B', utilities:'#5A84A1', other:'#AFB9D0' };
+  var catHtml = Object.keys(catTotals).length ? Object.keys(catTotals).sort(function(a,b){ return catTotals[b]-catTotals[a]; }).map(function(cat){
+    var pct = totalExpenses ? Math.round(catTotals[cat]/totalExpenses*100) : 0;
+    var color = catColors2[cat] || '#AFB9D0';
+    return '<div style="margin-bottom:10px">' +
+      '<div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:4px">' +
+        '<span style="color:var(--charcoal);font-weight:500">'+(catLabels[cat]||cat)+'</span>' +
+        '<span style="color:var(--muted)">'+catTotals[cat].toLocaleString('ru')+' ₽ · '+pct+'%</span>' +
+      '</div>' +
+      '<div style="height:6px;background:var(--silver);border-radius:3px;overflow:hidden">' +
+        '<div style="height:100%;width:'+pct+'%;background:'+color+';border-radius:3px;transition:width 0.4s"></div>' +
+      '</div>' +
+    '</div>';
+  }).join('') : '<div style="color:var(--muted);font-size:13px;padding:12px 0">Нет расходов за период</div>';
+  document.getElementById('dash-expenses-cats').innerHTML = catHtml;
+
+  // Ближайшие заезды
   var today = new Date(); today.setHours(0,0,0,0);
   var in30 = new Date(today.getTime() + 30*86400000);
   var monNames = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
   var statusLabels = { new:'Новая', confirmed:'Подтверждена', pending:'На рассмотрении' };
   var statusColors = { new:'var(--indigo)', confirmed:'var(--teal)', pending:'var(--warning)' };
-
   var upcoming2 = bookings.filter(function(b) {
     if (!b.in || b.status==='cancelled'||b.status==='done'||b.status==='blocked') return false;
     var d = new Date(b.in);
     return d >= today && d <= in30;
-  }).sort(function(a,b){ return new Date(a.in)-new Date(b.in); }).slice(0,5);
+  }).sort(function(a,b){ return new Date(a.in)-new Date(b.in); }).slice(0,6);
 
-  if (upcoming2.length) {
-    document.getElementById('dash-upcoming').innerHTML = upcoming2.map(function(b) {
-      var d = new Date(b.in);
-      var nights = Math.round((new Date(b.out)-new Date(b.in))/86400000);
-      var sLabel = statusLabels[b.status]||b.status;
-      var sColor = statusColors[b.status]||'var(--muted)';
-      return '<div class="upcoming-item">' +
-        '<div class="upcoming-date"><div class="upcoming-date-day">'+d.getDate()+'</div><div class="upcoming-date-mon">'+monNames[d.getMonth()]+'</div></div>' +
-        '<div class="upcoming-info">' +
-          '<div class="upcoming-name">'+b.name+' <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:'+sColor+';opacity:0.9;color:white;margin-left:6px">'+sLabel+'</span></div>' +
-          '<div class="upcoming-meta">'+b.objName+' · '+nights+' '+nightWord(nights)+' · '+b.amount.toLocaleString('ru')+' ₽</div>' +
-        '</div></div>';
-    }).join('');
-  } else {
-    document.getElementById('dash-upcoming').innerHTML = '<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center">Нет ближайших заездов</div>';
+  document.getElementById('dash-upcoming').innerHTML = upcoming2.length ? upcoming2.map(function(b) {
+    var d = new Date(b.in);
+    var nights = Math.round((new Date(b.out)-new Date(b.in))/86400000);
+    return '<div class="upcoming-item">' +
+      '<div class="upcoming-date"><div class="upcoming-date-day">'+d.getDate()+'</div><div class="upcoming-date-mon">'+monNames[d.getMonth()]+'</div></div>' +
+      '<div class="upcoming-info">' +
+        '<div class="upcoming-name">'+b.name+' <span style="font-size:11px;padding:2px 8px;border-radius:20px;background:'+(statusColors[b.status]||'var(--muted)')+';color:white;margin-left:6px">'+(statusLabels[b.status]||b.status)+'</span></div>' +
+        '<div class="upcoming-meta">'+(b.objName||'—')+' · '+nights+' '+nightWord(nights)+' · '+b.amount.toLocaleString('ru')+' ₽</div>' +
+      '</div></div>';
+  }).join('') : '<div style="color:var(--muted);font-size:13px;padding:16px 0;text-align:center">Нет ближайших заездов</div>';
+
+  // График выручки по месяцам
+  renderRevenueChart();
+}
+
+function renderRevenueChart() {
+  var chart = document.getElementById('dash-revenue-chart');
+  if (!chart) return;
+
+  // Последние 6 месяцев
+  var months = [];
+  var now = new Date();
+  for (var i = 5; i >= 0; i--) {
+    var d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0'));
   }
+
+  var monthNames6 = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  var data = months.map(function(m) {
+    var income = bookings.filter(function(b){
+      return (b.status==='confirmed'||b.status==='done') && b.in && b.in.substr(0,7)===m;
+    }).reduce(function(s,b){ return s+b.amount; }, 0);
+    var exp = expenses.filter(function(e){ return (e.date||'').substr(0,7)===m; })
+      .reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
+    var parts = m.split('-');
+    return { month: m, label: monthNames6[parseInt(parts[1])-1]+' '+parts[0].substr(2), income: income, expenses: exp, profit: income - exp };
+  });
+
+  var maxVal = Math.max.apply(null, data.map(function(d){ return Math.max(d.income, d.expenses); }).concat([1]));
+
+  chart.innerHTML = '<div style="display:flex;align-items:flex-end;gap:8px;height:140px;padding:0 4px">' +
+    data.map(function(d) {
+      var incH = Math.round(d.income / maxVal * 120);
+      var expH = Math.round(d.expenses / maxVal * 120);
+      return '<div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:4px">' +
+        '<div style="display:flex;align-items:flex-end;gap:3px;height:120px">' +
+          '<div title="Доход: '+d.income.toLocaleString('ru')+' ₽" style="width:14px;height:'+Math.max(incH,2)+'px;background:var(--teal);border-radius:4px 4px 0 0;opacity:0.85;transition:height 0.4s;cursor:default"></div>' +
+          '<div title="Расходы: '+d.expenses.toLocaleString('ru')+' ₽" style="width:14px;height:'+Math.max(expH,2)+'px;background:var(--warning);border-radius:4px 4px 0 0;opacity:0.7;transition:height 0.4s;cursor:default"></div>' +
+        '</div>' +
+        '<div style="font-size:10px;color:var(--muted);text-align:center">'+d.label+'</div>' +
+      '</div>';
+    }).join('') +
+  '</div>' +
+  '<div style="display:flex;gap:16px;margin-top:12px;padding:0 4px">' +
+    '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:var(--teal);opacity:0.85"></div>Доход</div>' +
+    '<div style="display:flex;align-items:center;gap:6px;font-size:12px;color:var(--muted)"><div style="width:10px;height:10px;border-radius:3px;background:var(--warning);opacity:0.7"></div>Расходы</div>' +
+  '</div>';
 }
 
 // ── PROMO ──
@@ -2788,6 +2904,83 @@ function deleteObject(id) {
       if (d.ok) { showToast('Объект удалён'); loadObjectsPage(); }
       else { showToast('Ошибка: ' + (d.error||'неизвестно')); }
     }).catch(function(){ showToast('Ошибка сети'); });
+}
+
+// ── EXCEL EXPORT ──
+function exportToExcel() {
+  var sel = document.getElementById('dash-period');
+  var period = sel ? sel.value : '';
+  if (!period) {
+    var now = new Date();
+    period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  }
+
+  var periodBookings = bookings.filter(function(b){
+    return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
+  });
+
+  if (!periodBookings.length) { showToast('Нет данных за выбранный период'); return; }
+
+  var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var parts = period.split('-');
+  var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
+
+  // Строим CSV
+  var rows = [['Дата заезда','Дата выезда','Ночей','Гость','Телефон','Объект','Гостей','Сумма (₽)','Статус','Комментарий']];
+  periodBookings.forEach(function(b){
+    var nights = b.in && b.out ? Math.round((new Date(b.out)-new Date(b.in))/86400000) : 0;
+    var statuses = { new:'Новая', confirmed:'Подтверждена', pending:'Ожидает', cancelled:'Отменена', done:'Завершена', blocked:'Закрыто' };
+    rows.push([
+      b.in||'', b.out||'', nights,
+      b.name||'', b.phone||'',
+      b.objName||promoObjNames[String(b.obj)]||('Объект '+b.obj),
+      b.guests||'', b.amount||0,
+      statuses[b.status]||b.status,
+      b.comment||''
+    ]);
+  });
+
+  // Итого
+  var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; })
+    .reduce(function(s,b){ return s+b.amount; }, 0);
+  rows.push([]);
+  rows.push(['','','','','','','','Итого (подтверждённые):', totalIncome + ' ₽', '']);
+
+  // Расходы за период
+  var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
+  if (periodExpenses.length) {
+    rows.push([]);
+    rows.push(['РАСХОДЫ','','','','','','','','','']);
+    rows.push(['Дата','Категория','Описание','Объект','Сумма (₽)','','','','','']);
+    periodExpenses.forEach(function(e){
+      var catLabels = { cleaning:'Клининг', supplies:'Расходники', repair:'Ремонт', utilities:'Коммунальные', other:'Прочее' };
+      rows.push([e.date||'', catLabels[e.category]||e.category||'', e.description||'', promoObjNames[String(e.obj_id)]||('Объект '+(e.obj_id||1)), e.amount||0,'','','','','']);
+    });
+    var totalExp = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
+    rows.push(['','','','Итого расходов:', totalExp + ' ₽','','','','','']);
+    rows.push(['','','','Прибыль:', (totalIncome - totalExp) + ' ₽','','','','','']);
+  }
+
+  var csvContent = '\uFEFF' + rows.map(function(row){
+    return row.map(function(cell){
+      var s = String(cell);
+      if (s.indexOf(',')!==-1 || s.indexOf('"')!==-1 || s.indexOf('\n')!==-1) {
+        s = '"' + s.replace(/"/g,'""') + '"';
+      }
+      return s;
+    }).join(',');
+  }).join('\n');
+
+  var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  var url = URL.createObjectURL(blob);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = 'baltika_' + period + '.csv';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  showToast('Файл скачан: baltika_' + period + '.csv');
 }
 
 // ── GUESTS ──
