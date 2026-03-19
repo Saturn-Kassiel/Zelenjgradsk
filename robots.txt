@@ -1,5 +1,0 @@
-User-agent: *
-Allow: /
-Disallow: /admin.html
-
-Sitemap: https://saturn-kassiel.github.io/Zelenjgradsk/sitemap.xml
