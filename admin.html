@@ -940,26 +940,123 @@ function driveDirectUrl(url) {
 
 var API = APPS_URL;
 
+// ── Маппинг полей из БД в старый формат (для совместимости с остальным кодом) ──
+function normalizeRow(sheet, row) {
+  if (sheet === 'bookings') {
+    return {
+      id: String(row.id),
+      obj_id: String(row.obj_id||'1'),
+      name: row.name||'',
+      phone: row.phone||'',
+      date_in: row.date_in ? String(row.date_in).substr(0,10) : '',
+      date_out: row.date_out ? String(row.date_out).substr(0,10) : '',
+      guests: row.guests||2,
+      amount: row.amount||0,
+      status: row.status||'new',
+      comment: row.comment||'',
+      token: row.token||''
+    };
+  }
+  if (sheet === 'expenses') {
+    return {
+      id: String(row.id),
+      obj_id: String(row.obj_id||'1'),
+      category: row.category||'',
+      description: row.description||'',
+      amount: row.amount||0,
+      date: row.expense_date ? String(row.expense_date).substr(0,10) : ''
+    };
+  }
+  if (sheet === 'supplies') {
+    return {
+      id: String(row.id),
+      obj_id: String(row.obj_id||'1'),
+      item: row.item||'',
+      quantity: row.quantity||0,
+      unit: row.unit||'шт',
+      status: row.status||'needed',
+      date: row.supply_date ? String(row.supply_date).substr(0,10) : ''
+    };
+  }
+  if (sheet === 'cleaning') {
+    return {
+      id: String(row.id),
+      obj_id: String(row.obj_id||'1'),
+      date: row.cleaning_date ? String(row.cleaning_date).substr(0,10) : '',
+      status: row.status||'scheduled',
+      notes: row.notes||''
+    };
+  }
+  if (sheet === 'promo') {
+    return {
+      id: String(row.id),
+      obj_id: String(row.obj_id||'1'),
+      price: row.price||0,
+      date_from: row.date_from ? String(row.date_from).substr(0,10) : '',
+      date_to: row.date_to ? String(row.date_to).substr(0,10) : '',
+      label: row.label||'',
+      active: row.active ? 'true' : 'false'
+    };
+  }
+  return row;
+}
+
 function apiRead(sheet, callback) {
-  fetch(API + '?sheet=' + sheet)
+  fetch(API + '/' + sheet)
     .then(function(r){ return r.json(); })
     .then(function(d){
-      var data = (d.data || []).map(function(row) {
-        var clean = {};
-        Object.keys(row).forEach(function(k){ clean[k.trim()] = row[k]; });
-        return clean;
-      });
+      var data = (d.data || []).map(function(row){ return normalizeRow(sheet, row); });
       callback(data);
     })
     .catch(function(){ callback([]); });
 }
 
 function apiWrite(action, sheet, row, id, callback) {
-  var body = { action: action, sheet: sheet, row: row };
-  if (id !== undefined) body.id = id;
-  fetch(API, {
-    method: 'POST',
-    body: JSON.stringify(body)
+  var method, url, body;
+
+  if (sheet === 'bookings') {
+    if (action === 'append') {
+      method = 'POST'; url = API + '/bookings';
+      body = { obj_id: row[1], name: row[2], phone: row[3], date_in: row[4], date_out: row[5], guests: row[6], amount: row[7], status: row[8]||'new', comment: row[9]||'' };
+    } else if (action === 'update') {
+      method = 'PUT'; url = API + '/bookings/' + id;
+      body = { obj_id: row[1], name: row[2], phone: row[3], date_in: row[4], date_out: row[5], guests: row[6], amount: row[7], status: row[8], comment: row[9]||'' };
+    } else if (action === 'delete') {
+      method = 'DELETE'; url = API + '/bookings/' + id; body = {};
+    }
+  } else if (sheet === 'expenses') {
+    if (action === 'append') {
+      method = 'POST'; url = API + '/expenses';
+      body = { obj_id: row[1], category: row[2], description: row[3], amount: row[4], expense_date: row[5] };
+    } else if (action === 'delete') {
+      method = 'DELETE'; url = API + '/expenses/' + id; body = {};
+    }
+  } else if (sheet === 'supplies') {
+    if (action === 'append') {
+      method = 'POST'; url = API + '/supplies';
+      body = { obj_id: row[1], item: row[2], quantity: row[3], unit: row[4], status: row[5]||'needed', supply_date: row[6] };
+    } else if (action === 'update') {
+      method = 'PUT'; url = API + '/supplies/' + id;
+      body = { obj_id: row[1], item: row[2], quantity: row[3], unit: row[4], status: row[5], supply_date: row[6] };
+    } else if (action === 'delete') {
+      method = 'DELETE'; url = API + '/supplies/' + id; body = {};
+    }
+  } else if (sheet === 'cleaning') {
+    if (action === 'append') {
+      method = 'POST'; url = API + '/cleaning';
+      body = { obj_id: row[1], cleaning_date: row[2], status: row[3]||'scheduled', notes: row[4]||'' };
+    } else if (action === 'update') {
+      method = 'PATCH'; url = API + '/cleaning/' + id;
+      body = { status: row[3] };
+    }
+  }
+
+  if (!method) { if (callback) callback({ ok: false, error: 'Unknown action' }); return; }
+
+  fetch(url, {
+    method: method,
+    headers: { 'Content-Type': 'application/json' },
+    body: method !== 'DELETE' ? JSON.stringify(body) : undefined
   })
   .then(function(r){ return r.json(); })
   .then(function(d){ if (callback) callback(d); })
@@ -1324,10 +1421,10 @@ function confirmMemo() {
     '\nВыезд: ' + checkoutFormatted +
     '\nСсылка для гостя:\n' + accessUrl;
 
-  fetch(API, {
+  fetch(API + '/memo', {
     method: 'POST',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({action: 'saveToken', bookingId: m.bookingId, token: token, memoText: memoText})
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ booking_id: m.bookingId, token: token, memo_text: memoText })
   }).then(function(r){ return r.json(); })
     .then(function(d){
       if (d && d.ok) { showToast('Памятка отправлена в Telegram! Перешлите гостю.'); loadBookings(); }
@@ -2185,8 +2282,8 @@ function savePromo() {
   var label = type==='special' ? (document.getElementById('promo-label').value||'') : '';
   var row = [true, obj, price, from, to, label];
 
-  var body = { action: 'updateRow', sheet: 'promo', row: row, rowNum: 2 };
-  fetch(API, { method: 'POST', body: JSON.stringify(body) })
+  var body = { obj_id: obj, price: price, date_from: from, date_to: to, label: label };
+  fetch(API + '/promo', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d && d.ok) {
@@ -2307,9 +2404,10 @@ function loginSubmit() {
   err.style.display = 'none';
   btn.disabled = true;
   btn.textContent = 'Проверяем...';
-  fetch(API, {
+  fetch(API + '/auth', {
     method: 'POST',
-    body: JSON.stringify({ action: 'auth', password: pass })
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ password: pass })
   })
   .then(function(r){ return r.json(); })
   .then(function(d){
