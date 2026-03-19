@@ -1352,7 +1352,7 @@ function renderCards(props) {
   }
 
   // Загружаем бронирования ПЕРВЫМИ — рендер карточек только после
-  fetch(APPS_URL + '?sheet=bookings')
+  fetch(APPS_URL + '/bookings')
     .then(function(r){ return r.json(); })
     .then(function(d){
       (d.data||[]).forEach(function(b){
@@ -1465,7 +1465,7 @@ loadWeather();
 loadBookingsForCal();
 
 function loadPromo(allProps) {
-  fetch(APPS_URL + '?sheet=promo')
+  fetch(APPS_URL + '/promo')
     .then(function(r){ return r.json(); })
     .then(function(d){
       var rows = (d.data||[]).map(function(row){
@@ -1592,7 +1592,7 @@ var calData = {
 
 // Загружаем бронирования сразу для блокировки дат в форме
 function loadBookingsForCal() {
-  fetch(APPS_URL + '?sheet=bookings')
+  fetch(APPS_URL + '/bookings')
     .then(function(r){ return r.json(); })
     .then(function(d){
       (d.data||[]).forEach(function(b){
@@ -1927,7 +1927,7 @@ function gParseDate(val) {
 }
 
 function loadGPromo() {
-  fetch(APPS_URL + '?sheet=promo')
+  fetch(APPS_URL + '/promo')
     .then(function(r){return r.json();})
     .then(function(d){
       var rows=(d.data||[]).map(function(row){var c={};Object.keys(row).forEach(function(k){c[k.trim()]=row[k];});return c;})
@@ -2017,7 +2017,11 @@ function submitForm() {
   var id = Date.now();
   var row = [id, obj.value, name.value.trim(), phone.value.trim(), checkin.value, checkout, guests, 0, 'new', comment];
 
-  fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
+  fetch(APPS_URL + '/bookings', {
+    method:'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ obj_id: row[1], name: row[2], phone: row[3], date_in: row[4], date_out: row[5], guests: row[6], amount: row[7], status: 'new', comment: row[9]||'' })
+  })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d && d.ok) {
@@ -2366,15 +2370,10 @@ async function cwSend() {
     var dialogLines = cwHistory.slice(-10).map(function(m) {
       return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
     }).join('\n');
-    fetch(APPS_URL, {
+    fetch(APPS_URL + '/contact', {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
-    }).catch(function(){});
-    fetch(APPS_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({action: 'append', sheet: 'contacts', row: [new Date().toLocaleDateString('ru-RU'), new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), text, dialogLines]})
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({contact: text, dialog: dialogLines})
     }).catch(function(){});
     return;
   }
@@ -2386,11 +2385,10 @@ async function cwSend() {
   }
   cwTyping();
   try {
-    var res = await fetch(APPS_URL, {
+    var res = await fetch(APPS_URL + '/chat', {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      redirect: 'follow',
-      body: JSON.stringify({action: 'chat', messages: cwHistory})
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({messages: cwHistory, session_id: 'index_' + Date.now()})
     });
     var rawText = await res.text();
     var data;
@@ -2417,18 +2415,7 @@ async function cwSend() {
       }, 600);
     }
 
-    // Логирование диалога в таблицу
-    var now = new Date();
-    var dateStr = now.toLocaleDateString('ru-RU');
-    var timeStr = now.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-    fetch(APPS_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'append',
-        sheet: 'chats',
-        row: [dateStr, timeStr, text, data.reply, cwHistory.length]
-      })
-    }).catch(function(){});
+    // Логирование теперь на сервере
   } catch(e) {
     cwRemoveTyping();
     cwAddMsg('Что-то пошло не так. Попробуйте чуть позже.', 'bot');
