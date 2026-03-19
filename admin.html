@@ -1213,6 +1213,19 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <div id="directions-editor" style="display:flex;flex-direction:column;gap:8px"></div>
     </div>
 
+    <!-- КАСТОМНЫЕ РАЗДЕЛЫ -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/><line x1="3" y1="6" x2="3.01" y2="6"/><line x1="3" y1="12" x2="3.01" y2="12"/><line x1="3" y1="18" x2="3.01" y2="18"/></svg>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Дополнительные разделы</span>
+        </div>
+        <button onclick="addCustomSection()" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px solid var(--teal);border-radius:20px;padding:4px 12px;cursor:pointer">+ Новый раздел</button>
+      </div>
+      <div id="sections-editor" style="display:flex;flex-direction:column;gap:12px"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Добавляйте любые разделы: Театры, Пляжи, Рестораны и т.д.</div>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <button class="btn btn-outline" style="justify-content:center;padding:13px" onclick="closeModal('modal-object')">Отмена</button>
       <button class="btn btn-primary" style="justify-content:center;padding:13px" onclick="saveObject()">
@@ -2834,6 +2847,85 @@ document.addEventListener('click', function(e) {
   );
 });
 
+// ── CUSTOM SECTIONS ──
+function sectionHtml(section) {
+  return '<div data-section style="background:var(--white);border-radius:12px;border:1px solid var(--silver);overflow:hidden">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg);border-bottom:1px solid var(--silver)">' +
+      '<input type="text" value="'+(section.title||'').replace(/"/g,'&quot;')+'" placeholder="Название раздела (напр: Театры)" data-field="title" style="font-family:Manrope,sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);border:none;background:transparent;outline:none;flex:1">' +
+      '<button onclick="deleteRowBtn(this)" style="width:28px;height:28px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)" title="Удалить раздел">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+      '</button>' +
+    '</div>' +
+    '<div style="padding:12px 14px">' +
+      '<div data-items style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">' +
+        (section.items||[]).map(function(item){ return sectionItemHtml(item); }).join('') +
+      '</div>' +
+      '<button onclick="addSectionItem(this)" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px dashed var(--teal);border-radius:8px;padding:6px 12px;cursor:pointer;width:100%">+ Добавить строку</button>' +
+    '</div>' +
+  '</div>';
+}
+
+function sectionItemHtml(item) {
+  var text = item || '';
+  var isAllow = text.startsWith('+');
+  var isDeny = text.startsWith('-');
+  var cleanText = text.replace(/^[+\-]\s*/, '').replace(/"/g, '&quot;');
+  return '<div data-item style="display:flex;align-items:center;gap:8px">' +
+    '<select data-field="type" style="font-size:11px;border:1.5px solid var(--silver);border-radius:8px;padding:5px 8px;background:white;cursor:pointer;outline:none;flex-shrink:0">' +
+      '<option value="neutral"'+(!isAllow&&!isDeny?' selected':'')+'>• Нейтральный</option>' +
+      '<option value="allow"'+(isAllow?' selected':'')+'>✓ Разрешено</option>' +
+      '<option value="deny"'+(isDeny?' selected':'')+'>✗ Запрещено</option>' +
+    '</select>' +
+    '<input type="text" value="'+cleanText+'" placeholder="Текст строки" data-field="text" style="flex:1;font-family:DM Sans,sans-serif;font-size:13px;border:1.5px solid var(--silver);border-radius:8px;padding:7px 10px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor=\'var(--teal)\'" onblur="this.style.borderColor=\'var(--silver)\'">' +
+    '<button onclick="deleteRowBtn(this)" style="width:28px;height:28px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
+      '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
+    '</button>' +
+  '</div>';
+}
+
+function addCustomSection() {
+  var el = document.getElementById('sections-editor');
+  var div = document.createElement('div');
+  div.innerHTML = sectionHtml({ title: '', items: [] });
+  el.appendChild(div.firstChild);
+  el.lastChild.querySelector('[data-field="title"]').focus();
+}
+
+function addSectionItem(btn) {
+  var itemsEl = btn.previousElementSibling;
+  var div = document.createElement('div');
+  div.innerHTML = sectionItemHtml('');
+  itemsEl.appendChild(div.firstChild);
+  itemsEl.lastChild.querySelector('[data-field="text"]').focus();
+}
+
+function getSectionsValues() {
+  var el = document.getElementById('sections-editor');
+  if (!el) return [];
+  return Array.from(el.querySelectorAll('[data-section]')).map(function(sec){
+    var title = sec.querySelector('[data-field="title"]').value.trim();
+    var items = Array.from(sec.querySelectorAll('[data-item]')).map(function(item){
+      var type = item.querySelector('[data-field="type"]').value;
+      var text = item.querySelector('[data-field="text"]').value.trim();
+      if (!text) return null;
+      var prefix = type === 'allow' ? '+ ' : type === 'deny' ? '- ' : '';
+      return prefix + text;
+    }).filter(Boolean);
+    return { title: title, items: items };
+  }).filter(function(s){ return s.title || s.items.length; });
+}
+
+function populateSectionsEditor(sections) {
+  var el = document.getElementById('sections-editor');
+  if (!el) return;
+  el.innerHTML = '';
+  (sections||[]).forEach(function(sec){
+    var div = document.createElement('div');
+    div.innerHTML = sectionHtml(sec);
+    el.appendChild(div.firstChild);
+  });
+}
+
 // ── OBJECT EDITORS ──
 function deleteRowBtn(el) { el.closest('[data-row]').remove(); }
 
@@ -2983,6 +3075,11 @@ function populateEditors(o) {
     div.innerHTML = directionRowHtml(item);
     drEl.appendChild(div.firstChild);
   });
+
+  // Кастомные разделы
+  var secs = [];
+  try { secs = typeof o.sections === 'string' ? JSON.parse(o.sections||'[]') : (o.sections||[]); } catch(e) {}
+  populateSectionsEditor(secs);
 }
 
 // ── OBJECTS ──
@@ -3079,6 +3176,7 @@ function saveObject() {
     rules: getEditorValues('rules-editor'),
     nearby: getNearbyValues(),
     directions: getDirectionValues(),
+    sections: getSectionsValues(),
     address: document.getElementById('obj-address').value.trim(),
     address_secret: document.getElementById('obj-address-secret').value.trim(),
     apt_number: document.getElementById('obj-apt-number').value.trim(),
