@@ -1111,7 +1111,7 @@ function loadBookings() {
   apiRead('bookings', function(data) {
     bookings = data.map(function(r) {
       var objId = String(r.obj_id||'1').trim();
-      var objName = objId==='1'?'Балтийский бриз':'Янтарный закат';
+      var objName = (promoObjNames && promoObjNames[objId]) || (objId==='1'?'Балтийский бриз':'Янтарный закат');
       var amt = String(r.amount||'0').replace(/\s/g,'').replace(',','.');
       return {
         id: String(r.id),
@@ -1124,7 +1124,8 @@ function loadBookings() {
         guests: parseInt(r.guests)||2,
         amount: Math.round(parseFloat(amt))||0,
         status: String(r.status||'new'),
-        comment: String(r.comment||'')
+        comment: String(r.comment||''),
+        token: String(r.token||'')
       };
     });
     calStatuses = {1:{},2:{}};
@@ -1221,7 +1222,7 @@ function renderBookings(filter, search) {
       '<td><span style="font-family:Manrope,sans-serif;font-weight:700">'+b.amount.toLocaleString('ru')+' ₽</span>'+(b.comment?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+b.comment+'</div>':'')+'</td>' +
       '<td><select class="status-select ss-'+b.status+'"'+(isDisabled?' disabled style="opacity:0.7;cursor:default"':'')+' onchange="changeStatus(\''+b.id+'\',this)">'+opts+'</select></td>' +
       '<td><div class="action-btns">' +
-        (b.status==='confirmed' ? '<button class="icon-btn" onclick="copyGuestLink(\''+b.id+'\',\''+b.obj+'\')" title="Ссылка для гостя"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10 13a5 5 0 0 0 7.54.54l3-3a5 5 0 0 0-7.07-7.07l-1.72 1.71"/><path d="M14 11a5 5 0 0 0-7.54-.54l-3 3a5 5 0 0 0 7.07 7.07l1.71-1.71"/></svg></button><button class="icon-btn" onclick="sendGuestMemo(\''+b.id+'\',\''+b.obj+'\',\''+b.name+'\',\''+b.in+'\')" title="Отправить памятку гостю" style="background:rgba(62,112,87,0.1);color:var(--teal)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>' : '') +
+        (b.status==='confirmed' ? '<button class="icon-btn" onclick="sendGuestMemo(\''+b.id+'\',\''+b.obj+'\',\''+b.name+'\',\''+b.in+'\',\''+b.token+'\')" title="Отправить памятку гостю" style="background:rgba(62,112,87,0.1);color:var(--teal)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>' : '') +
         '<button class="icon-btn" onclick="editBooking(\''+b.id+'\')" title="Редактировать"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
         '<button class="icon-btn danger" onclick="deleteBooking(\''+b.id+'\')" title="Удалить"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>' +
       '</div></td>';
@@ -1266,16 +1267,25 @@ function changeStatus(id, sel) {
   loadBookings();
 }
 
-function sendGuestMemo(bookingId, objId, guestName, checkinDate) {
-  if (!confirm('Отправить памятку гостю ' + guestName + '?')) return;
+function sendGuestMemo(bookingId, objId, guestName, checkinDate, existingToken) {
+  var isRepeat = existingToken && existingToken.trim() !== '';
+  var msg = 'Отправить памятку гостю ' + guestName + '?';
+  if (isRepeat) {
+    msg += '\n\n⚠️ Памятка уже отправлялась. Предыдущая ссылка станет недействительной.';
+  }
+  if (!confirm(msg)) return;
+
   var token = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
   var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html';
   var accessUrl = base + '?id=' + objId + '&token=' + token;
   var checkinFormatted = checkinDate ? checkinDate.split('-').reverse().join('.') : '—';
+  var objName = (promoObjNames && promoObjNames[String(objId)]) || ('Объект ' + objId);
 
-  var memoText = '🔑 Памятка для гостя ' + guestName + '\nЗаезд: ' + checkinFormatted + '\nСсылка для гостя:\n' + accessUrl;
+  var memoText = '🔑 Памятка для гостя ' + guestName +
+    '\nОбъект: ' + objName +
+    '\nЗаезд: ' + checkinFormatted +
+    '\nСсылка для гостя:\n' + accessUrl;
 
-  // Save token and send Telegram notification
   fetch(API, {
     method: 'POST',
     headers: {'Content-Type': 'text/plain'},
@@ -1284,12 +1294,12 @@ function sendGuestMemo(bookingId, objId, guestName, checkinDate) {
     .then(function(d){
       if (d && d.ok) {
         showToast('Памятка отправлена в Telegram! Перешлите гостю.');
+        loadBookings();
       } else {
         showToast('Ошибка: ' + (d && d.error ? d.error : 'неизвестно'));
       }
     }).catch(function(){ showToast('Ошибка сети'); });
 
-  // Copy memo text to clipboard
   navigator.clipboard.writeText(memoText).catch(function(){
     var ta = document.createElement('textarea');
     ta.value = memoText;
@@ -1297,23 +1307,6 @@ function sendGuestMemo(bookingId, objId, guestName, checkinDate) {
     ta.select();
     document.execCommand('copy');
     document.body.removeChild(ta);
-  });
-}
-
-function copyGuestLink(bookingId, objId) {
-  var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html';
-  var url = base + '?id=' + objId + '&booking=' + bookingId + '#guest';
-  navigator.clipboard.writeText(url).then(function() {
-    showToast('Ссылка скопирована — отправьте гостю!');
-  }).catch(function() {
-    // Fallback если clipboard недоступен
-    var ta = document.createElement('textarea');
-    ta.value = url;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
-    showToast('Ссылка скопирована — отправьте гостю!');
   });
 }
 
@@ -2049,46 +2042,24 @@ var promoObjPrices = { '1': 4000, '2': 5000 };
 var promoObjNames = { '1': 'Балтийский бриз', '2': 'Янтарный закат' };
 
 function loadPromoAdmin() {
-  // Сначала загружаем объекты для фото, потом промо
-  fetch(SHEET_URL)
-    .then(function(r){ return r.text(); })
-    .then(function(text){
-      var props = parseCSVAdmin(text);
-      promoObjImages = {};
-      promoObjPrices = {};
-      promoObjNames = {};
-      props.forEach(function(p){
-        var id = String(p.id||'');
-        if (p.image_1) promoObjImages[id] = p.image_1;
-        if (p.price) promoObjPrices[id] = Math.round(parseFloat(String(p.price).replace(/\s/g,'').replace(',','.'))||0);
-        if (p.name) promoObjNames[id] = p.name;
-      });
-      // После загрузки объектов — загружаем промо
-      apiRead('promo', function(data) {
-        if (data.length) {
-          var r = data[0];
-          Object.keys(r).forEach(function(k){ if(k!==k.trim()){ r[k.trim()]=r[k]; delete r[k]; } });
-          promoData = {
-            id: r.id || '',
-            active: true,
-            obj_id: String(r.obj_id||'1'),
-            price: String(r.price||''),
-            date_from: String(r.date_from||''),
-            date_to: String(r.date_to||''),
-            label: String(r.label||'')
-          };
-        }
-        applyPromoToForm();
-      });
-    }).catch(function(){
-      apiRead('promo', function(data) {
-        if (data.length) { promoData.obj_id = String(data[0].obj_id||'1'); }
-        applyPromoToForm();
-      });
-    });
+  // Объекты уже загружены в loadObjects — грузим только промо
+  apiRead('promo', function(data) {
+    if (data.length) {
+      var r = data[0];
+      Object.keys(r).forEach(function(k){ if(k!==k.trim()){ r[k.trim()]=r[k]; delete r[k]; } });
+      promoData = {
+        id: r.id || '',
+        active: true,
+        obj_id: String(r.obj_id||'1'),
+        price: String(r.price||''),
+        date_from: String(r.date_from||''),
+        date_to: String(r.date_to||''),
+        label: String(r.label||'')
+      };
+    }
+    applyPromoToForm();
+  });
 }
-
-var promoObjImages = {};
 
 function parseCSVAdmin(text) {
   var lines = text.trim().split('\n');
@@ -2250,12 +2221,35 @@ renderAdminCal();
   if (sel) { sel.innerHTML = '<option value="'+val+'">'+['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'][now.getMonth()]+' '+now.getFullYear()+'</option>'; }
 })();
 
-loadBookings();
-loadExpenses();
-loadSupplies();
-loadCleaning();
-loadPromoAdmin();
-loadAdminPromo();
+// Инициализация: сначала объекты, потом всё остальное
+var promoObjNames = {};
+var promoObjImages = {};
+var promoObjPrices = {};
+
+function loadObjects(callback) {
+  fetch(SHEET_URL)
+    .then(function(r){ return r.text(); })
+    .then(function(text){
+      var props = parseCSVAdmin(text);
+      props.forEach(function(p){
+        var id = String(p.id||'');
+        if (p.name)    promoObjNames[id]  = p.name;
+        if (p.image_1) promoObjImages[id] = p.image_1;
+        if (p.price)   promoObjPrices[id] = Math.round(parseFloat(String(p.price).replace(/\s/g,'').replace(',','.'))||0);
+      });
+      if (callback) callback();
+    })
+    .catch(function(){ if (callback) callback(); });
+}
+
+loadObjects(function(){
+  loadBookings();
+  loadExpenses();
+  loadSupplies();
+  loadCleaning();
+  loadPromoAdmin();
+  loadAdminPromo();
+});
 
 // ── AUTH ──
 function loginSubmit() {
