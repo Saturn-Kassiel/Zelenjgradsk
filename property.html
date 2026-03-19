@@ -1178,23 +1178,20 @@ function applyPropData(prop) {
 
 function loadPropData() {
   var propId = getPropId();
-  fetch(SHEET_URL)
-    .then(function(r){ return r.text(); })
-    .then(function(text){
-      var props = parseCSV(text);
+  fetch(APPS_URL + '?sheet=objects')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var props = (d.data || []).map(function(p){
+        var c = {}; Object.keys(p).forEach(function(k){ c[k.trim()] = p[k]; }); return c;
+      });
       var prop = props.find(function(p){ return parseInt(p.id) === propId; }) || props[0];
       if (prop) {
-        console.log('propData loaded:', JSON.stringify({id:prop.id, name:prop.name, price:prop.price, image_1:prop.image_1}));
-        applyPropData(prop);
+        console.log('propData loaded:', JSON.stringify(prop));
+        try { applyPropData(prop); } catch(e) { console.log('Sheets load error:', e); }
       }
     })
-    .catch(function(e){ console.log('Sheets load error:', e); });
+    .catch(function(e){ console.log('loadPropData error:', e); });
 }
-
-loadPropData();
-
-var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-var dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
 function renderCalendar() {
   var year = calState.year, month = calState.month;
