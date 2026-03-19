@@ -1269,7 +1269,7 @@ function changeStatus(id, sel) {
 function sendGuestMemo(bookingId, objId, guestName, checkinDate) {
   if (!confirm('Отправить памятку гостю ' + guestName + '?')) return;
   var token = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
-  var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/property.html';
+  var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html';
   var accessUrl = base + '?id=' + objId + '&token=' + token;
   var checkinFormatted = checkinDate ? checkinDate.split('-').reverse().join('.') : '—';
 
@@ -1301,7 +1301,7 @@ function sendGuestMemo(bookingId, objId, guestName, checkinDate) {
 }
 
 function copyGuestLink(bookingId, objId) {
-  var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/property.html';
+  var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html';
   var url = base + '?id=' + objId + '&booking=' + bookingId + '#guest';
   navigator.clipboard.writeText(url).then(function() {
     showToast('Ссылка скопирована — отправьте гостю!');
