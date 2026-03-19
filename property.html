@@ -1624,10 +1624,10 @@ async function cwSend() {
     var dialogLines = cwHistory.slice(-10).map(function(m) {
       return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
     }).join('\n');
-    fetch(APPS_URL + '/contact', {
+    fetch(CHAT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({contact: text, dialog: dialogLines})
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
     }).catch(function(){});
     return;
   }
@@ -1639,10 +1639,11 @@ async function cwSend() {
   }
   cwTyping();
   try {
-    var res = await fetch(APPS_URL + '/chat', {
+    var res = await fetch(CHAT_URL, {
       method: 'POST',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify({messages: cwHistory, session_id: 'property_' + Date.now()})
+      headers: {'Content-Type': 'text/plain'},
+      redirect: 'follow',
+      body: JSON.stringify({action: 'chat', messages: cwHistory})
     });
     var rawText = await res.text();
     var data;
