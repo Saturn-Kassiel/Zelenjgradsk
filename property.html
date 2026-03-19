@@ -2,7 +2,8 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<link rel="icon" type="image/png" href="https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png">
 <title>Апартаменты «Балтийский бриз» — Зеленоградск</title>
 <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
 <style>
@@ -297,7 +298,225 @@ header {
   .modal-handle { display: block; }
   .form-row { grid-template-columns: 1fr; }
 }
+.weather-section { padding: 60px 24px; }
+.weather-inner { max-width: 680px; margin: 0 auto; }
+.weather-section-title { font-family: Manrope, sans-serif; font-size: 28px; font-weight: 800; color: var(--charcoal); margin-bottom: 6px; text-align: center; }
+.weather-section-sub { font-size: 14px; color: var(--muted); text-align: center; margin-bottom: 28px; }
+.weather-widget-main { background: linear-gradient(135deg, #CAD5F0, #D0E8FF); border-radius: 24px; padding: 28px; box-shadow: 0 4px 24px rgba(46,56,77,0.08); }
+.weather-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.weather-city { font-size: 13px; font-weight: 500; color: var(--charcoal); margin-bottom: 4px; }
+.weather-temp { font-family: 'Manrope', sans-serif; font-size: 56px; font-weight: 800; color: var(--charcoal); letter-spacing: -2px; line-height: 1; }
+.weather-desc { font-size: 14px; color: var(--muted); margin-top: 4px; }
+.weather-meta-line { display: flex; gap: 16px; margin-top: 10px; font-size: 13px; color: var(--charcoal); }
+.weather-days { display: grid; grid-template-columns: repeat(5, 1fr); gap: 8px; margin-top: 20px; padding-top: 16px; border-top: 1px solid rgba(255,255,255,0.5); }
+.weather-day { text-align: center; background: rgba(255,255,255,0.5); border-radius: 12px; padding: 10px 6px; }
+.weather-day-name { font-size: 11px; color: var(--muted); margin-bottom: 4px; font-weight: 600; text-transform: uppercase; }
+.weather-day-temp { font-family: 'Manrope', sans-serif; font-size: 14px; font-weight: 700; color: var(--charcoal); }
+@media(max-width:600px) { .weather-days { gap: 4px; } .weather-day { padding: 8px 4px; } }
+
+/* FEATURES */
+.features-section { background: white; padding: 72px 40px; border-top: 1px solid var(--silver); border-bottom: 1px solid var(--silver); }
+.features-inner { max-width: 1200px; margin: 0 auto; }
+.features-title { font-family: 'Manrope', sans-serif; font-size: 30px; font-weight: 800; color: var(--charcoal); text-align: center; margin-bottom: 10px; letter-spacing: -0.5px; }
+.features-subtitle { text-align: center; font-size: 15px; color: var(--muted); margin-bottom: 48px; }
+.features-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 22px; }
+.feature-card { padding: 26px 22px; border-radius: 20px; border: 1.5px solid var(--silver); transition: all 0.25s; }
+.feature-card:hover { transform: translateY(-3px); box-shadow: 0 8px 24px rgba(46,56,77,0.08); border-color: var(--lavender); }
+.feature-icon { width: 46px; height: 46px; border-radius: 14px; display: flex; align-items: center; justify-content: center; margin-bottom: 14px; }
+.fi-1 { background: rgba(184,245,210,0.4); } .fi-2 { background: rgba(208,232,255,0.5); }
+.fi-3 { background: rgba(217,196,236,0.4); } .fi-4 { background: rgba(191,237,242,0.5); }
+.feature-name { font-weight: 700; font-size: 15px; color: var(--charcoal); margin-bottom: 8px; }
+.feature-desc { font-size: 13px; color: var(--muted); line-height: 1.6; }
+
+/* FOOTER */
+footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48px 40px 28px; }
+.footer-inner { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 1.5fr 1fr 1fr; gap: 48px; margin-bottom: 36px; }
+.logo-f { font-family: 'Manrope', sans-serif; font-size: 16px; font-weight: 700; color: white; display: flex; align-items: center; gap: 8px; margin-bottom: 12px; }
+.footer-brand p { font-size: 13px; line-height: 1.7; max-width: 260px; }
+.footer-col h4 { color: white; font-size: 13px; font-weight: 600; margin-bottom: 14px; }
+.footer-col ul { list-style: none; display: flex; flex-direction: column; gap: 10px; }
+.footer-col ul a { font-size: 13px; color: rgba(255,255,255,0.55); text-decoration: none; display: flex; align-items: center; gap: 8px; transition: color 0.2s; }
+.footer-col ul a:hover { color: var(--mint); }
+.footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
+.footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.3); }
+
+/* MODAL */
+.modal-overlay {
+  position: fixed; inset: 0; z-index: 500;
+  background: rgba(46,56,77,0.45); backdrop-filter: blur(6px);
+  display: flex; align-items: center; justify-content: center;
+  padding: 20px; opacity: 0; pointer-events: none;
+  transition: opacity 0.3s;
+}
+
+
+#chat-widget-btn {
+  position: fixed; bottom: 28px; right: 28px; z-index: 1000;
+  width: 60px; height: 60px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal) 0%, #5269AB 100%);
+  border: none; cursor: pointer;
+  box-shadow: 0 4px 24px rgba(62,112,87,0.35);
+  display: flex; align-items: center; justify-content: center;
+  transition: transform 0.2s, box-shadow 0.2s;
+}
+#chat-widget-btn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(62,112,87,0.45); }
+#chat-widget-btn svg { transition: opacity 0.2s; }
+#chat-widget-btn .icon-close { display: none; }
+
+#chat-widget-box {
+  position: fixed; bottom: 100px; right: 28px; z-index: 1000;
+  width: 380px; height: 560px;
+  background: var(--bg); border-radius: 24px;
+  box-shadow: 0 16px 56px rgba(46,56,77,0.16);
+  display: none; flex-direction: column; overflow: hidden;
+  border: 1px solid var(--lavender);
+  animation: chatSlideIn 0.25s ease;
+}
+@keyframes chatSlideIn { from { opacity:0; transform:translateY(16px) scale(0.97); } to { opacity:1; transform:none; } }
+#chat-widget-box.open { display: flex; }
+
+@media (max-width: 600px) {
+  #chat-widget-box {
+    position: fixed !important;
+    top: 0 !important; left: 0 !important; right: 0 !important; bottom: 0 !important;
+    width: 100% !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    border-radius: 0 !important;
+    z-index: 9999 !important;
+  }
+  #chat-widget-btn { bottom: 20px; right: 20px; }
+  #cw-header {
+    padding: 16px 18px !important;
+    padding-top: max(16px, env(safe-area-inset-top)) !important;
+    flex-shrink: 0 !important;
+  }
+  #cw-messages { flex: 1 1 0 !important; min-height: 0 !important; overflow-y: auto !important; }
+  #cw-sugs { flex-shrink: 0 !important; }
+  #cw-input-row {
+    flex-shrink: 0 !important;
+    padding: 10px 14px !important;
+    padding-bottom: max(10px, env(safe-area-inset-bottom)) !important;
+  }
+  .cw-bubble { font-size: 16px !important; padding: 12px 16px !important; }
+  .cw-sb { font-size: 14px !important; padding: 8px 16px !important; }
+  #cw-inp { font-size: 16px !important; padding: 11px 16px !important; }
+  #cw-send { width: 44px !important; height: 44px !important; }
+  #cw-sugs { padding: 8px 12px !important; gap: 7px !important; }
+}
+
+#cw-header {
+  padding: 16px 18px;
+  background: linear-gradient(135deg, var(--teal) 0%, #4a6fa5 100%);
+  display: flex; align-items: center; gap: 12px; flex-shrink: 0;
+}
+#cw-header .cw-av {
+  width: 40px; height: 40px; border-radius: 50%;
+  background: rgba(255,255,255,0.18);
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+  border: 1.5px solid rgba(255,255,255,0.25);
+}
+#cw-header .cw-info { flex: 1; }
+#cw-header .cw-name { font-family: Manrope, sans-serif; font-size: 15px; font-weight: 700; color: white; margin-bottom: 2px; }
+#cw-header .cw-sub { font-size: 11px; color: rgba(255,255,255,0.72); display: flex; align-items: center; gap: 5px; }
+#cw-header .cw-dot { width: 6px; height: 6px; border-radius: 50%; background: #7EE8A2; display: inline-block; flex-shrink: 0; }
+#cw-header .cw-close {
+  width: 32px; height: 32px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.15s; flex-shrink: 0;
+}
+#cw-header .cw-close:hover { background: rgba(255,255,255,0.25); }
+
+#cw-messages {
+  flex: 1; overflow-y: auto; padding: 16px 14px;
+  display: flex; flex-direction: column; gap: 10px;
+  background: var(--bg);
+}
+.cw-msg { max-width: 84%; }
+.cw-msg.user { align-self: flex-end; }
+.cw-msg.bot { align-self: flex-start; }
+.cw-bubble {
+  padding: 10px 14px; border-radius: 16px;
+  font-size: 15px; line-height: 1.55; font-family: 'DM Sans', sans-serif;
+}
+.cw-msg.user .cw-bubble {
+  background: linear-gradient(135deg, var(--indigo) 0%, #3E7057 100%);
+  color: white; border-bottom-right-radius: 4px;
+}
+.cw-msg.bot .cw-bubble {
+  background: white; border: 1px solid var(--lavender);
+  border-bottom-left-radius: 4px; color: var(--charcoal);
+}
+.cw-typing { color: var(--muted) !important; font-style: italic; }
+
+#cw-sugs {
+  padding: 8px 12px; display: flex; gap: 6px; flex-wrap: wrap;
+  border-top: 1px solid var(--silver);
+  background: white; flex-shrink: 0;
+}
+.cw-sb {
+  font-size: 13px; color: var(--indigo);
+  border: 1.5px solid var(--lavender);
+  background: var(--bg); border-radius: 20px; padding: 6px 14px;
+  cursor: pointer; font-family: 'DM Sans', sans-serif; white-space: nowrap;
+  transition: all 0.15s;
+}
+.cw-sb:hover { background: var(--lavender); color: var(--charcoal); }
+
+#cw-input-row {
+  display: flex; gap: 8px; padding: 10px 12px;
+  border-top: 1px solid var(--silver);
+  background: white; flex-shrink: 0;
+}
+#cw-inp {
+  flex: 1; font-size: 14px; border: 1.5px solid var(--silver);
+  border-radius: 22px; padding: 10px 16px; outline: none;
+  font-family: 'DM Sans', sans-serif; color: var(--charcoal); background: var(--bg);
+  transition: border-color 0.15s;
+}
+#cw-inp:focus { border-color: var(--indigo); }
+#cw-send {
+  width: 38px; height: 38px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--teal) 0%, var(--indigo) 100%);
+  border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  transition: opacity 0.15s;
+}
+#cw-send:hover { opacity: 0.88; }
+
+
+/* ── SCROLL TO TOP ── */
+#scroll-top {
+  position: fixed; bottom: 100px; right: 28px; z-index: 999;
+  width: 44px; height: 44px; border-radius: 50%;
+  background: var(--teal); color: white; border: none;
+  cursor: pointer; display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 4px 16px rgba(62,112,87,0.3);
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s, transform 0.3s;
+  transform: translateY(10px);
+}
+#scroll-top.visible { opacity: 1; pointer-events: all; transform: translateY(0); }
+#scroll-top:hover { background: #325f47; transform: translateY(-2px); }
+@media (max-width: 600px) { #scroll-top { bottom: 90px; right: 20px; } }
+
+/* ── SECRET SECTION ── */
+.secret-section {
+  display: none;
+  background: linear-gradient(135deg, rgba(62,112,87,0.06), rgba(82,105,171,0.06));
+  border: 1.5px solid rgba(62,112,87,0.2);
+  border-radius: 20px; padding: 28px; margin: 24px 0;
+}
+.secret-section.visible { display: block; }
+.secret-title { font-family: Manrope,sans-serif; font-size: 18px; font-weight: 700; color: var(--teal); margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+.secret-row { display: flex; align-items: flex-start; gap: 12px; padding: 12px 0; border-bottom: 1px solid rgba(202,213,240,0.4); }
+.secret-row:last-child { border-bottom: none; }
+.secret-label { font-size: 12px; color: var(--muted); font-weight: 500; min-width: 120px; padding-top: 2px; }
+.secret-value { font-size: 15px; font-weight: 600; color: var(--charcoal); font-family: Manrope,sans-serif; }
+.secret-copy { margin-left: auto; font-size: 11px; color: var(--teal); cursor: pointer; padding: 4px 8px; border-radius: 8px; background: rgba(62,112,87,0.1); border: none; font-family: DM Sans,sans-serif; }
 </style>
+<script src="config.js?v=2"></script>
 </head>
 <body>
 
@@ -305,7 +524,7 @@ header {
   <div class="nav-inner">
     <a class="logo" href="index.html">
       <div class="logo-dot"></div>
-      Апартаменты в Зеленоградске
+      Апартаменты Балтики
     </a>
     <div class="nav-right">
       <a href="index.html" class="nav-back">
@@ -698,7 +917,6 @@ header {
 
 <script>
 // ── PROMO & PRICING ──
-var APPS_URL = 'https://script.google.com/macros/s/AKfycbyljA9MRoh8CpLWIM03eCQtX2n39CFElfiLIh4IIug7JxS9jwxUTiQrQHubfXAu4U4f/exec';
 var propData = { price: 0, id: 1 };
 var promoData = null; // { obj_id, price, date_from, date_to }
 
@@ -1014,341 +1232,67 @@ function changeMonth(delta) {
 renderCalendar();
 
 // GUEST TOGGLE
-// ── ДОСТУП ГОСТЯ ──
-function initGuestAccess() {
-  var params = new URLSearchParams(window.location.search);
-  var bookingId = params.get('booking');
-  if (!bookingId) return;
-
-  // Проверяем бронирование через Apps Script
-  fetch(APPS_URL + '?sheet=bookings')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var rows = (d.data||[]).map(function(b){
-        var c={}; Object.keys(b).forEach(function(k){c[k.trim()]=b[k];}); return c;
-      });
-      var booking = rows.find(function(b){ return String(b.id)===String(bookingId); });
-      if (!booking) return;
-      if (booking.status !== 'confirmed') return;
-
-      // Проверяем период
-      var today = new Date(); today.setHours(0,0,0,0);
-      var dateIn = new Date(String(booking.date_in).indexOf('T')!==-1 ? booking.date_in : booking.date_in+'T00:00:00');
-      var dateOut = new Date(String(booking.date_out).indexOf('T')!==-1 ? booking.date_out : booking.date_out+'T00:00:00');
-      dateIn.setHours(0,0,0,0); dateOut.setHours(0,0,0,0);
-
-      // Открываем за сутки до заезда
-      var dayBefore = new Date(dateIn.getTime() - 86400000);
-      if (today < dayBefore || today >= dateOut) return;
-
-      // Всё ок — открываем блок
-      var track = document.getElementById('toggle-track');
-      var section = document.getElementById('guest-section');
-      var toggleBar = document.querySelector('.guest-toggle-bar');
-      if (track) track.classList.add('on');
-      if (section) section.classList.add('visible');
-      // Скрываем демо-полосу для гостей по ссылке
-      var toggleBar = document.querySelector('.guest-toggle-bar');
-      if (toggleBar) toggleBar.style.display = 'none';
-
-      // Обновляем заголовок гостевого блока
-      var titleEl = document.getElementById('guest-welcome-title');
-      var subEl = document.getElementById('guest-welcome-sub');
-      if (titleEl) titleEl.textContent = 'Добро пожаловать, ' + (booking.name ? booking.name.split(' ')[0] : 'дорогой гость') + '!';
-      if (subEl) subEl.textContent = 'Ваш заезд ' + formatDateRu(dateIn) + ' · Выезд ' + formatDateRu(dateOut);
-
-      // Прокручиваем к блоку если есть якорь
-      if (window.location.hash === '#guest') {
-        setTimeout(function() {
-          if (section) {
-            var top = section.getBoundingClientRect().top + window.pageYOffset - 80;
-            window.scrollTo({ top: top, behavior: 'smooth' });
-          }
-        }, 500);
-      }
-    }).catch(function(){});
-}
-
-function formatDateRu(date) {
-  var months = ['января','февраля','марта','апреля','мая','июня','июля','августа','сентября','октября','ноября','декабря'];
-  return date.getDate() + ' ' + months[date.getMonth()];
-}
-
-function toggleGuestMode() {
-  var track = document.getElementById('toggle-track');
-  var section = document.getElementById('guest-section');
-  var isOn = track.classList.contains('on');
-  if (isOn) {
-    track.classList.remove('on');
-    section.classList.remove('visible');
-  } else {
-    track.classList.add('on');
-    section.classList.add('visible');
-    setTimeout(function() {
-      var top = section.getBoundingClientRect().top + window.pageYOffset - 80;
-      window.scrollTo({ top: top, behavior: 'smooth' });
-    }, 50);
-  }
-}
-
-// NEARBY TABS
-function switchTab(btn, panelId) {
-  document.querySelectorAll('.nearby-tab').forEach(function(t) { t.classList.remove('active'); });
-  document.querySelectorAll('.nearby-panel').forEach(function(p) { p.classList.remove('active'); });
-  btn.classList.add('active');
-  document.getElementById('panel-' + panelId).classList.add('active');
-}
-
-// COPY
-function copyText(text, btn) {
-  if (navigator.clipboard) {
-    navigator.clipboard.writeText(text).then(function() {
-      btn.textContent = 'Скопировано!';
-      setTimeout(function() { btn.textContent = 'Скопировать'; }, 2000);
-    });
-  } else {
-    btn.textContent = 'Скопировано!';
-    setTimeout(function() { btn.textContent = 'Скопировать'; }, 2000);
-  }
-}
-
-// MODAL
-// ── ГАЛЕРЕЯ И ЛАЙТБОКС ──
-var allPhotos = [];
-var lbIndex = 0;
-
-function openLightbox(idx) {
-  if (!allPhotos.length) return;
-  lbIndex = idx || 0;
-  document.getElementById('lightbox').style.display = 'flex';
-  document.body.style.overflow = 'hidden';
-  lbShow();
-}
-
-function closeLightbox() {
-  document.getElementById('lightbox').style.display = 'none';
-  document.body.style.overflow = '';
-}
-
-function closeLightboxOutside(e) {
-  if (e.target === document.getElementById('lightbox')) closeLightbox();
-}
-
-function lbShow() {
-  var img = document.getElementById('lb-img');
-  var counter = document.getElementById('lb-counter');
-  img.src = allPhotos[lbIndex];
-  counter.textContent = (lbIndex+1) + ' / ' + allPhotos.length;
-  // Подсвечиваем активный превью
-  document.querySelectorAll('.lb-thumb').forEach(function(t, i) {
-    t.style.opacity = i === lbIndex ? '1' : '0.5';
-    t.style.outline = i === lbIndex ? '2px solid white' : 'none';
-  });
-}
-
-function lbPrev(e) { e.stopPropagation(); lbIndex = (lbIndex - 1 + allPhotos.length) % allPhotos.length; lbShow(); }
-function lbNext(e) { e.stopPropagation(); lbIndex = (lbIndex + 1) % allPhotos.length; lbShow(); }
-
-document.addEventListener('keydown', function(e) {
-  if (document.getElementById('lightbox').style.display === 'flex') {
-    if (e.key === 'ArrowLeft') lbPrev(e);
-    if (e.key === 'ArrowRight') lbNext(e);
-    if (e.key === 'Escape') closeLightbox();
-  }
-});
-
-function buildGallery(photos) {
-  allPhotos = photos.filter(Boolean);
-  if (!allPhotos.length) return;
-
-  // Основная сетка — первые 3 фото
-  setGalleryImg('gallery-main', allPhotos[0], 'linear-gradient(135deg,#E2F0D9,#BFEDF2,#D0E8FF)');
-  setGalleryImg('gallery-sub-1', allPhotos[1] || '', 'linear-gradient(135deg,#E6E6FA,#D9C4EC)');
-  setGalleryImg('gallery-sub-2', allPhotos[2] || '', 'linear-gradient(135deg,#D0E8FF,#BFEDF2)');
-
-  // Кнопка «+N фото» если больше 3
-  var btnEl = document.getElementById('gallery-all-btn');
-  var labelEl = document.getElementById('gallery-all-label');
-  if (allPhotos.length > 3 && btnEl) {
-    btnEl.style.display = 'flex';
-    if (labelEl) labelEl.textContent = '+' + (allPhotos.length - 3) + ' фото';
-  }
-
-  // Счётчик
-  var cnt = document.getElementById('gallery-count');
-  if (cnt) { cnt.textContent = '1 / ' + allPhotos.length; cnt.style.display = ''; }
-
-  // Превью в лайтбоксе
-  var thumbs = document.getElementById('lb-thumbs');
-  if (thumbs) {
-    thumbs.innerHTML = allPhotos.map(function(url, i) {
-      return '<img class="lb-thumb" src="' + url + '" onclick="lbIndex='+i+';lbShow();event.stopPropagation()" style="width:60px;height:45px;object-fit:cover;border-radius:6px;cursor:pointer;flex-shrink:0;opacity:0.5;transition:opacity 0.2s" onerror="this.style.display=\'none\'">';
-    }).join('');
-  }
-}
 
 
-function propNightWord(n) { return n===1?'ночь':n<5?'ночи':'ночей'; }
+loadPropBookings();
+initGuestAccess();
+</script>
+<!-- WEATHER SECTION -->
+<section class="weather-section" id="weather">
+  <div class="weather-inner">
+    <h2 class="weather-section-title">Погода в Зеленоградске</h2>
+    <p class="weather-section-sub">Балтийское море · обновляется в реальном времени</p>
+    <div class="weather-widget-main">
+      <div class="weather-top">
+        <div>
+          <div class="weather-city">Зеленоградск, сейчас</div>
+          <div class="weather-temp" id="w-temp">—°</div>
+          <div class="weather-desc" id="w-desc">Загружаем...</div>
+          <div class="weather-meta-line">
+            <span id="w-feels"></span>
+            <span>💨 <span id="w-wind">—</span></span>
+            <span>💧 <span id="w-humidity">—</span></span>
+            <span>🌊 <span id="w-water">—</span></span>
+          </div>
+        </div>
+        <div id="w-icon">
+          <svg width="72" height="72" viewBox="0 0 24 24" fill="none" stroke="rgba(46,56,77,0.25)" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/></svg>
+        </div>
+      </div>
+      <div class="weather-days" id="w-forecast">
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+        <div class="weather-day"><div class="weather-day-name">—</div><div class="weather-day-temp">—</div></div>
+      </div>
+    </div>
+  </div>
+</section>
 
-function propChangeNights(d) {
-  var el = document.getElementById('prop-nights');
-  var v = Math.max(1, (parseInt(el.value)||1) + d);
-  el.value = v;
-  propRecalc(); propCalRender();
-}
-
-function propRecalc() {
-  var inVal = document.getElementById('f-checkin').value;
-  var nights = parseInt(document.getElementById('prop-nights').value) || 1;
-  var label = document.getElementById('prop-nights-label');
-  if (label) label.textContent = propNightWord(nights);
-  if (!inVal) return;
-  var inDate = new Date(inVal);
-  inDate.setDate(inDate.getDate() + nights);
-  var outStr = inDate.toISOString().split('T')[0];
-  document.getElementById('f-checkout').value = outStr;
-}
-
-function propFormatPhone(input) {
-  var digits = input.value.replace(/\D/g,'');
-  if (digits.length === 0) { input.value = ''; return; }
-  if (digits[0] === '8') digits = '7' + digits.slice(1);
-  if (digits[0] !== '7') digits = '7' + digits;
-  digits = digits.slice(0, 11);
-  var r = '+7';
-  if (digits.length > 1) r += ' (' + digits.slice(1, 4);
-  if (digits.length >= 4) r += ') ' + digits.slice(4, 7);
-  if (digits.length >= 7) r += '-' + digits.slice(7, 9);
-  if (digits.length >= 9) r += '-' + digits.slice(9, 11);
-  input.value = r;
-  input.style.borderColor = '';
-}
-
-
-var propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
-var propMonthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-
-function propCalPrev() { propCalState.month--; if(propCalState.month<0){propCalState.month=11;propCalState.year--;} propCalRender(); }
-function propCalNext() { propCalState.month++; if(propCalState.month>11){propCalState.month=0;propCalState.year++;} propCalRender(); }
-
-function propCalRender() {
-  var titleEl = document.getElementById('prop-cal-title');
-  var grid = document.getElementById('prop-cal-grid');
-  if (!titleEl || !grid) { setTimeout(propCalRender, 200); return; }
-
-  var y = propCalState.year, m = propCalState.month;
-  titleEl.textContent = propMonthNames[m] + ' ' + y;
-
-  var inVal = document.getElementById('f-checkin') ? document.getElementById('f-checkin').value : '';
-  var nights = document.getElementById('prop-nights') ? (parseInt(document.getElementById('prop-nights').value)||1) : 1;
-  var selIn = inVal ? new Date(inVal) : null;
-  var selOut = selIn ? new Date(selIn.getTime() + nights*86400000) : null;
-  var today = new Date(); today.setHours(0,0,0,0);
-
-  grid.innerHTML = '';
-  var firstDay = new Date(y, m, 1).getDay();
-  var offset = firstDay === 0 ? 6 : firstDay - 1;
-  for (var i = 0; i < offset; i++) { var e=document.createElement('div'); grid.appendChild(e); }
-
-  var days = new Date(y, m+1, 0).getDate();
-  for (var day = 1; day <= days; day++) {
-    var date = new Date(y, m, day);
-    var key = y+'-'+(m+1)+'-'+day;
-    var occ = statuses[key] === 'occupied';
-    var isPast = date < today;
-    var isIn = selIn && date.getTime() === selIn.getTime();
-    var isSel = selIn && selOut && date >= selIn && date < selOut;
-
-    var el = document.createElement('div');
-    el.textContent = day;
-    el.style.cssText = 'text-align:center;padding:5px 2px;border-radius:6px;font-size:12px;cursor:pointer;';
-
-    if (isPast) { el.style.color='#AFB9D0'; el.style.opacity='0.4'; }
-    else if (occ) { el.style.background='rgba(224,82,82,0.12)'; el.style.color='#C0392B'; el.style.cursor='default'; }
-    else if (isIn) { el.style.background='#3E7057'; el.style.color='white'; el.style.fontWeight='700'; }
-    else if (isSel) { el.style.background='rgba(62,112,87,0.12)'; el.style.color='#3E7057'; }
-    else {
-      el.style.color='#2E384D';
-      (function(d){ el.onclick=function(){
-        var y2=d.getFullYear(), m2=String(d.getMonth()+1).padStart(2,'0'), d2=String(d.getDate()).padStart(2,'0');
-        document.getElementById('f-checkin').value=y2+'-'+m2+'-'+d2;
-        propRecalc();
-        propCalRender();
-      }; })(date);
-    }
-    if (date.toDateString()===today.toDateString()&&!isIn) el.style.fontWeight='700';
-    grid.appendChild(el);
-  }
-}
-
-function openModal() {
-  var o = document.getElementById('modal-overlay');
-  o.classList.add('open'); document.body.style.overflow = 'hidden';
-  document.getElementById('f-checkin').value = '';
-  var outEl = document.getElementById('f-checkout');
-  if (outEl) outEl.value = '';
-  var nightsEl = document.getElementById('prop-nights');
-  if (nightsEl) { nightsEl.value = 3; }
-  var label = document.getElementById('prop-nights-label');
-  if (label) label.textContent = 'ночи';
-  propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
-  setTimeout(function(){ propCalRender(); }, 300);
-}
-function closeModal() {
-  document.getElementById('modal-overlay').classList.remove('open');
-  document.body.style.overflow = '';
-  setTimeout(function() {
-    document.getElementById('form-screen').style.display = 'block';
-    document.getElementById('success-screen').classList.remove('show');
-  }, 300);
-}
-function closeModalOutside(e) { if (e.target === document.getElementById('modal-overlay')) closeModal(); }
-function submitForm() {
-  var name = document.getElementById('f-name');
-  var phone = document.getElementById('f-phone');
-  var checkin = document.getElementById('f-checkin');
-  var ok = true;
-
-  if (!name.value.trim()) { name.style.borderColor='#E05252'; ok=false; }
-  if (!phone.value.trim() || phone.value.replace(/\D/g,'').length !== 11) { phone.style.borderColor='#E05252'; ok=false; }
-  if (!checkin.value) { checkin.style.borderColor='#E05252'; ok=false; }
-  if (!ok) return;
-
-  var checkout = document.getElementById('f-checkout').value;
-  var guests = document.getElementById('f-guests').value;
-  var comment = document.getElementById('f-comment').value;
-  var id = Date.now();
-  var row = [id, propData.id, name.value.trim(), phone.value.trim(), checkin.value, checkout||'', guests, 0, 'new', comment];
-  fetch(APPS_URL, { method:'POST', body: JSON.stringify({ action:'append', sheet:'bookings', row:row }) })
-    .catch(function(){});
-  document.getElementById('form-screen').style.display = 'none';
-  document.getElementById('success-screen').classList.add('show');
-}
-document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeModal(); });
-
-// ── LIVE WEATHER ──
-var OWM_KEY = '96ae9fe213f50f5bc55e4ff3d65ac3cd';
-var CITY_ID = '554234';
-var dayNamesP = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
-
+<script>
 function getWeatherSvg(icon, size) {
   size = size || 40;
-  var code = icon.replace('n','d');
+  var code = icon.replace('n','d'); // ночные = дневные
   var svgs = {
     '01d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="14" fill="#FFD93D"/><g stroke="#FFB300" stroke-width="3" stroke-linecap="round"><line x1="32" y1="6" x2="32" y2="12"/><line x1="32" y1="52" x2="32" y2="58"/><line x1="6" y1="32" x2="12" y2="32"/><line x1="52" y1="32" x2="58" y2="32"/><line x1="14" y1="14" x2="18" y2="18"/><line x1="46" y1="46" x2="50" y2="50"/><line x1="50" y1="14" x2="46" y2="18"/><line x1="18" y1="46" x2="14" y2="50"/></g></svg>',
-    '02d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="24" cy="30" r="10" fill="#FFD93D"/><rect x="18" y="34" width="30" height="16" rx="8" fill="#C8DCF0"/><ellipse cx="26" cy="34" rx="10" ry="8" fill="#D8EAF8"/><ellipse cx="38" cy="32" rx="12" ry="9" fill="#E0EFFE"/></svg>',
+    '02d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="24" cy="30" r="10" fill="#FFD93D"/><g stroke="#FFB300" stroke-width="2.5" stroke-linecap="round"><line x1="24" y1="10" x2="24" y2="15"/><line x1="10" y1="30" x2="15" y2="30"/><line x1="14" y1="16" x2="18" y2="20"/></g><rect x="18" y="34" width="30" height="16" rx="8" fill="#C8DCF0"/><ellipse cx="26" cy="34" rx="10" ry="8" fill="#D8EAF8"/><ellipse cx="38" cy="32" rx="12" ry="9" fill="#E0EFFE"/></svg>',
     '03d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="30" width="44" height="20" rx="10" fill="#C8DCF0"/><ellipse cx="24" cy="30" rx="14" ry="11" fill="#D8EAF8"/><ellipse cx="40" cy="28" rx="16" ry="12" fill="#E0EFFE"/></svg>',
-    '04d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="6" y="34" width="40" height="18" rx="9" fill="#B0C4D8"/><rect x="16" y="30" width="38" height="18" rx="9" fill="#D0DEF0"/><ellipse cx="30" cy="30" rx="14" ry="10" fill="#D8E6F4"/></svg>',
-    '09d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="20" width="42" height="18" rx="9" fill="#B0C8E0"/><ellipse cx="32" cy="18" rx="18" ry="11" fill="#C8DCF0"/><g stroke="#5BA0D0" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="42" x2="19" y2="52"/><line x1="32" y1="44" x2="29" y2="54"/><line x1="42" y1="42" x2="39" y2="52"/></g></svg>',
-    '10d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="20" cy="20" r="9" fill="#FFD93D" opacity="0.9"/><rect x="12" y="24" width="38" height="16" rx="8" fill="#B8D0E8"/><ellipse cx="32" cy="22" rx="16" ry="10" fill="#D0E4F4"/><g stroke="#4A90D9" stroke-width="2.5" stroke-linecap="round"><line x1="24" y1="42" x2="21" y2="52"/><line x1="34" y1="44" x2="31" y2="54"/><line x1="44" y1="42" x2="41" y2="52"/></g></svg>',
-    '11d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="42" height="18" rx="9" fill="#8EA0B8"/><ellipse cx="32" cy="14" rx="18" ry="11" fill="#A8BCD0"/><g stroke="#4A90D9" stroke-width="2"><line x1="24" y1="38" x2="21" y2="46"/><line x1="34" y1="40" x2="31" y2="48"/></g><polyline points="28,42 32,34 30,42 36,34" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
-    '13d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="18" width="42" height="16" rx="8" fill="#C8D8F0"/><ellipse cx="32" cy="16" rx="18" ry="11" fill="#DCEAf8"/><g fill="#A0B8D8"><circle cx="22" cy="42" r="2.5"/><circle cx="32" cy="46" r="2.5"/><circle cx="42" cy="42" r="2.5"/></g></svg>',
+    '04d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="6" y="34" width="40" height="18" rx="9" fill="#B0C4D8"/><ellipse cx="20" cy="34" rx="13" ry="10" fill="#C0D0E0"/><ellipse cx="36" cy="32" rx="15" ry="11" fill="#C8D8E8"/><rect x="16" y="30" width="38" height="18" rx="9" fill="#D0DEF0"/><ellipse cx="30" cy="30" rx="14" ry="10" fill="#D8E6F4"/><ellipse cx="46" cy="28" rx="14" ry="11" fill="#E0ECF8"/></svg>',
+    '09d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="20" width="42" height="18" rx="9" fill="#B0C8E0"/><ellipse cx="22" cy="20" rx="13" ry="10" fill="#C0D4EC"/><ellipse cx="40" cy="18" rx="15" ry="11" fill="#CADCf0"/><g stroke="#5BA0D0" stroke-width="2.5" stroke-linecap="round"><line x1="22" y1="42" x2="19" y2="52"/><line x1="32" y1="44" x2="29" y2="54"/><line x1="42" y1="42" x2="39" y2="52"/></g></svg>',
+    '10d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><circle cx="20" cy="20" r="9" fill="#FFD93D" opacity="0.9"/><rect x="12" y="24" width="38" height="16" rx="8" fill="#B8D0E8"/><ellipse cx="22" cy="24" rx="12" ry="9" fill="#C8DCF0"/><ellipse cx="38" cy="22" rx="14" ry="10" fill="#D0E4F4"/><g stroke="#4A90D9" stroke-width="2.5" stroke-linecap="round"><line x1="24" y1="42" x2="21" y2="52"/><line x1="34" y1="44" x2="31" y2="54"/><line x1="44" y1="42" x2="41" y2="52"/></g></svg>',
+    '11d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="8" y="16" width="42" height="18" rx="9" fill="#8EA0B8"/><ellipse cx="20" cy="16" rx="13" ry="10" fill="#9EB0C8"/><ellipse cx="38" cy="14" rx="15" ry="11" fill="#A8BCD0"/><g stroke="#4A90D9" stroke-width="2" stroke-linecap="round"><line x1="24" y1="38" x2="21" y2="46"/><line x1="34" y1="40" x2="31" y2="48"/><line x1="44" y1="38" x2="41" y2="46"/></g><polyline points="28,42 32,34 30,42 36,34" stroke="#FFD93D" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>',
+    '13d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><rect x="10" y="18" width="42" height="16" rx="8" fill="#C8D8F0"/><ellipse cx="22" cy="18" rx="13" ry="10" fill="#D4E2F6"/><ellipse cx="40" cy="16" rx="15" ry="11" fill="#DCEAf8"/><g fill="#A0B8D8"><circle cx="22" cy="42" r="2.5"/><circle cx="32" cy="46" r="2.5"/><circle cx="42" cy="42" r="2.5"/><circle cx="27" cy="52" r="2"/><circle cx="37" cy="50" r="2"/></g></svg>',
     '50d': '<svg width="'+size+'" height="'+size+'" viewBox="0 0 64 64" fill="none"><g stroke="#A0B4C8" stroke-width="2.5" stroke-linecap="round" opacity="0.7"><line x1="14" y1="28" x2="50" y2="28"/><line x1="10" y1="36" x2="54" y2="36"/><line x1="14" y1="44" x2="50" y2="44"/></g></svg>'
   };
   return svgs[code] || svgs['03d'];
 }
 
-function loadPropWeather() {
+var OWM_KEY = '96ae9fe213f50f5bc55e4ff3d65ac3cd';
+var CITY_ID = '554234';
+var dayNamesW = ['Вс','Пн','Вт','Ср','Чт','Пт','Сб'];
+
+function loadWeather() {
   fetch('https://api.openweathermap.org/data/2.5/weather?id=' + CITY_ID + '&appid=' + OWM_KEY + '&units=metric&lang=ru')
     .then(function(r){ return r.json(); })
     .then(function(d){
@@ -1356,12 +1300,14 @@ function loadPropWeather() {
       var feels = Math.round(d.main.feels_like);
       var desc = d.weather[0].description;
       var icon = d.weather[0].icon;
-      document.getElementById('pw-temp').textContent = (temp > 0 ? '+' : '') + temp + '°';
-      document.getElementById('pw-desc').textContent = desc.charAt(0).toUpperCase() + desc.slice(1);
-      document.getElementById('pw-feels').textContent = 'Ощущается как ' + (feels > 0 ? '+' : '') + feels + '°';
-      document.getElementById('pw-icon').innerHTML = getWeatherSvg(icon, 56);
-      document.getElementById('pw-wind').textContent = Math.round(d.wind.speed) + ' м/с';
-      document.getElementById('pw-humidity').textContent = d.main.humidity + '%';
+      document.getElementById('w-temp').textContent = (temp>0?'+':'') + temp + '°';
+      document.getElementById('w-desc').textContent = desc.charAt(0).toUpperCase() + desc.slice(1);
+      document.getElementById('w-feels').textContent = 'Ощущается ' + (feels>0?'+':'') + feels + '°';
+      document.getElementById('w-icon').innerHTML = getWeatherSvg(icon, 72);
+      document.getElementById('w-wind').textContent = Math.round(d.wind.speed) + ' м/с';
+      document.getElementById('w-humidity').textContent = d.main.humidity + '%';
+      var waterTemp = Math.max(2, Math.min(22, temp > 15 ? temp - 3 : temp - 1));
+      document.getElementById('w-water').textContent = waterTemp + '°C';
     }).catch(function(){});
 
   fetch('https://api.openweathermap.org/data/2.5/forecast?id=' + CITY_ID + '&appid=' + OWM_KEY + '&units=metric&lang=ru')
@@ -1375,29 +1321,358 @@ function loadPropWeather() {
         days[key].temps.push(item.main.temp);
       });
       var keys = Object.keys(days).slice(0, 5);
-      var fc = document.getElementById('pw-forecast');
-      fc.innerHTML = keys.map(function(k) {
+      document.getElementById('w-forecast').innerHTML = keys.map(function(k) {
         var day = days[k];
         var max = Math.round(Math.max.apply(null, day.temps));
-        var name = dayNamesP[day.date.getDay()];
+        var min = Math.round(Math.min.apply(null, day.temps));
+        var name = dayNamesW[day.date.getDay()];
         return '<div class="weather-day">' +
           '<div class="weather-day-name">' + name + '</div>' +
-          '<div style="margin:2px auto;display:flex;justify-content:center">'+getWeatherSvg(day.icon, 28)+'</div>' +
-          '<div class="weather-day-temp">' + (max > 0 ? '+' : '') + max + '°</div>' +
+          '<div style="margin:4px 0">'+getWeatherSvg(day.icon, 32)+'</div>' +
+          '<div class="weather-day-temp">' + (max>0?'+':'') + max + '°</div>' +
+          '<div style="font-size:11px;color:var(--muted)">' + (min>0?'+':'') + min + '°</div>' +
           '</div>';
       }).join('');
     }).catch(function(){});
 }
 
-loadPropWeather();
-// Показываем демо-переключатель только при ?demo=1
-if (window.location.search.indexOf('demo=1') !== -1) {
-  var demoBar = document.getElementById('guest-toggle-bar');
-  if (demoBar) demoBar.style.display = '';
+loadWeather();
+</script>
+
+<!-- SECRET SECTION -->
+<div class="secret-section" id="secret-section">
+  <div class="secret-title">🔑 Данные для заезда</div>
+  <div class="secret-row">
+    <span class="secret-label">Адрес</span>
+    <span class="secret-value" id="s-address">—</span>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Квартира</span>
+    <span class="secret-value" id="s-apt">—</span>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Код домофона</span>
+    <span class="secret-value" id="s-door">—</span>
+    <button class="secret-copy" onclick="copySecret('s-door')">Копировать</button>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Wi-Fi сеть</span>
+    <span class="secret-value" id="s-wifi-name">—</span>
+  </div>
+  <div class="secret-row">
+    <span class="secret-label">Пароль Wi-Fi</span>
+    <span class="secret-value" id="s-wifi-pass">—</span>
+    <button class="secret-copy" onclick="copySecret('s-wifi-pass')">Копировать</button>
+  </div>
+</div>
+
+<footer id="contacts">
+  <div class="footer-inner">
+    <div class="footer-brand">
+      <div class="logo-f">
+        <img src="https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png" style="width:32px;height:32px;object-fit:contain;border-radius:8px;flex-shrink:0">
+        Апартаменты Балтики
+      </div>
+      <p>Доверительное управление недвижимостью на Балтийском побережье.</p>
+    </div>
+    <div class="footer-col">
+      <h4>Навигация</h4>
+      <ul>
+        <li><a href="index.html#objects">Объекты</a></li>
+        <li><a href="index.html#about">О нас</a></li>
+        <li><a href="index.html#contacts">Контакты</a></li>
+      </ul>
+    </div>
+    <div class="footer-col">
+      <h4>Контакты</h4>
+      <ul>
+        <li><a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Зеленоградск, Калининград</a></li>
+        <li><a href="tel:+7"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +7 (000) 000-00-00</a></li>
+        <li><a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> <span class="__cf_email__" data-cfemail="244d4a424b64415c45495448410a474b49">[email&#160;protected]</span></a></li>
+        <li><a href="#"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg> Telegram</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 Апартаменты Балтики. Все права защищены.</p>
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:flex-end">
+      <a href="privacy.html" style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:12px;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Политика конфиденциальности</a>
+      <a href="offer.html" style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:12px;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Договор-оферта</a>
+      <a href="rules.html" style="color:rgba(255,255,255,0.3);text-decoration:none;font-size:12px;transition:color 0.2s" onmouseover="this.style.color='rgba(255,255,255,0.7)'" onmouseout="this.style.color='rgba(255,255,255,0.3)'">Правила проживания</a>
+    </div>
+  </div>
+</footer>
+
+<button id="chat-widget-btn" onclick="cwToggle()" aria-label="Открыть чат">
+  <svg class="icon-chat" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+  <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+</button>
+
+<div id="chat-widget-box">
+  <div id="cw-header">
+    <div class="cw-av"><img src="https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png" style="width:28px;height:28px;object-fit:contain;border-radius:50%"></div>
+    <div class="cw-info">
+      <div class="cw-name">Апартаменты Балтики</div>
+      <div class="cw-sub"><span class="cw-dot"></span>онлайн · обычно отвечает сразу</div>
+    </div>
+    <button onclick="cwClear()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s" title="Очистить чат" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
+    </button>
+    <button class="cw-close" onclick="cwToggle()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+  </div>
+  <div id="cw-messages"></div>
+
+  <div id="cw-input-row">
+    <input id="cw-inp" type="text" placeholder="Напишите вопрос..." onkeydown="if(event.key==='Enter')cwSend()"/>
+    <button id="cw-send" onclick="cwSend()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+    </button>
+  </div>
+</div>
+<script>
+var cwHistory = [];
+var cwOpen = false;
+var cwWaitingContact = false;
+
+// Загружаем историю из localStorage
+(function() {
+  try {
+    var saved = localStorage.getItem('chat_history');
+    if (saved) cwHistory = JSON.parse(saved);
+  } catch(e) {}
+})();
+
+if (window.visualViewport) {
+  window.visualViewport.addEventListener('resize', function() {
+    var box = document.getElementById('chat-widget-box');
+    if (!box || !cwOpen || window.innerWidth > 600) return;
+    var h = window.visualViewport.height;
+    box.style.height = h + 'px';
+    box.style.top = (window.visualViewport.offsetTop) + 'px';
+  });
 }
 
-loadPropBookings();
-initGuestAccess();
+function cwToggle() {
+  cwOpen = !cwOpen;
+  var box = document.getElementById('chat-widget-box');
+  var btn = document.getElementById('chat-widget-btn');
+  box.classList.toggle('open', cwOpen);
+  btn.querySelector('.icon-chat').style.display = cwOpen ? 'none' : 'block';
+  btn.querySelector('.icon-close').style.display = cwOpen ? 'block' : 'none';
+  if (window.innerWidth <= 600) {
+    document.body.style.overflow = cwOpen ? 'hidden' : '';
+    document.body.style.position = cwOpen ? 'fixed' : '';
+    document.body.style.width = cwOpen ? '100%' : '';
+  }
+  if (cwOpen && cwHistory.length === 0) cwInit();
+}
+
+function cwInit() {
+  if (cwHistory.length > 0) {
+    cwHistory.forEach(function(m) {
+      cwAddMsg(m.content, m.role === 'user' ? 'user' : 'bot');
+    });
+  } else {
+    cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
+  }
+}
+
+function cwClear() {
+  cwHistory = [];
+  try { localStorage.removeItem('chat_history'); } catch(e) {}
+  document.getElementById('cw-messages').innerHTML = '';
+  cwInit();
+}
+
+function cwFormatText(text) {
+  return text
+    .replace(/\n/g, '<br>')
+    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--indigo);text-decoration:underline">$1</a>')
+    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:var(--indigo);text-decoration:underline;word-break:break-all">$1</a>');
+}
+
+function cwAddMsg(text, role) {
+  var msgs = document.getElementById('cw-messages');
+  var div = document.createElement('div');
+  div.className = 'cw-msg ' + role;
+  div.innerHTML = '<div class="cw-bubble">' + cwFormatText(text) + '</div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function cwTyping() {
+  var msgs = document.getElementById('cw-messages');
+  var div = document.createElement('div');
+  div.className = 'cw-msg bot'; div.id = 'cw-typ';
+  div.innerHTML = '<div class="cw-bubble cw-typing">печатает...</div>';
+  msgs.appendChild(div);
+  msgs.scrollTop = msgs.scrollHeight;
+}
+
+function cwRemoveTyping() { var e = document.getElementById('cw-typ'); if(e) e.remove(); }
+
+async function cwSend() {
+  var inp = document.getElementById('cw-inp');
+  var text = inp.value.trim(); if (!text) return;
+  inp.value = '';
+  cwAddMsg(text, 'user');
+
+  // Режим ожидания контакта
+  if (cwWaitingContact) {
+    // Проверка контакта
+    var digits = text.replace(/\D/g, '');
+    var hasUsername = text.indexOf('@') !== -1;
+    var hasWhatsapp = /whatsapp|вотсап|ватсап/i.test(text);
+    var hasPhone = digits.length >= 10;
+
+    if (!hasUsername && !hasPhone) {
+      if (hasWhatsapp) {
+        cwAddMsg('Напишите номер для WhatsApp — например, +79001234567', 'bot');
+      } else {
+        cwAddMsg('Похоже контакт неполный. Напишите номер телефона, @username в Telegram или номер для WhatsApp', 'bot');
+      }
+      return;
+    }
+
+    cwWaitingContact = false;
+    cwAddMsg('Управляющий получил ваш контакт и свяжется в ближайшее время 🙏', 'bot');
+    var dialogLines = cwHistory.slice(-10).map(function(m) {
+      return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
+    }).join('\n');
+    fetch(APPS_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
+    }).catch(function(){});
+    fetch(APPS_URL, {
+      method: 'POST',
+      body: JSON.stringify({action: 'append', sheet: 'contacts', row: [new Date().toLocaleDateString('ru-RU'), new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), text, dialogLines]})
+    }).catch(function(){});
+    return;
+  }
+
+  cwHistory.push({role: 'user', content: text});
+  if (window.innerWidth <= 600) {
+    var sugs = document.getElementById('cw-sugs');
+    if (sugs) sugs.style.display = 'none';
+  }
+  cwTyping();
+  try {
+    var res = await fetch(APPS_URL, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      redirect: 'follow',
+      body: JSON.stringify({action: 'chat', messages: cwHistory})
+    });
+    var rawText = await res.text();
+    var data;
+    try { data = JSON.parse(rawText); } catch(e) {
+      cwRemoveTyping();
+      cwAddMsg('Не удалось получить ответ. Попробуйте ещё раз.', 'bot');
+      return;
+    }
+    cwRemoveTyping();
+    if (data.error) { cwAddMsg('Не удалось получить ответ. Напишите нам напрямую.', 'bot'); return; }
+    cwHistory.push({role: 'assistant', content: data.reply});
+    cwAddMsg(data.reply, 'bot');
+    try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
+
+    // Перехват передачи управляющему
+    if (data.reply && data.reply.includes('передам администратору')) {
+      cwWaitingContact = true;
+      setTimeout(function() {
+        cwAddMsg('Ваш контакт получит только управляющий. Как лучше с вами связаться? (телефон, Telegram или WhatsApp)', 'bot');
+      }, 600);
+    }
+
+    // Логирование диалога в таблицу
+    var now = new Date();
+    var dateStr = now.toLocaleDateString('ru-RU');
+    var timeStr = now.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
+    fetch(APPS_URL, {
+      method: 'POST',
+      body: JSON.stringify({
+        action: 'append',
+        sheet: 'chats',
+        row: [dateStr, timeStr, text, data.reply, cwHistory.length]
+      })
+    }).catch(function(){});
+  } catch(e) {
+    cwRemoveTyping();
+    cwAddMsg('Что-то пошло не так. Попробуйте чуть позже.', 'bot');
+  }
+}
+
+function cwSug(btn) {
+  document.getElementById('cw-inp').value = btn.textContent;
+  cwSend();
+}
+
+</script>
+
+<!-- SCROLL TO TOP -->
+<button id="scroll-top" onclick="window.scrollTo({top:0,behavior:'smooth'})" aria-label="Наверх">
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="18 15 12 9 6 15"/></svg>
+</button>
+<script>
+window.addEventListener('scroll', function() {
+  var btn = document.getElementById('scroll-top');
+  if (window.scrollY > 400) btn.classList.add('visible');
+  else btn.classList.remove('visible');
+});
+</script>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9998;background:var(--charcoal);color:rgba(255,255,255,0.85);padding:16px 24px;display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;font-size:13px;box-shadow:0 -4px 20px rgba(0,0,0,0.2)">
+  <p style="margin:0;flex:1;min-width:200px">Мы используем localStorage для сохранения истории чата. <a href="privacy.html" style="color:#B8F5D2;text-decoration:underline">Политика конфиденциальности</a></p>
+  <button onclick="cookieAccept()" style="font-family:DM Sans,sans-serif;font-size:13px;font-weight:500;background:#3E7057;color:white;border:none;padding:10px 22px;border-radius:50px;cursor:pointer;white-space:nowrap;flex-shrink:0">Понятно</button>
+</div>
+<script>
+(function() {
+  if (!localStorage.getItem('cookie_accepted')) {
+    document.getElementById('cookie-banner').style.display = 'flex';
+  }
+})();
+function cookieAccept() {
+  localStorage.setItem('cookie_accepted', '1');
+  document.getElementById('cookie-banner').style.display = 'none';
+}
+</script>
+<script>
+
+// ── SECRET ACCESS ──
+function copySecret(id) {
+  var el = document.getElementById(id);
+  if (el) navigator.clipboard.writeText(el.textContent).then(function(){ 
+    showToast && showToast('Скопировано!');
+  });
+}
+
+function initGuestAccess() {
+  var params = new URLSearchParams(window.location.search);
+  var token = params.get('token');
+  var objId = params.get('id');
+  if (!token || !objId) return;
+
+  // Verify token via GAS
+  fetch(APPS_URL + '?action=checkToken&token=' + encodeURIComponent(token) + '&objId=' + objId)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.property) {
+        var p = d.property;
+        document.getElementById('s-address').textContent = p.address_secret || '—';
+        document.getElementById('s-apt').textContent = p.apt_number || '—';
+        document.getElementById('s-door').textContent = p.door_code || '—';
+        document.getElementById('s-wifi-name').textContent = p.wifi_name || '—';
+        document.getElementById('s-wifi-pass').textContent = p.wifi_pass || '—';
+        document.getElementById('secret-section').classList.add('visible');
+        document.getElementById('secret-section').scrollIntoView({behavior:'smooth', block:'center'});
+      }
+    }).catch(function(){});
+}
+
 </script>
 </body>
 </html>
