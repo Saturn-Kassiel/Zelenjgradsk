@@ -1445,16 +1445,11 @@ function closeSidebar() {
 var adminPromoData = null;
 
 function loadAdminPromo() {
-  fetch(API + '?sheet=promo')
+  fetch(API + '/promo')
     .then(function(r){ return r.json(); })
     .then(function(d){
-      var rows = (d.data||[]).map(function(row){
-        var clean={};
-        Object.keys(row).forEach(function(k){clean[k.trim()]=row[k];});
-        return clean;
-      }).filter(function(r){
-        var a = String(r.active).toLowerCase();
-        return (a==='true'||a==='1') && r.price && r.date_from && r.date_to;
+      var rows = (d.data||[]).filter(function(r){
+        return r.active && r.price && r.date_from && r.date_to;
       });
       if (rows.length) {
         var r = rows[0];
@@ -1623,7 +1618,7 @@ function renderBookings(filter, search) {
     }
     if (search && b.name.toLowerCase().indexOf(search) === -1 && b.phone.indexOf(search) === -1) return false;
     if (period && b.in && b.in.substr(0,7) !== period) return false;
-    if (objFilter && b.obj !== objFilter) return false;
+    if (objFilter && objFilter !== 'all' && b.obj !== objFilter) return false;
     return true;
   });
   tbody.innerHTML = '';
