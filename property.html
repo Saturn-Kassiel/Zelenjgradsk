@@ -951,7 +951,7 @@ var propData = { price: 0, id: 1 };
 var promoData = null; // { obj_id, price, date_from, date_to }
 
 function loadPromoForProp() {
-  fetch(APPS_URL + '?sheet=promo')
+  fetch(APPS_URL + '/promo')
     .then(function(r){ return r.json(); })
     .then(function(d){
       var rows = (d.data||[]).map(function(row){
@@ -1076,7 +1076,7 @@ var statuses = {};
 
 function loadPropBookings() {
   var propId = getPropId();
-  fetch(APPS_URL + '?sheet=bookings')
+  fetch(APPS_URL + '/bookings')
     .then(function(r){ return r.json(); })
     .then(function(d){
       (d.data||[]).forEach(function(b){
@@ -1609,14 +1609,10 @@ async function cwSend() {
     var dialogLines = cwHistory.slice(-10).map(function(m) {
       return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
     }).join('\n');
-    fetch(APPS_URL, {
+    fetch(APPS_URL + '/contact', {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
-    }).catch(function(){});
-    fetch(APPS_URL, {
-      method: 'POST',
-      body: JSON.stringify({action: 'append', sheet: 'contacts', row: [new Date().toLocaleDateString('ru-RU'), new Date().toLocaleTimeString('ru-RU',{hour:'2-digit',minute:'2-digit'}), text, dialogLines]})
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({contact: text, dialog: dialogLines})
     }).catch(function(){});
     return;
   }
@@ -1628,11 +1624,10 @@ async function cwSend() {
   }
   cwTyping();
   try {
-    var res = await fetch(APPS_URL, {
+    var res = await fetch(APPS_URL + '/chat', {
       method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      redirect: 'follow',
-      body: JSON.stringify({action: 'chat', messages: cwHistory})
+      headers: {'Content-Type': 'application/json'},
+      body: JSON.stringify({messages: cwHistory, session_id: 'property_' + Date.now()})
     });
     var rawText = await res.text();
     var data;
@@ -1654,19 +1649,7 @@ async function cwSend() {
         cwAddMsg('Ваш контакт получит только управляющий. Как лучше с вами связаться? (телефон, Telegram или WhatsApp)', 'bot');
       }, 600);
     }
-
-    // Логирование диалога в таблицу
-    var now = new Date();
-    var dateStr = now.toLocaleDateString('ru-RU');
-    var timeStr = now.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
-    fetch(APPS_URL, {
-      method: 'POST',
-      body: JSON.stringify({
-        action: 'append',
-        sheet: 'chats',
-        row: [dateStr, timeStr, text, data.reply, cwHistory.length]
-      })
-    }).catch(function(){});
+    // Логирование теперь на сервере
   } catch(e) {
     cwRemoveTyping();
     cwAddMsg('Что-то пошло не так. Попробуйте чуть позже.', 'bot');
@@ -1725,7 +1708,7 @@ function initGuestAccess() {
   if (!token || !objId) return;
 
   // Verify token via GAS
-  fetch(APPS_URL + '?action=checkToken&token=' + encodeURIComponent(token) + '&objId=' + objId)
+  fetch(APPS_URL + '/bookings/token/' + encodeURIComponent(token))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.ok) {
