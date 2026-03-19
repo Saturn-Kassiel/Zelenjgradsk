@@ -1110,7 +1110,7 @@ function getPropId() {
 function driveDirectUrl(url) {
   if (!url) return '';
   var m = url.match(/\/d\/([a-zA-Z0-9_-]+)/);
-  if (m) return 'https://lh3.googleusercontent.com/d/' + m[1];
+  if (m) return 'https://lh3.googleusercontent.com/d/' + m[1] + '=w1200';
   return url;
 }
 
@@ -1123,6 +1123,7 @@ function parseCSV(text) {
     var vals = splitCSVLine(lines[i]);
     var obj = {};
     headers.forEach(function(h, idx){ obj[h] = (vals[idx]||'').replace(/^"|"$/g,'').trim(); });
+    if (!obj.id || !obj.name) continue;
     rows.push(obj);
   }
   return rows;
@@ -1288,6 +1289,7 @@ function loadPropData() {
 }
 
 var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+var dayNames = ['Пн','Вт','Ср','Чт','Пт','Сб','Вс'];
 
 function renderCalendar() {
   var year = calState.year, month = calState.month;
