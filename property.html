@@ -694,45 +694,21 @@ html { overflow-x: hidden; }
       </div>
 
       <!-- NEARBY (открытый блок) -->
-      <div class="section-block">
+      <div class="section-block" id="section-nearby">
         <div class="block-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>
           Что рядом
         </div>
-        <div id="nearby-container">
-          <div class="nearby-tabs">
-            <button class="nearby-tab active" onclick="switchNearbyTab(this,'panel-cafe')">Кафе</button>
-            <button class="nearby-tab" onclick="switchNearbyTab(this,'panel-shop')">Магазины</button>
-            <button class="nearby-tab" onclick="switchNearbyTab(this,'panel-pharm')">Аптеки</button>
-            <button class="nearby-tab" onclick="switchNearbyTab(this,'panel-sight')">Достопримечательности</button>
-          </div>
-          <div class="nearby-panel active" id="panel-cafe">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div class="nearby-name">Кофейня «Балтика»</div><div class="nearby-dist">180 м · открыто до 22:00</div></div></div>
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg></div><div><div class="nearby-name">Ресторан «Янтарь»</div><div class="nearby-dist">320 м · кухня до 23:00</div></div></div>
-          </div>
-          <div class="nearby-panel" id="panel-shop">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg></div><div><div class="nearby-name">Пятёрочка</div><div class="nearby-dist">200 м · 8:00–22:00</div></div></div>
-          </div>
-          <div class="nearby-panel" id="panel-pharm">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg></div><div><div class="nearby-name">Аптека «Здоровье»</div><div class="nearby-dist">250 м · 9:00–20:00</div></div></div>
-          </div>
-          <div class="nearby-panel" id="panel-sight">
-            <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg></div><div><div class="nearby-name">Пляж Балтийского моря</div><div class="nearby-dist">400 м пешком</div></div></div>
-          </div>
-        </div>
+        <div id="nearby-container"></div>
       </div>
 
       <!-- HOW TO GET HERE (открытый блок) -->
-      <div class="section-block">
+      <div class="section-block" id="section-directions">
         <div class="block-title">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
           Как добраться
         </div>
-        <div style="display:flex;flex-direction:column;gap:10px" id="directions-list">
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg></div><div><div class="nearby-name">Аэропорт Храброво</div><div class="nearby-dist">~55 км · 50 мин на авто или такси</div></div></div>
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4"/><line x1="3" y1="15" x2="21" y2="15"/></svg></div><div><div class="nearby-name">Из Калининграда</div><div class="nearby-dist">~35 км · автобус №122 или авто 30–40 мин</div></div></div>
-          <div class="nearby-item"><div class="nearby-icon"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="1" y="3" width="22" height="13" rx="2"/><path d="M16 17l3 4"/><path d="M8 17l-3 4"/><path d="M1 10h22"/></svg></div><div><div class="nearby-name">Ж/д вокзал Зеленоградск</div><div class="nearby-dist">2 км · 5 мин на такси</div></div></div>
-        </div>
+        <div style="display:flex;flex-direction:column;gap:10px" id="directions-list"></div>
       </div>
 
       <!-- КАСТОМНЫЕ РАЗДЕЛЫ -->
@@ -1307,10 +1283,12 @@ function applyPropData(prop) {
 
   // ── ЧТО РЯДОМ ──
   var nearbyEl = document.getElementById('nearby-container');
+  var nearbySec = document.getElementById('section-nearby');
   if (nearbyEl && prop.nearby) {
     var nearby;
     try { nearby = typeof prop.nearby === 'string' ? JSON.parse(prop.nearby) : prop.nearby; } catch(e) { nearby = []; }
     if (nearby && nearby.length) {
+      if (nearbySec) nearbySec.style.display = '';
       var categories = {};
       nearby.forEach(function(item){
         var cat = item.cat || 'other';
@@ -1337,15 +1315,21 @@ function applyPropData(prop) {
             }).join('') +
           '</div>';
         }).join('');
+    } else {
+      if (nearbySec) nearbySec.style.display = 'none';
     }
+  } else {
+    if (nearbySec) nearbySec.style.display = 'none';
   }
 
   // ── КАК ДОБРАТЬСЯ ──
   var directionsEl = document.getElementById('directions-list');
+  var directionsSec = document.getElementById('section-directions');
   if (directionsEl && prop.directions) {
     var directions;
     try { directions = typeof prop.directions === 'string' ? JSON.parse(prop.directions) : prop.directions; } catch(e) { directions = []; }
     if (directions && directions.length) {
+      if (directionsSec) directionsSec.style.display = '';
       var dirIcons = {
         plane: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.8 19.2L16 11l3.5-3.5C21 6 21 4 19.5 2.5S18 2 16.5 3.5L13 7 4.8 5.2c-.5-.1-.9.1-1.1.5l-.3.5c-.2.5-.1 1 .3 1.3L9 12l-2 3H4l-1 1 3 2 2 3 1-1v-3l3-2 3.5 5.3c.3.4.8.5 1.3.3l.5-.2c.4-.3.6-.7.5-1.2z"/></svg>',
         bus: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="10" rx="2"/><path d="M9 11V7a3 3 0 0 1 6 0v4"/><line x1="3" y1="15" x2="21" y2="15"/></svg>',
@@ -1356,7 +1340,11 @@ function applyPropData(prop) {
         var icon = dirIcons[item.icon] || dirIcons.car;
         return '<div class="nearby-item"><div class="nearby-icon">'+icon+'</div><div><div class="nearby-name">'+item.name+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
       }).join('');
+    } else {
+      if (directionsSec) directionsSec.style.display = 'none';
     }
+  } else {
+    if (directionsSec) directionsSec.style.display = 'none';
   }
   // ── КАСТОМНЫЕ РАЗДЕЛЫ ──
   var sectionsContainer = document.getElementById('custom-sections');
