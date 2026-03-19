@@ -2603,6 +2603,7 @@ function loadObjects(callback) {
 }
 
 loadObjects(function(){
+  updateObjSelects();
   loadBookings();
   loadExpenses();
   loadSupplies();
@@ -2610,6 +2611,50 @@ loadObjects(function(){
   loadPromoAdmin();
   loadAdminPromo();
 });
+
+function updateObjSelects() {
+  var ids = Object.keys(promoObjNames).sort();
+  if (!ids.length) return;
+
+  // Кнопки календаря
+  var calTabs = document.querySelector('.cal-obj-tabs');
+  if (calTabs) {
+    calTabs.innerHTML = ids.map(function(id, i){
+      return '<button class="cal-obj-tab'+(i===0?' active':'')+'" onclick="switchCalObj('+id+',this)">'+promoObjNames[id]+'</button>';
+    }).join('');
+    if (ids[0]) adminCalState.obj = parseInt(ids[0]);
+    renderAdminCal();
+  }
+
+  // Все select с объектами
+  var selects = ['nb-obj', 'booking-obj-filter', 'exp-obj', 'supply-obj', 'promo-obj'];
+  selects.forEach(function(selId){
+    var sel = document.getElementById(selId);
+    if (!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = (selId === 'booking-obj-filter' ? '<option value="all">Все объекты</option>' : '') +
+      ids.map(function(id){
+        return '<option value="'+id+'">'+promoObjNames[id]+(promoObjPrices[id]?' — '+promoObjPrices[id].toLocaleString('ru')+' ₽/ночь':'')+'</option>';
+      }).join('');
+    if (cur) sel.value = cur;
+  });
+
+  // Select в форме новой брони (без цены)
+  var nbObj = document.getElementById('nb-obj');
+  if (nbObj) {
+    nbObj.innerHTML = ids.map(function(id){
+      return '<option value="'+id+'">'+promoObjNames[id]+'</option>';
+    }).join('');
+  }
+
+  // Клининг-селекты
+  ['clean-obj-1','clean-obj-2'].forEach(function(selId, i){
+    var sel = document.getElementById(selId);
+    if (sel && ids[i]) {
+      sel.innerHTML = '<option value="'+ids[i]+'">'+promoObjNames[ids[i]]+'</option>';
+    }
+  });
+}
 
 // Делегированный обработчик для кнопок памятки
 document.addEventListener('click', function(e) {
