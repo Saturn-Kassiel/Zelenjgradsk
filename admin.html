@@ -884,6 +884,27 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 </div>
 
 <!-- MODAL: Confirm Delete -->
+<!-- MODAL: Send Memo -->
+<div class="modal-overlay" id="modal-memo" onclick="closeModalBg(event,'modal-memo')">
+  <div class="modal" style="max-width:400px;padding:28px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(62,112,87,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+      </div>
+      <div class="modal-title" style="font-size:18px">Отправить памятку гостю?</div>
+      <div id="memo-guest" style="font-size:13px;color:var(--muted);margin-top:6px"></div>
+      <div id="memo-warning" style="display:none;margin-top:12px;padding:10px 14px;background:rgba(224,154,43,0.1);border:1px solid rgba(224,154,43,0.35);border-radius:12px;font-size:12px;color:#b07d1a;text-align:left;align-items:flex-start;gap:8px">
+        <svg style="flex-shrink:0;margin-top:1px" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+        <span>Памятка уже отправлялась. Предыдущая ссылка станет недействительной.</span>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-memo')">Отмена</button>
+      <button class="btn btn-primary" style="justify-content:center" onclick="confirmMemo()">Отправить</button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;padding:28px">
     <div style="text-align:center;margin-bottom:20px">
@@ -1267,26 +1288,38 @@ function changeStatus(id, sel) {
   loadBookings();
 }
 
+var _pendingMemo = null;
+
 function sendGuestMemo(bookingId, objId, guestName, checkinDate, checkoutDate, existingToken) {
   var isRepeat = existingToken && existingToken.trim() !== '';
-  var msg = 'Отправить памятку гостю ' + guestName + '?';
-  if (isRepeat) {
-    msg += '\n\n⚠️ Памятка уже отправлялась. Предыдущая ссылка станет недействительной.';
-  }
-  if (!confirm(msg)) return;
+  var objName = (promoObjNames && promoObjNames[String(objId)]) || ('Объект ' + objId);
+  var checkinFormatted = checkinDate ? checkinDate.split('-').reverse().join('.') : '—';
+
+  document.getElementById('memo-guest').textContent = guestName + ' · ' + objName + ' · заезд ' + checkinFormatted;
+
+  var warn = document.getElementById('memo-warning');
+  if (isRepeat) { warn.style.display = 'flex'; } else { warn.style.display = 'none'; }
+
+  _pendingMemo = { bookingId: bookingId, objId: objId, guestName: guestName, checkinDate: checkinDate, checkoutDate: checkoutDate, objName: objName };
+  openModal('modal-memo');
+}
+
+function confirmMemo() {
+  closeModal('modal-memo');
+  if (!_pendingMemo) return;
+  var m = _pendingMemo; _pendingMemo = null;
 
   var token = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
   var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html';
-  var accessUrl = base + '?id=' + objId + '&token=' + token +
-    (checkinDate  ? '&in='  + checkinDate  : '') +
-    (checkoutDate ? '&out=' + checkoutDate : '');
+  var accessUrl = base + '?id=' + m.objId + '&token=' + token +
+    (m.checkinDate  ? '&in='  + m.checkinDate  : '') +
+    (m.checkoutDate ? '&out=' + m.checkoutDate : '');
 
-  var checkinFormatted  = checkinDate  ? checkinDate.split('-').reverse().join('.')  : '—';
-  var checkoutFormatted = checkoutDate ? checkoutDate.split('-').reverse().join('.') : '—';
-  var objName = (promoObjNames && promoObjNames[String(objId)]) || ('Объект ' + objId);
+  var checkinFormatted  = m.checkinDate  ? m.checkinDate.split('-').reverse().join('.')  : '—';
+  var checkoutFormatted = m.checkoutDate ? m.checkoutDate.split('-').reverse().join('.') : '—';
 
-  var memoText = '🔑 Памятка для гостя ' + guestName +
-    '\nОбъект: ' + objName +
+  var memoText = '🔑 Памятка для гостя ' + m.guestName +
+    '\nОбъект: ' + m.objName +
     '\nЗаезд: ' + checkinFormatted +
     '\nВыезд: ' + checkoutFormatted +
     '\nСсылка для гостя:\n' + accessUrl;
@@ -1294,24 +1327,17 @@ function sendGuestMemo(bookingId, objId, guestName, checkinDate, checkoutDate, e
   fetch(API, {
     method: 'POST',
     headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({action: 'saveToken', bookingId: bookingId, token: token, memoText: memoText})
+    body: JSON.stringify({action: 'saveToken', bookingId: m.bookingId, token: token, memoText: memoText})
   }).then(function(r){ return r.json(); })
     .then(function(d){
-      if (d && d.ok) {
-        showToast('Памятка отправлена в Telegram! Перешлите гостю.');
-        loadBookings();
-      } else {
-        showToast('Ошибка: ' + (d && d.error ? d.error : 'неизвестно'));
-      }
+      if (d && d.ok) { showToast('Памятка отправлена в Telegram! Перешлите гостю.'); loadBookings(); }
+      else { showToast('Ошибка: ' + (d && d.error ? d.error : 'неизвестно')); }
     }).catch(function(){ showToast('Ошибка сети'); });
 
   navigator.clipboard.writeText(memoText).catch(function(){
     var ta = document.createElement('textarea');
-    ta.value = memoText;
-    document.body.appendChild(ta);
-    ta.select();
-    document.execCommand('copy');
-    document.body.removeChild(ta);
+    ta.value = memoText; document.body.appendChild(ta);
+    ta.select(); document.execCommand('copy'); document.body.removeChild(ta);
   });
 }
 
