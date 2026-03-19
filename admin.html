@@ -373,6 +373,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       Объекты
     </div>
+    <div class="nav-item" onclick="showPage('alina')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      Алина (промпт)
+    </div>
     <div class="nav-item" onclick="showPage('promo')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Промо / Спецпредложение
@@ -691,6 +695,53 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
       <div id="objects-list" style="display:flex;flex-direction:column;gap:16px">
         <div style="text-align:center;padding:40px;color:var(--muted)">Загрузка...</div>
+      </div>
+    </div>
+
+    <!-- ══ ALINA ══ -->
+    <div class="page" id="page-alina">
+      <div style="max-width:720px">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--teal),#4a6fa5);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div>
+              <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Алина — настройки промпта</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px">Как отвечает чат-бот гостям</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-outline" onclick="resetPrompt()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.71"/></svg>
+              Сбросить
+            </button>
+            <button class="btn btn-primary" onclick="savePrompt()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Сохранить всё
+            </button>
+          </div>
+        </div>
+
+        <!-- ПРЕДУСТАНОВЛЕННЫЕ РАЗДЕЛЫ -->
+        <div id="alina-preset-fields" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
+
+        <!-- КАСТОМНЫЕ РАЗДЕЛЫ -->
+        <div id="alina-custom-fields" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
+
+        <!-- ДОБАВИТЬ РАЗДЕЛ -->
+        <div style="background:var(--bg);border:2px dashed var(--silver);border-radius:14px;padding:20px;text-align:center">
+          <div style="font-size:13px;color:var(--muted);margin-bottom:12px">Добавить новый раздел для Алины</div>
+          <div style="display:flex;gap:10px;max-width:480px;margin:0 auto">
+            <input type="text" class="form-input-a" id="new-prompt-key" placeholder="Название раздела (напр: Театры)" style="flex:1">
+            <button class="btn btn-primary" onclick="addPromptField()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Добавить
+            </button>
+          </div>
+        </div>
+
       </div>
     </div>
 
@@ -1184,19 +1235,20 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', promo:'Промо / Спецпредложение', objects:'Объекты' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', objects:'Объекты', alina:'Алина — промпт', promo:'Промо / Спецпредложение' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','objects','promo'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','objects','alina','promo'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
   closeSidebar();
   if (name === 'objects') loadObjectsPage();
+  if (name === 'alina') loadPromptPage();
 }
 
 function topbarPrimary() {
@@ -2613,6 +2665,136 @@ function deleteObject(id) {
       if (d.ok) { showToast('Объект удалён'); loadObjectsPage(); }
       else { showToast('Ошибка: ' + (d.error||'неизвестно')); }
     }).catch(function(){ showToast('Ошибка сети'); });
+}
+
+// ── ALINA PROMPT ──
+var PRESET_KEYS = [
+  { key: 'character',      label: 'Характер Алины',         placeholder: 'Дружелюбная, честная, отвечает коротко...' },
+  { key: 'style',          label: 'Стиль ответов',           placeholder: 'Без лишних слов, по делу...' },
+  { key: 'checkin',        label: 'Заезд / Выезд',           placeholder: 'Заезд с 14:00, выезд до 12:00...' },
+  { key: 'includes',       label: 'Что включено',            placeholder: 'Wi-Fi, постельное бельё, полотенца...' },
+  { key: 'parking',        label: 'Парковка',                placeholder: 'Бесплатная во дворе...' },
+  { key: 'pets',           label: 'Животные',                placeholder: 'По согласованию, доп. оплата...' },
+  { key: 'guests_policy',  label: 'Политика гостей',         placeholder: 'До 3 гостей, 3-й гость +500₽/ночь...' },
+  { key: 'location',       label: 'Локация',                 placeholder: 'Зеленоградск, 5 мин до моря...' },
+  { key: 'nearby_1',       label: 'Инфраструктура — Заря',   placeholder: 'SPAR 200м, кафе Балтика 300м...' },
+  { key: 'nearby_2',       label: 'Инфраструктура — Янтарный закат', placeholder: 'Магнит 150м...' },
+  { key: 'payment',        label: 'Оплата',                  placeholder: 'Наличные, перевод на карту...' },
+  { key: 'cancellation',   label: 'Отмена бронирования',     placeholder: 'За 3 дня — полный возврат...' },
+  { key: 'checkout_rules', label: 'Правила выезда',          placeholder: 'Вынести мусор, сдать ключи...' },
+  { key: 'emergency',      label: 'Экстренные контакты',     placeholder: '+7 (999) 123-45-67 — управляющий...' },
+  { key: 'escalate',       label: 'Когда передавать человеку', placeholder: 'При вопросах об оплате, жалобах...' },
+];
+
+var _promptData = {};
+var _customKeys = [];
+
+function loadPromptPage() {
+  fetch(API + '/prompt_settings')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _promptData = {};
+      var presetKeySet = PRESET_KEYS.map(function(p){ return p.key; });
+      _customKeys = [];
+      (d.data || []).forEach(function(row){
+        _promptData[row.key] = row.value;
+        if (presetKeySet.indexOf(row.key) === -1 && row.value) {
+          _customKeys.push(row.key);
+        }
+      });
+      renderPromptFields();
+    }).catch(function(){});
+}
+
+function renderPromptFields() {
+  var presetEl = document.getElementById('alina-preset-fields');
+  presetEl.innerHTML = PRESET_KEYS.map(function(p){
+    return promptFieldHtml(p.key, p.label, p.placeholder, false);
+  }).join('');
+  var customEl = document.getElementById('alina-custom-fields');
+  customEl.innerHTML = _customKeys.map(function(key){
+    return promptFieldHtml(key, key, '', true);
+  }).join('');
+}
+
+function promptFieldHtml(key, label, placeholder, deletable) {
+  var val = (_promptData[key] || '');
+  var rows = Math.max(3, Math.min(8, (val.split('\n').length + 1)));
+  var safeVal = val.replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  return '<div style="background:var(--white);border-radius:14px;border:1px solid var(--silver);overflow:hidden" id="pf-wrap-'+key+'">' +
+    '<div style="display:flex;align-items:center;justify-content:space-between;padding:14px 18px 10px">' +
+      '<div style="display:flex;align-items:center;gap:8px">' +
+        '<div style="width:6px;height:6px;border-radius:50%;background:var(--teal);flex-shrink:0"></div>' +
+        '<span style="font-size:13px;font-weight:700;color:var(--charcoal)">' + label + '</span>' +
+        '<span style="font-size:10px;color:var(--muted);font-family:monospace;background:var(--bg);padding:2px 7px;border-radius:6px">' + key + '</span>' +
+      '</div>' +
+      (deletable ? '<button onclick="deletePromptField(\''+key+'\')" style="width:28px;height:28px;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)" title="Удалить раздел">' +
+        '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
+      '</button>' : '') +
+    '</div>' +
+    '<div style="padding:0 14px 14px">' +
+      '<textarea id="pf-'+key+'" rows="'+rows+'" style="font-family:DM Sans,sans-serif;width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--silver);background:var(--bg);font-size:13px;color:var(--charcoal);outline:none;resize:vertical;line-height:1.6;transition:border-color 0.2s" onfocus="this.style.borderColor=\'var(--teal)\'" onblur="this.style.borderColor=\'var(--silver)\'" placeholder="'+placeholder+'">'+safeVal+'</textarea>' +
+    '</div>' +
+  '</div>';
+}
+
+function addPromptField() {
+  var keyInput = document.getElementById('new-prompt-key');
+  var rawLabel = keyInput.value.trim();
+  if (!rawLabel) { showToast('Введите название раздела'); return; }
+  var key = rawLabel.toLowerCase()
+    .replace(/[а-яё]/g, function(c){ var m={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'}; return m[c]||c; })
+    .replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
+  if (!key) { showToast('Некорректное название'); return; }
+  if (_customKeys.indexOf(key) !== -1 || PRESET_KEYS.find(function(p){ return p.key===key; })) {
+    showToast('Такой раздел уже есть'); return;
+  }
+  _promptData[key] = '';
+  _customKeys.push(key);
+  keyInput.value = '';
+  var customEl = document.getElementById('alina-custom-fields');
+  var tmp = document.createElement('div');
+  tmp.innerHTML = promptFieldHtml(key, rawLabel, '', true);
+  customEl.appendChild(tmp.firstChild);
+  showToast('Раздел «' + rawLabel + '» добавлен');
+}
+
+function deletePromptField(key) {
+  if (!confirm('Удалить раздел «' + key + '»?')) return;
+  _customKeys = _customKeys.filter(function(k){ return k !== key; });
+  delete _promptData[key];
+  var wrap = document.getElementById('pf-wrap-' + key);
+  if (wrap) wrap.remove();
+  showToast('Раздел удалён');
+}
+
+function savePrompt() {
+  var allKeys = PRESET_KEYS.map(function(p){ return p.key; }).concat(_customKeys);
+  var saveBtn = document.querySelector('#page-alina .btn-primary');
+  if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Сохраняем...'; }
+  var promises = allKeys.map(function(key){
+    var el = document.getElementById('pf-' + key);
+    if (!el) return Promise.resolve();
+    return fetch(API + '/prompt_settings', {
+      method: 'POST',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ key: key, value: el.value })
+    });
+  });
+  Promise.all(promises)
+    .then(function(){
+      showToast('Промпт Алины сохранён ✓');
+      if (saveBtn) { saveBtn.disabled = false; saveBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Сохранить всё'; }
+    })
+    .catch(function(){
+      showToast('Ошибка сохранения');
+      if (saveBtn) { saveBtn.disabled = false; }
+    });
+}
+
+function resetPrompt() {
+  if (!confirm('Сбросить изменения? Данные перезагрузятся с сервера.')) return;
+  loadPromptPage();
 }
 
 // ── AUTH ──
