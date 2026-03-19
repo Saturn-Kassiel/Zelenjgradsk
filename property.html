@@ -1178,12 +1178,10 @@ function applyPropData(prop) {
 
 function loadPropData() {
   var propId = getPropId();
-  fetch(APPS_URL + '?sheet=objects')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      var props = (d.data || []).map(function(p){
-        var c = {}; Object.keys(p).forEach(function(k){ c[k.trim()] = p[k]; }); return c;
-      });
+  fetch(SHEET_URL)
+    .then(function(r){ return r.text(); })
+    .then(function(text){
+      var props = parseCSV(text);
       var prop = props.find(function(p){ return parseInt(p.id) === propId; }) || props[0];
       if (prop) {
         console.log('propData loaded:', JSON.stringify(prop));
@@ -1192,6 +1190,8 @@ function loadPropData() {
     })
     .catch(function(e){ console.log('loadPropData error:', e); });
 }
+
+var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
 
 function renderCalendar() {
   var year = calState.year, month = calState.month;
@@ -1656,15 +1656,23 @@ function initGuestAccess() {
   fetch(APPS_URL + '?action=checkToken&token=' + encodeURIComponent(token) + '&objId=' + objId)
     .then(function(r){ return r.json(); })
     .then(function(d){
-      if (d.ok && d.property) {
-        var p = d.property;
-        document.getElementById('s-address').textContent = p.address_secret || '—';
-        document.getElementById('s-apt').textContent = p.apt_number || '—';
-        document.getElementById('s-door').textContent = p.door_code || '—';
-        document.getElementById('s-wifi-name').textContent = p.wifi_name || '—';
-        document.getElementById('s-wifi-pass').textContent = p.wifi_pass || '—';
-        document.getElementById('secret-section').classList.add('visible');
-        document.getElementById('secret-section').scrollIntoView({behavior:'smooth', block:'center'});
+      if (d.ok) {
+        // Token valid - load secret data from CSV (same as main page)
+        fetch(SHEET_URL)
+          .then(function(r){ return r.text(); })
+          .then(function(text){
+            var props = parseCSV(text);
+            var prop = props.find(function(p){ return String(p.id) === String(objId); });
+            if (prop) {
+              document.getElementById('s-address').textContent = prop.address_secret || '—';
+              document.getElementById('s-apt').textContent = prop.apt_number || '—';
+              document.getElementById('s-door').textContent = prop.door_code || '—';
+              document.getElementById('s-wifi-name').textContent = prop.wifi_name || '—';
+              document.getElementById('s-wifi-pass').textContent = prop.wifi_pass || '—';
+              document.getElementById('secret-section').classList.add('visible');
+              document.getElementById('secret-section').scrollIntoView({behavior:'smooth', block:'center'});
+            }
+          });
       }
     }).catch(function(){});
 }
