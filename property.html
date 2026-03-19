@@ -1402,6 +1402,8 @@ function applyPropData(prop) {
     }
   }
 }
+
+function switchNearbyTab(btn, panelId) {
   var container = btn.closest('.section-block') || document.getElementById('nearby-container');
   if (!container) return;
   container.querySelectorAll('.nearby-tab').forEach(function(t){ t.classList.remove('active'); });
