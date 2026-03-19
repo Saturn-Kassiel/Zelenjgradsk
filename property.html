@@ -1296,15 +1296,25 @@ function applyPropData(prop) {
 
 function loadPropData() {
   var propId = getPropId();
-  fetch(SHEET_URL)
-    .then(function(r){ return r.text(); })
-    .then(function(text){
-      var props = parseCSV(text);
-      var prop = props.find(function(p){ return parseInt(p.id) === propId; }) || props[0];
-      if (prop) {
-        console.log('propData loaded:', JSON.stringify(prop));
-        try { applyPropData(prop); } catch(e) { console.log('Sheets load error:', e); }
-      }
+  fetch(APPS_URL + '/objects/' + propId)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok || !d.data) return;
+      var o = d.data;
+      var prop = {
+        id: String(o.id), name: o.name||'', description: o.description||'',
+        description_full: o.description_full||'', price: String(o.price||0),
+        rooms: String(o.rooms||1), guests: String(o.guests||2),
+        address: o.address||'', features: o.features||'',
+        address_secret: o.address_secret||'', wifi_name: o.wifi_name||'',
+        wifi_pass: o.wifi_pass||'', door_code: o.door_code||'',
+        apt_number: o.apt_number||'', apt_entry: o.apt_entry||'',
+        image_1: o.image_1||'', image_2: o.image_2||'', image_3: o.image_3||'',
+        image_4: o.image_4||'', image_5: o.image_5||'', image_6: o.image_6||'',
+        image_7: o.image_7||'', image_8: o.image_8||'', image_9: o.image_9||'',
+        image_10: o.image_10||''
+      };
+      try { applyPropData(prop); } catch(e) { console.log('applyPropData error:', e); }
     })
     .catch(function(e){ console.log('loadPropData error:', e); });
 }
