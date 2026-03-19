@@ -1160,6 +1160,59 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
     </div>
 
+    <!-- УДОБСТВА -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 11 12 14 22 4"/><path d="M21 12v7a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11"/></svg>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Удобства</span>
+        </div>
+        <button onclick="addObjItem('amenities-editor','Новое удобство')" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px solid var(--teal);border-radius:20px;padding:4px 12px;cursor:pointer">+ Добавить</button>
+      </div>
+      <div id="amenities-editor" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Каждая строка — одно удобство</div>
+    </div>
+
+    <!-- ПРАВИЛА -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Правила проживания</span>
+        </div>
+        <div style="display:flex;gap:6px">
+          <button onclick="addObjRule('rules-editor',false)" style="font-size:11px;font-weight:600;color:var(--danger);background:none;border:1.5px solid var(--danger);border-radius:20px;padding:4px 12px;cursor:pointer">✕ Запрет</button>
+          <button onclick="addObjRule('rules-editor',true)" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px solid var(--teal);border-radius:20px;padding:4px 12px;cursor:pointer">✓ Разрешено</button>
+        </div>
+      </div>
+      <div id="rules-editor" style="display:flex;flex-direction:column;gap:8px"></div>
+      <div style="font-size:11px;color:var(--muted);margin-top:8px">Начните строку с + для разрешения, без + — запрет</div>
+    </div>
+
+    <!-- ЧТО РЯДОМ -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Что рядом</span>
+        </div>
+        <button onclick="addNearbyItem()" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px solid var(--teal);border-radius:20px;padding:4px 12px;cursor:pointer">+ Добавить</button>
+      </div>
+      <div id="nearby-editor" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
+    <!-- КАК ДОБРАТЬСЯ -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+        <div style="display:flex;align-items:center;gap:8px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/></svg>
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Как добраться</span>
+        </div>
+        <button onclick="addDirectionItem()" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px solid var(--teal);border-radius:20px;padding:4px 12px;cursor:pointer">+ Добавить</button>
+      </div>
+      <div id="directions-editor" style="display:flex;flex-direction:column;gap:8px"></div>
+    </div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
       <button class="btn btn-outline" style="justify-content:center;padding:13px" onclick="closeModal('modal-object')">Отмена</button>
       <button class="btn btn-primary" style="justify-content:center;padding:13px" onclick="saveObject()">
@@ -2786,6 +2839,157 @@ document.addEventListener('click', function(e) {
   );
 });
 
+// ── OBJECT EDITORS ──
+function deleteRowBtn(el) { el.closest('[data-row]').remove(); }
+
+function editorRowHtml(value, placeholder) {
+  return '<div data-row style="display:flex;align-items:center;gap:8px">' +
+    '<input type="text" class="form-input-a" value="'+value.replace(/"/g,'&quot;')+'" placeholder="'+placeholder+'" style="flex:1;margin:0">' +
+    '<button onclick="deleteRowBtn(this)" style="width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+    '</button>' +
+  '</div>';
+}
+
+function addObjItem(editorId, placeholder) {
+  var el = document.getElementById(editorId);
+  if (!el) return;
+  var div = document.createElement('div');
+  div.innerHTML = editorRowHtml('', placeholder || 'Введите значение');
+  el.appendChild(div.firstChild);
+  el.lastChild.querySelector('input').focus();
+}
+
+function addObjRule(editorId, isAllow) {
+  var el = document.getElementById(editorId);
+  if (!el) return;
+  var prefix = isAllow ? '+ ' : '';
+  var placeholder = isAllow ? '+ Что разрешено' : 'Что запрещено';
+  var div = document.createElement('div');
+  div.innerHTML = editorRowHtml(prefix, placeholder);
+  el.appendChild(div.firstChild);
+  el.lastChild.querySelector('input').focus();
+}
+
+function nearbyRowHtml(item) {
+  var cats = ['cafe','shop','pharm','sight','other'];
+  var catNames = { cafe:'Кафе', shop:'Магазины', pharm:'Аптеки', sight:'Достопримечательности', other:'Прочее' };
+  return '<div data-row style="display:flex;gap:8px;align-items:center">' +
+    '<select class="form-input-a" style="flex:0 0 140px;margin:0;padding:8px 10px" data-field="cat">' +
+      cats.map(function(c){ return '<option value="'+c+'"'+(item.cat===c?' selected':'')+'>'+catNames[c]+'</option>'; }).join('') +
+    '</select>' +
+    '<input type="text" class="form-input-a" value="'+(item.name||'').replace(/"/g,'&quot;')+'" placeholder="Название" style="flex:1;margin:0" data-field="name">' +
+    '<input type="text" class="form-input-a" value="'+(item.dist||'').replace(/"/g,'&quot;')+'" placeholder="180 м · часы" style="flex:1;margin:0" data-field="dist">' +
+    '<button onclick="deleteRowBtn(this)" style="width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+    '</button>' +
+  '</div>';
+}
+
+function addNearbyItem() {
+  var el = document.getElementById('nearby-editor');
+  var div = document.createElement('div');
+  div.innerHTML = nearbyRowHtml({ cat:'cafe', name:'', dist:'' });
+  el.appendChild(div.firstChild);
+}
+
+function directionRowHtml(item) {
+  var icons = ['plane','bus','train','car'];
+  var iconNames = { plane:'✈️ Самолёт', bus:'🚌 Автобус', train:'🚂 Поезд', car:'🚗 Машина' };
+  return '<div data-row style="display:flex;gap:8px;align-items:center">' +
+    '<select class="form-input-a" style="flex:0 0 130px;margin:0;padding:8px 10px" data-field="icon">' +
+      icons.map(function(ic){ return '<option value="'+ic+'"'+(item.icon===ic?' selected':'')+'>'+iconNames[ic]+'</option>'; }).join('') +
+    '</select>' +
+    '<input type="text" class="form-input-a" value="'+(item.name||'').replace(/"/g,'&quot;')+'" placeholder="Название маршрута" style="flex:1;margin:0" data-field="name">' +
+    '<input type="text" class="form-input-a" value="'+(item.dist||'').replace(/"/g,'&quot;')+'" placeholder="~55 км · 50 мин" style="flex:1;margin:0" data-field="dist">' +
+    '<button onclick="deleteRowBtn(this)" style="width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
+      '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+    '</button>' +
+  '</div>';
+}
+
+function addDirectionItem() {
+  var el = document.getElementById('directions-editor');
+  var div = document.createElement('div');
+  div.innerHTML = directionRowHtml({ icon:'car', name:'', dist:'' });
+  el.appendChild(div.firstChild);
+}
+
+function getEditorValues(editorId) {
+  var el = document.getElementById(editorId);
+  if (!el) return '';
+  return Array.from(el.querySelectorAll('[data-row] input[type="text"]'))
+    .map(function(i){ return i.value.trim(); }).filter(Boolean).join(';');
+}
+
+function getNearbyValues() {
+  var el = document.getElementById('nearby-editor');
+  if (!el) return [];
+  return Array.from(el.querySelectorAll('[data-row]')).map(function(row){
+    return {
+      cat: row.querySelector('[data-field="cat"]').value,
+      name: row.querySelector('[data-field="name"]').value.trim(),
+      dist: row.querySelector('[data-field="dist"]').value.trim()
+    };
+  }).filter(function(i){ return i.name; });
+}
+
+function getDirectionValues() {
+  var el = document.getElementById('directions-editor');
+  if (!el) return [];
+  return Array.from(el.querySelectorAll('[data-row]')).map(function(row){
+    return {
+      icon: row.querySelector('[data-field="icon"]').value,
+      name: row.querySelector('[data-field="name"]').value.trim(),
+      dist: row.querySelector('[data-field="dist"]').value.trim()
+    };
+  }).filter(function(i){ return i.name; });
+}
+
+function populateEditors(o) {
+  // Удобства
+  var amEl = document.getElementById('amenities-editor');
+  amEl.innerHTML = '';
+  var amenities = (o.amenities || o.features || '').split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+  amenities.forEach(function(a){
+    var div = document.createElement('div');
+    div.innerHTML = editorRowHtml(a, 'Удобство');
+    amEl.appendChild(div.firstChild);
+  });
+
+  // Правила
+  var ruEl = document.getElementById('rules-editor');
+  ruEl.innerHTML = '';
+  var rules = (o.rules || '').split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+  rules.forEach(function(r){
+    var div = document.createElement('div');
+    div.innerHTML = editorRowHtml(r, 'Правило');
+    ruEl.appendChild(div.firstChild);
+  });
+
+  // Что рядом
+  var nbEl = document.getElementById('nearby-editor');
+  nbEl.innerHTML = '';
+  var nearby = [];
+  try { nearby = typeof o.nearby === 'string' ? JSON.parse(o.nearby||'[]') : (o.nearby||[]); } catch(e) {}
+  nearby.forEach(function(item){
+    var div = document.createElement('div');
+    div.innerHTML = nearbyRowHtml(item);
+    nbEl.appendChild(div.firstChild);
+  });
+
+  // Как добраться
+  var drEl = document.getElementById('directions-editor');
+  drEl.innerHTML = '';
+  var dirs = [];
+  try { dirs = typeof o.directions === 'string' ? JSON.parse(o.directions||'[]') : (o.directions||[]); } catch(e) {}
+  dirs.forEach(function(item){
+    var div = document.createElement('div');
+    div.innerHTML = directionRowHtml(item);
+    drEl.appendChild(div.firstChild);
+  });
+}
+
 // ── OBJECTS ──
 var objects = [];
 var editingObjectId = null;
@@ -2861,6 +3065,7 @@ function openObjectModal(id) {
   for (var i=1; i<=10; i++) {
     document.getElementById('obj-img-'+i).value = o['image_'+i]||'';
   }
+  populateEditors(o);
   openModal('modal-object');
 }
 
@@ -2874,7 +3079,11 @@ function saveObject() {
     price: parseInt(document.getElementById('obj-price').value)||0,
     rooms: parseInt(document.getElementById('obj-rooms').value)||1,
     guests: parseInt(document.getElementById('obj-guests').value)||2,
-    features: document.getElementById('obj-features').value.trim(),
+    features: getEditorValues('amenities-editor') || document.getElementById('obj-features').value.trim(),
+    amenities: getEditorValues('amenities-editor'),
+    rules: getEditorValues('rules-editor'),
+    nearby: getNearbyValues(),
+    directions: getDirectionValues(),
     address: document.getElementById('obj-address').value.trim(),
     address_secret: document.getElementById('obj-address-secret').value.trim(),
     apt_number: document.getElementById('obj-apt-number').value.trim(),
