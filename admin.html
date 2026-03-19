@@ -369,6 +369,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       Дашборд
     </div>
     <div class="nav-section-label">Настройки</div>
+    <div class="nav-item" onclick="showPage('objects')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      Объекты
+    </div>
     <div class="nav-item" onclick="showPage('promo')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Промо / Спецпредложение
@@ -673,6 +677,23 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
     </div>
 
+    <!-- ══ OBJECTS ══ -->
+    <div class="page" id="page-objects">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div>
+          <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Объекты</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Управление апартаментами</div>
+        </div>
+        <button class="btn btn-primary" onclick="openObjectModal()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Добавить объект
+        </button>
+      </div>
+      <div id="objects-list" style="display:flex;flex-direction:column;gap:16px">
+        <div style="text-align:center;padding:40px;color:var(--muted)">Загрузка...</div>
+      </div>
+    </div>
+
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-dashboard">
       <!-- Фильтр периода -->
@@ -905,6 +926,63 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
   </div>
 </div>
 
+<!-- MODAL: Object -->
+<div class="modal-overlay" id="modal-object" onclick="closeModalBg(event,'modal-object')">
+  <div class="modal" style="max-width:640px;padding:28px">
+    <button class="modal-close" onclick="closeModal('modal-object')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-label">Объект</div>
+    <div class="modal-title" id="obj-modal-title">Новый объект</div>
+    <div style="margin-top:20px;display:flex;flex-direction:column;gap:0">
+
+      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin:0 0 12px">Основная информация</div>
+      <div class="form-group"><label class="form-label">Название</label><input type="text" class="form-input" id="obj-name" placeholder="Балтийский бриз"></div>
+      <div class="form-group"><label class="form-label">Короткое описание</label><input type="text" class="form-input" id="obj-description" placeholder="Уютные апартаменты у моря"></div>
+      <div class="form-group"><label class="form-label">Полное описание</label><textarea class="form-input" id="obj-description-full" style="resize:vertical;min-height:80px" placeholder="Подробное описание объекта..."></textarea></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Цена, ₽/ночь</label><input type="number" class="form-input" id="obj-price" placeholder="4000"></div>
+        <div class="form-group"><label class="form-label">Спален</label><input type="number" class="form-input" id="obj-rooms" placeholder="1" value="1"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Гостей max</label><input type="number" class="form-input" id="obj-guests" placeholder="2" value="2"></div>
+        <div class="form-group"><label class="form-label">Особенности (через ;)</label><input type="text" class="form-input" id="obj-features" placeholder="Wi-Fi;Парковка"></div>
+      </div>
+      <div class="form-group"><label class="form-label">Адрес (публичный)</label><input type="text" class="form-input" id="obj-address" placeholder="Зеленоградск, ул. Большая Окружная, 26"></div>
+
+      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin:16px 0 12px">Данные для заезда</div>
+      <div class="form-group"><label class="form-label">Секретный адрес</label><input type="text" class="form-input" id="obj-address-secret" placeholder="Зеленоградск, Большая Окружная 26"></div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Квартира</label><input type="text" class="form-input" id="obj-apt-number" placeholder="Кв. 31, 1 подъезд 8 этаж"></div>
+        <div class="form-group"><label class="form-label">Код домофона</label><input type="text" class="form-input" id="obj-door-code" placeholder="B2021B"></div>
+      </div>
+      <div class="form-row">
+        <div class="form-group"><label class="form-label">Wi-Fi сеть</label><input type="text" class="form-input" id="obj-wifi-name" placeholder="Zarya"></div>
+        <div class="form-group"><label class="form-label">Пароль Wi-Fi</label><input type="text" class="form-input" id="obj-wifi-pass" placeholder="88888888"></div>
+      </div>
+
+      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin:16px 0 12px">Фотографии (ссылки)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+        <div class="form-group"><label class="form-label">Фото 1 (главное)</label><input type="text" class="form-input" id="obj-img-1" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 2</label><input type="text" class="form-input" id="obj-img-2" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 3</label><input type="text" class="form-input" id="obj-img-3" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 4</label><input type="text" class="form-input" id="obj-img-4" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 5</label><input type="text" class="form-input" id="obj-img-5" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 6</label><input type="text" class="form-input" id="obj-img-6" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 7</label><input type="text" class="form-input" id="obj-img-7" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 8</label><input type="text" class="form-input" id="obj-img-8" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 9</label><input type="text" class="form-input" id="obj-img-9" placeholder="https://..."></div>
+        <div class="form-group"><label class="form-label">Фото 10</label><input type="text" class="form-input" id="obj-img-10" placeholder="https://..."></div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
+        <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-object')">Отмена</button>
+        <button class="btn btn-primary" style="justify-content:center" onclick="saveObject()">Сохранить</button>
+      </div>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;padding:28px">
     <div style="text-align:center;margin-bottom:20px">
@@ -1083,18 +1161,19 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', promo:'Промо / Спецпредложение' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', promo:'Промо / Спецпредложение', objects:'Объекты' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','promo'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','objects','promo'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
   closeSidebar();
+  if (name === 'objects') loadObjectsPage();
 }
 
 function topbarPrimary() {
@@ -2355,10 +2434,10 @@ var promoObjImages = {};
 var promoObjPrices = {};
 
 function loadObjects(callback) {
-  fetch(SHEET_URL)
-    .then(function(r){ return r.text(); })
-    .then(function(text){
-      var props = parseCSVAdmin(text);
+  fetch(API + '/objects')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var props = d.data || [];
       props.forEach(function(p){
         var id = String(p.id||'');
         if (p.name)    promoObjNames[id]  = p.name;
@@ -2392,6 +2471,126 @@ document.addEventListener('click', function(e) {
     btn.dataset.token
   );
 });
+
+// ── OBJECTS ──
+var objects = [];
+var editingObjectId = null;
+
+function loadObjectsPage() {
+  fetch(API + '/objects')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      objects = d.data || [];
+      renderObjects();
+      // Обновляем promoObjNames из БД
+      objects.forEach(function(o){
+        promoObjNames[String(o.id)] = o.name;
+        if (o.image_1) promoObjImages[String(o.id)] = o.image_1;
+        if (o.price)   promoObjPrices[String(o.id)] = o.price;
+      });
+    }).catch(function(){});
+}
+
+function renderObjects() {
+  var list = document.getElementById('objects-list');
+  if (!objects.length) {
+    list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted)">Объектов пока нет. Добавьте первый.</div>';
+    return;
+  }
+  list.innerHTML = objects.map(function(o) {
+    var imgHtml = o.image_1
+      ? '<img src="'+o.image_1+'" style="width:100%;height:100%;object-fit:cover;display:block" onerror="this.parentNode.style.background=\'linear-gradient(135deg,#E2F0D9,#BFEDF2)\';this.remove()">'
+      : '';
+    return '<div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);overflow:hidden;display:flex;gap:0">' +
+      '<div style="width:140px;min-width:140px;height:120px;background:linear-gradient(135deg,#E2F0D9,#BFEDF2);flex-shrink:0;overflow:hidden">' + imgHtml + '</div>' +
+      '<div style="padding:16px 20px;flex:1;min-width:0">' +
+        '<div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:var(--charcoal);margin-bottom:4px">' + (o.name||'—') + '</div>' +
+        '<div style="font-size:13px;color:var(--muted);margin-bottom:8px">' + (o.address||'Адрес не указан') + '</div>' +
+        '<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px">' +
+          '<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--teal-light);color:var(--teal);font-weight:500">' + (o.price ? o.price.toLocaleString('ru') + ' ₽/ночь' : '—') + '</span>' +
+          '<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg);color:var(--muted);border:1px solid var(--silver)">' + (o.guests||2) + ' гостей</span>' +
+          '<span style="font-size:11px;padding:3px 10px;border-radius:20px;background:var(--bg);color:var(--muted);border:1px solid var(--silver)">' + (o.rooms||1) + ' спальня</span>' +
+        '</div>' +
+        '<div style="display:flex;gap:8px">' +
+          '<button class="btn btn-outline" style="font-size:12px;padding:7px 14px" onclick="editObject('+o.id+')">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>' +
+            ' Редактировать' +
+          '</button>' +
+          '<button class="btn btn-outline" style="font-size:12px;padding:7px 14px;color:var(--danger);border-color:var(--danger)" onclick="deleteObject('+o.id+')">' +
+            '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>' +
+            ' Удалить' +
+          '</button>' +
+        '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openObjectModal(id) {
+  editingObjectId = id || null;
+  document.getElementById('obj-modal-title').textContent = id ? 'Редактировать объект' : 'Новый объект';
+  var o = id ? objects.find(function(x){ return x.id === id; }) : {};
+  if (!o) o = {};
+  document.getElementById('obj-name').value = o.name||'';
+  document.getElementById('obj-description').value = o.description||'';
+  document.getElementById('obj-description-full').value = o.description_full||'';
+  document.getElementById('obj-price').value = o.price||'';
+  document.getElementById('obj-rooms').value = o.rooms||1;
+  document.getElementById('obj-guests').value = o.guests||2;
+  document.getElementById('obj-features').value = o.features||'';
+  document.getElementById('obj-address').value = o.address||'';
+  document.getElementById('obj-address-secret').value = o.address_secret||'';
+  document.getElementById('obj-apt-number').value = o.apt_number||'';
+  document.getElementById('obj-door-code').value = o.door_code||'';
+  document.getElementById('obj-wifi-name').value = o.wifi_name||'';
+  document.getElementById('obj-wifi-pass').value = o.wifi_pass||'';
+  for (var i=1; i<=10; i++) {
+    document.getElementById('obj-img-'+i).value = o['image_'+i]||'';
+  }
+  openModal('modal-object');
+}
+
+function editObject(id) { openObjectModal(id); }
+
+function saveObject() {
+  var body = {
+    name: document.getElementById('obj-name').value.trim(),
+    description: document.getElementById('obj-description').value.trim(),
+    description_full: document.getElementById('obj-description-full').value.trim(),
+    price: parseInt(document.getElementById('obj-price').value)||0,
+    rooms: parseInt(document.getElementById('obj-rooms').value)||1,
+    guests: parseInt(document.getElementById('obj-guests').value)||2,
+    features: document.getElementById('obj-features').value.trim(),
+    address: document.getElementById('obj-address').value.trim(),
+    address_secret: document.getElementById('obj-address-secret').value.trim(),
+    apt_number: document.getElementById('obj-apt-number').value.trim(),
+    door_code: document.getElementById('obj-door-code').value.trim(),
+    wifi_name: document.getElementById('obj-wifi-name').value.trim(),
+    wifi_pass: document.getElementById('obj-wifi-pass').value.trim()
+  };
+  for (var i=1; i<=10; i++) {
+    body['image_'+i] = document.getElementById('obj-img-'+i).value.trim() || null;
+  }
+  var method = editingObjectId ? 'PUT' : 'POST';
+  var url = editingObjectId ? API + '/objects/' + editingObjectId : API + '/objects';
+  fetch(url, { method: method, headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) { showToast('Объект сохранён'); closeModal('modal-object'); loadObjectsPage(); }
+      else { showToast('Ошибка: ' + (d.error||'неизвестно')); }
+    }).catch(function(){ showToast('Ошибка сети'); });
+}
+
+function deleteObject(id) {
+  var o = objects.find(function(x){ return x.id === id; });
+  if (!confirm('Удалить объект «' + (o ? o.name : id) + '»?')) return;
+  fetch(API + '/objects/' + id, { method: 'DELETE' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) { showToast('Объект удалён'); loadObjectsPage(); }
+      else { showToast('Ошибка: ' + (d.error||'неизвестно')); }
+    }).catch(function(){ showToast('Ошибка сети'); });
+}
 
 // ── AUTH ──
 function loginSubmit() {
