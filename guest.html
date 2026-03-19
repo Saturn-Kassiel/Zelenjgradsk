@@ -65,31 +65,32 @@ body {
 
 /* ── GALLERY ── */
 .gallery-wrap {
-  position: relative;
-  width: 100%;
-  padding: 0 0 0 0;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 24px 16px 0;
 }
 .gallery {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: 220px 150px;
-  gap: 4px;
+  grid-template-rows: 320px 200px;
+  gap: 12px;
+  border-radius: 24px;
   overflow: hidden;
+  margin-bottom: 0;
   cursor: pointer;
-}
-@media (min-width: 560px) {
-  .gallery { grid-template-rows: 300px 200px; }
 }
 .gallery-main {
   grid-row: 1 / 3;
-  background: linear-gradient(135deg, #c8dce8, #b8f5d2);
-  overflow: hidden; position: relative;
+  background: linear-gradient(135deg, #E2F0D9, #BFEDF2, #D0E8FF);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
 .gallery-sub {
-  background: linear-gradient(135deg, #d9c4ec, #cad5f0);
-  overflow: hidden; position: relative;
+  background: linear-gradient(135deg, #E6E6FA, #D9C4EC);
+  display: flex; align-items: center; justify-content: center;
+  position: relative; overflow: hidden;
 }
-.gallery-sub:nth-child(3) { background: linear-gradient(135deg, #d0e8ff, #bfedf2); }
+.gallery-sub:nth-child(3) { background: linear-gradient(135deg, #D0E8FF, #BFEDF2); }
 .gallery-main img, .gallery-sub img {
   width: 100%; height: 100%;
   object-fit: cover; display: block;
@@ -99,16 +100,16 @@ body {
 .gallery:hover .gallery-sub img { transform: scale(1.03); }
 
 .gallery-pill {
-  position: absolute; bottom: 14px; right: 14px;
-  background: rgba(46,56,77,0.72);
-  backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  color: white; font-size: 12px; font-weight: 600;
+  position: absolute; bottom: 16px; right: 16px;
+  background: rgba(46,56,77,0.7);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  color: white; font-size: 12px; font-weight: 500;
   padding: 6px 12px; border-radius: 20px;
   display: flex; align-items: center; gap: 6px;
   pointer-events: none;
 }
 .gallery-name {
-  position: absolute; bottom: 14px; left: 14px;
+  position: absolute; bottom: 16px; left: 16px;
   font-size: 16px; font-weight: 800; color: white;
   text-shadow: 0 1px 8px rgba(0,0,0,0.4);
   pointer-events: none; line-height: 1.2;
@@ -122,6 +123,11 @@ body {
 @keyframes glow {
   0%, 100% { box-shadow: 0 0 0 2px rgba(126,232,162,0.3); }
   50%       { box-shadow: 0 0 0 5px rgba(126,232,162,0.15); }
+}
+
+@media (max-width: 560px) {
+  .gallery { grid-template-rows: 200px 130px; gap: 6px; border-radius: 16px; }
+  .gallery-wrap { padding: 12px 12px 0; }
 }
 
 /* ── LIGHTBOX ── */
