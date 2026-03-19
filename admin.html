@@ -928,57 +928,80 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
 <!-- MODAL: Object -->
 <div class="modal-overlay" id="modal-object" onclick="closeModalBg(event,'modal-object')">
-  <div class="modal" style="max-width:640px;padding:28px">
+  <div class="modal" style="max-width:680px;padding:32px;max-height:90vh;overflow-y:auto">
     <button class="modal-close" onclick="closeModal('modal-object')">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
     </button>
-    <div class="modal-label">Объект</div>
-    <div class="modal-title" id="obj-modal-title">Новый объект</div>
-    <div style="margin-top:20px;display:flex;flex-direction:column;gap:0">
 
-      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin:0 0 12px">Основная информация</div>
-      <div class="form-group"><label class="form-label">Название</label><input type="text" class="form-input" id="obj-name" placeholder="Балтийский бриз"></div>
-      <div class="form-group"><label class="form-label">Короткое описание</label><input type="text" class="form-input" id="obj-description" placeholder="Уютные апартаменты у моря"></div>
-      <div class="form-group"><label class="form-label">Полное описание</label><textarea class="form-input" id="obj-description-full" style="resize:vertical;min-height:80px" placeholder="Подробное описание объекта..."></textarea></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Цена, ₽/ночь</label><input type="number" class="form-input" id="obj-price" placeholder="4000"></div>
-        <div class="form-group"><label class="form-label">Спален</label><input type="number" class="form-input" id="obj-rooms" placeholder="1" value="1"></div>
+    <div style="display:flex;align-items:center;gap:12px;margin-bottom:28px">
+      <div style="width:44px;height:44px;border-radius:14px;background:var(--teal-light);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Гостей max</label><input type="number" class="form-input" id="obj-guests" placeholder="2" value="2"></div>
-        <div class="form-group"><label class="form-label">Особенности (через ;)</label><input type="text" class="form-input" id="obj-features" placeholder="Wi-Fi;Парковка"></div>
+      <div>
+        <div class="modal-label" style="margin-bottom:2px">Объект</div>
+        <div class="modal-title" id="obj-modal-title" style="font-size:20px">Новый объект</div>
       </div>
-      <div class="form-group"><label class="form-label">Адрес (публичный)</label><input type="text" class="form-input" id="obj-address" placeholder="Зеленоградск, ул. Большая Окружная, 26"></div>
+    </div>
 
-      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin:16px 0 12px">Данные для заезда</div>
-      <div class="form-group"><label class="form-label">Секретный адрес</label><input type="text" class="form-input" id="obj-address-secret" placeholder="Зеленоградск, Большая Окружная 26"></div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Квартира</label><input type="text" class="form-input" id="obj-apt-number" placeholder="Кв. 31, 1 подъезд 8 этаж"></div>
-        <div class="form-group"><label class="form-label">Код домофона</label><input type="text" class="form-input" id="obj-door-code" placeholder="B2021B"></div>
+    <!-- ОСНОВНАЯ ИНФОРМАЦИЯ -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Основная информация</span>
       </div>
-      <div class="form-row">
-        <div class="form-group"><label class="form-label">Wi-Fi сеть</label><input type="text" class="form-input" id="obj-wifi-name" placeholder="Zarya"></div>
-        <div class="form-group"><label class="form-label">Пароль Wi-Fi</label><input type="text" class="form-input" id="obj-wifi-pass" placeholder="88888888"></div>
+      <div class="form-group-a"><label>Название</label><input type="text" class="form-input-a" id="obj-name" placeholder="Балтийский бриз"></div>
+      <div class="form-group-a"><label>Короткое описание</label><input type="text" class="form-input-a" id="obj-description" placeholder="Уютные апартаменты у моря"></div>
+      <div class="form-group-a"><label>Полное описание</label><textarea class="form-input-a" id="obj-description-full" style="resize:vertical;min-height:90px" placeholder="Подробное описание объекта..."></textarea></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px">
+        <div class="form-group-a"><label>Цена, ₽/ночь</label><input type="number" class="form-input-a" id="obj-price" placeholder="4000"></div>
+        <div class="form-group-a"><label>Спален</label><input type="number" class="form-input-a" id="obj-rooms" placeholder="1" value="1"></div>
+        <div class="form-group-a"><label>Гостей max</label><input type="number" class="form-input-a" id="obj-guests" placeholder="2" value="2"></div>
       </div>
+      <div class="form-group-a"><label>Особенности (через ;)</label><input type="text" class="form-input-a" id="obj-features" placeholder="Wi-Fi;Парковка;Кухня"></div>
+      <div class="form-group-a" style="margin-bottom:0"><label>Адрес публичный</label><input type="text" class="form-input-a" id="obj-address" placeholder="Зеленоградск, ул. Большая Окружная, 26"></div>
+    </div>
 
-      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal);margin:16px 0 12px">Фотографии (ссылки)</div>
+    <!-- ДАННЫЕ ДЛЯ ЗАЕЗДА -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:16px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+        <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Данные для заезда</span>
+      </div>
+      <div class="form-group-a"><label>Секретный адрес</label><input type="text" class="form-input-a" id="obj-address-secret" placeholder="Зеленоградск, Большая Окружная 26"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+        <div class="form-group-a"><label>Квартира / этаж</label><input type="text" class="form-input-a" id="obj-apt-number" placeholder="Кв. 31, 1 подъезд 8 этаж"></div>
+        <div class="form-group-a"><label>Код домофона</label><input type="text" class="form-input-a" id="obj-door-code" placeholder="B2021B"></div>
+        <div class="form-group-a"><label>Wi-Fi сеть</label><input type="text" class="form-input-a" id="obj-wifi-name" placeholder="Zarya"></div>
+        <div class="form-group-a" style="margin-bottom:0"><label>Пароль Wi-Fi</label><input type="text" class="form-input-a" id="obj-wifi-pass" placeholder="88888888"></div>
+      </div>
+    </div>
+
+    <!-- ФОТОГРАФИИ -->
+    <div style="background:var(--bg);border-radius:14px;padding:20px;margin-bottom:20px">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+        <span style="font-size:11px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--teal)">Фотографии</span>
+      </div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-        <div class="form-group"><label class="form-label">Фото 1 (главное)</label><input type="text" class="form-input" id="obj-img-1" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 2</label><input type="text" class="form-input" id="obj-img-2" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 3</label><input type="text" class="form-input" id="obj-img-3" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 4</label><input type="text" class="form-input" id="obj-img-4" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 5</label><input type="text" class="form-input" id="obj-img-5" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 6</label><input type="text" class="form-input" id="obj-img-6" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 7</label><input type="text" class="form-input" id="obj-img-7" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 8</label><input type="text" class="form-input" id="obj-img-8" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 9</label><input type="text" class="form-input" id="obj-img-9" placeholder="https://..."></div>
-        <div class="form-group"><label class="form-label">Фото 10</label><input type="text" class="form-input" id="obj-img-10" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 1 — главное</label><input type="text" class="form-input-a" id="obj-img-1" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 2</label><input type="text" class="form-input-a" id="obj-img-2" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 3</label><input type="text" class="form-input-a" id="obj-img-3" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 4</label><input type="text" class="form-input-a" id="obj-img-4" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 5</label><input type="text" class="form-input-a" id="obj-img-5" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 6</label><input type="text" class="form-input-a" id="obj-img-6" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 7</label><input type="text" class="form-input-a" id="obj-img-7" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 8</label><input type="text" class="form-input-a" id="obj-img-8" placeholder="https://..."></div>
+        <div class="form-group-a"><label>Фото 9</label><input type="text" class="form-input-a" id="obj-img-9" placeholder="https://..."></div>
+        <div class="form-group-a" style="margin-bottom:0"><label>Фото 10</label><input type="text" class="form-input-a" id="obj-img-10" placeholder="https://..."></div>
       </div>
+    </div>
 
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
-        <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-object')">Отмена</button>
-        <button class="btn btn-primary" style="justify-content:center" onclick="saveObject()">Сохранить</button>
-      </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+      <button class="btn btn-outline" style="justify-content:center;padding:13px" onclick="closeModal('modal-object')">Отмена</button>
+      <button class="btn btn-primary" style="justify-content:center;padding:13px" onclick="saveObject()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Сохранить объект
+      </button>
     </div>
   </div>
 </div>
