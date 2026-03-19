@@ -1,1 +1,1 @@
-var APPS_URL = 'http://5.23.53.74/api';
+var APPS_URL = 'https://api.aparts-baltika.ru/api';
