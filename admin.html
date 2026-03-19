@@ -368,6 +368,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/><line x1="2" y1="20" x2="22" y2="20"/></svg>
       Дашборд
     </div>
+    <div class="nav-item" onclick="showPage('guests')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+      Гости
+    </div>
     <div class="nav-section-label">Настройки</div>
     <div class="nav-item" onclick="showPage('objects')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
@@ -745,6 +749,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
     </div>
 
+    <!-- ══ GUESTS ══ -->
+    <div class="page" id="page-guests">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Клиентская база</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px" id="guests-count">Загрузка...</div>
+        </div>
+        <div class="search-box" style="min-width:240px">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+          <input type="text" id="guests-search" placeholder="Имя или телефон..." oninput="searchGuests(this.value)">
+        </div>
+      </div>
+      <div id="guests-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-dashboard">
       <!-- Фильтр периода -->
@@ -973,6 +992,64 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
       <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-memo')">Отмена</button>
       <button class="btn btn-primary" style="justify-content:center" onclick="confirmMemo()">Отправить</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Guest Detail -->
+<div class="modal-overlay" id="modal-guest" onclick="closeModalBg(event,'modal-guest')">
+  <div class="modal" style="max-width:560px;padding:28px">
+    <button class="modal-close" onclick="closeModal('modal-guest')">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:24px">
+      <div id="guest-modal-avatar" style="width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#4a6fa5);display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:white;flex-shrink:0">А</div>
+      <div style="flex:1;min-width:0">
+        <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--charcoal)" id="guest-modal-name">—</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:2px" id="guest-modal-phone">—</div>
+      </div>
+      <select id="guest-modal-label" style="font-size:12px;font-weight:600;border:none;border-radius:20px;padding:6px 12px;cursor:pointer;outline:none">
+        <option value="normal">Обычный</option>
+        <option value="vip">⭐ VIP</option>
+        <option value="problem">⚠️ Проблемный</option>
+        <option value="regular">🔄 Постоянный</option>
+      </select>
+    </div>
+
+    <!-- СТАТИСТИКА -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:20px">
+      <div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-family:Manrope,sans-serif;font-size:22px;font-weight:800;color:var(--teal)" id="gm-count">0</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">броней</div>
+      </div>
+      <div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-family:Manrope,sans-serif;font-size:22px;font-weight:800;color:var(--charcoal)" id="gm-spent">0</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">₽ потрачено</div>
+      </div>
+      <div style="background:var(--bg);border-radius:12px;padding:14px;text-align:center">
+        <div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:var(--charcoal)" id="gm-last">—</div>
+        <div style="font-size:11px;color:var(--muted);margin-top:2px">последний визит</div>
+      </div>
+    </div>
+
+    <!-- ИСТОРИЯ БРОНЕЙ -->
+    <div style="margin-bottom:16px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:10px">История бронирований</div>
+      <div id="gm-bookings" style="display:flex;flex-direction:column;gap:6px;max-height:180px;overflow-y:auto"></div>
+    </div>
+
+    <!-- ЗАМЕТКА -->
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:700;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:8px">Заметка</div>
+      <textarea id="guest-modal-note" rows="3" style="font-family:DM Sans,sans-serif;width:100%;padding:12px 14px;border-radius:10px;border:1.5px solid var(--silver);background:var(--bg);font-size:13px;color:var(--charcoal);outline:none;resize:vertical;transition:border-color 0.2s" onfocus="this.style.borderColor='var(--teal)'" onblur="this.style.borderColor='var(--silver)'" placeholder="Добавьте заметку о госте..."></textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-guest')">Закрыть</button>
+      <button class="btn btn-primary" style="justify-content:center" onclick="saveGuestNote()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+        Сохранить
+      </button>
     </div>
   </div>
 </div>
@@ -1235,20 +1312,21 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', objects:'Объекты', alina:'Алина — промпт', promo:'Промо / Спецпредложение' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', promo:'Промо / Спецпредложение' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','objects','alina','promo'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','promo'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
   closeSidebar();
   if (name === 'objects') loadObjectsPage();
   if (name === 'alina') loadPromptPage();
+  if (name === 'guests') loadGuestsPage();
 }
 
 function topbarPrimary() {
@@ -2664,6 +2742,125 @@ function deleteObject(id) {
     .then(function(d){
       if (d.ok) { showToast('Объект удалён'); loadObjectsPage(); }
       else { showToast('Ошибка: ' + (d.error||'неизвестно')); }
+    }).catch(function(){ showToast('Ошибка сети'); });
+}
+
+// ── GUESTS ──
+var _guests = [];
+var _currentGuest = null;
+var _searchTimer = null;
+
+var GUEST_LABELS = {
+  normal:  { text: 'Обычный',    color: 'rgba(90,132,161,0.1)',   textColor: 'var(--muted)' },
+  vip:     { text: '⭐ VIP',     color: 'rgba(224,154,43,0.12)',  textColor: '#b07d1a' },
+  problem: { text: '⚠️ Проблемный', color: 'rgba(224,82,82,0.1)', textColor: 'var(--danger)' },
+  regular: { text: '🔄 Постоянный', color: 'rgba(62,112,87,0.1)', textColor: 'var(--teal)' }
+};
+
+function loadGuestsPage(search) {
+  var url = API + '/guests' + (search ? '?search=' + encodeURIComponent(search) : '');
+  fetch(url)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _guests = d.data || [];
+      document.getElementById('guests-count').textContent = _guests.length + ' гостей в базе';
+      renderGuests();
+    }).catch(function(){});
+}
+
+function searchGuests(val) {
+  clearTimeout(_searchTimer);
+  _searchTimer = setTimeout(function(){ loadGuestsPage(val); }, 400);
+}
+
+function renderGuests() {
+  var list = document.getElementById('guests-list');
+  if (!_guests.length) {
+    list.innerHTML = '<div style="text-align:center;padding:48px;color:var(--muted)">Гостей пока нет</div>';
+    return;
+  }
+  list.innerHTML = _guests.map(function(g) {
+    var label = GUEST_LABELS[g.label] || GUEST_LABELS.normal;
+    var initials = (g.name||'?').split(' ').map(function(w){ return w[0]; }).slice(0,2).join('').toUpperCase();
+    var lastVisit = g.last_visit ? new Date(g.last_visit).toLocaleDateString('ru-RU', {day:'numeric',month:'short',year:'numeric'}) : '—';
+    var total = parseInt(g.total_spent||0).toLocaleString('ru');
+    return '<div style="background:var(--white);border-radius:14px;border:1px solid var(--silver);padding:16px 20px;display:flex;align-items:center;gap:16px;cursor:pointer;transition:box-shadow 0.15s" onclick="openGuestModal(\''+encodeURIComponent(g.phone)+'\')" onmouseover="this.style.boxShadow=\'0 4px 16px rgba(46,56,77,0.08)\'" onmouseout="this.style.boxShadow=\'none\'">' +
+      '<div style="width:44px;height:44px;border-radius:50%;background:linear-gradient(135deg,var(--teal),#4a6fa5);display:flex;align-items:center;justify-content:center;font-family:Manrope,sans-serif;font-size:15px;font-weight:800;color:white;flex-shrink:0">' + initials + '</div>' +
+      '<div style="flex:1;min-width:0">' +
+        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:3px">' +
+          '<span style="font-size:14px;font-weight:600;color:var(--charcoal)">' + (g.name||'—') + '</span>' +
+          (g.label !== 'normal' ? '<span style="font-size:11px;font-weight:600;padding:2px 8px;border-radius:20px;background:'+label.color+';color:'+label.textColor+'">' + label.text + '</span>' : '') +
+        '</div>' +
+        '<div style="font-size:12px;color:var(--muted)">' + (g.phone||'—') + '</div>' +
+      '</div>' +
+      '<div style="text-align:right;flex-shrink:0">' +
+        '<div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:var(--charcoal)">' + total + ' ₽</div>' +
+        '<div style="font-size:11px;color:var(--muted);margin-top:2px">' + g.bookings_count + ' ' + (parseInt(g.bookings_count)===1?'бронь':parseInt(g.bookings_count)<5?'брони':'броней') + ' · ' + lastVisit + '</div>' +
+      '</div>' +
+    '</div>';
+  }).join('');
+}
+
+function openGuestModal(phoneEncoded) {
+  var phone = decodeURIComponent(phoneEncoded);
+  var g = _guests.find(function(x){ return x.phone === phone; });
+  if (!g) return;
+  _currentGuest = g;
+
+  var initials = (g.name||'?').split(' ').map(function(w){ return w[0]; }).slice(0,2).join('').toUpperCase();
+  document.getElementById('guest-modal-avatar').textContent = initials;
+  document.getElementById('guest-modal-name').textContent = g.name || '—';
+  document.getElementById('guest-modal-phone').textContent = g.phone || '—';
+  document.getElementById('guest-modal-label').value = g.label || 'normal';
+  document.getElementById('guest-modal-note').value = g.note || '';
+  document.getElementById('gm-count').textContent = g.bookings_count;
+  document.getElementById('gm-spent').textContent = parseInt(g.total_spent||0).toLocaleString('ru');
+
+  var lastVisit = g.last_visit ? new Date(g.last_visit).toLocaleDateString('ru-RU', {day:'numeric',month:'short'}) : '—';
+  document.getElementById('gm-last').textContent = lastVisit;
+
+  // Загружаем историю броней
+  document.getElementById('gm-bookings').innerHTML = '<div style="font-size:12px;color:var(--muted)">Загрузка...</div>';
+  fetch(API + '/guests/' + encodeURIComponent(phone) + '/bookings')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var items = d.data || [];
+      if (!items.length) {
+        document.getElementById('gm-bookings').innerHTML = '<div style="font-size:12px;color:var(--muted)">Нет бронирований</div>';
+        return;
+      }
+      document.getElementById('gm-bookings').innerHTML = items.map(function(b){
+        var dateIn = b.date_in ? new Date(b.date_in).toLocaleDateString('ru-RU', {day:'numeric',month:'short',year:'numeric'}) : '—';
+        var dateOut = b.date_out ? new Date(b.date_out).toLocaleDateString('ru-RU', {day:'numeric',month:'short'}) : '—';
+        var nights = b.date_in && b.date_out ? Math.round((new Date(b.date_out)-new Date(b.date_in))/86400000) : 0;
+        var statusMap = { new:'Новая', confirmed:'Подтверждена', pending:'На рассмотрении', cancelled:'Отменена', done:'Завершена' };
+        return '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border-radius:10px;font-size:12px">' +
+          '<div>' +
+            '<div style="font-weight:500;color:var(--charcoal)">' + dateIn + ' — ' + dateOut + ' (' + nights + ' ' + (nights===1?'ночь':nights<5?'ночи':'ночей') + ')</div>' +
+            '<div style="color:var(--muted);margin-top:2px">' + (statusMap[b.status]||b.status) + ' · ' + (parseInt(b.amount||0)).toLocaleString('ru') + ' ₽</div>' +
+          '</div>' +
+        '</div>';
+      }).join('');
+    }).catch(function(){});
+
+  openModal('modal-guest');
+}
+
+function saveGuestNote() {
+  if (!_currentGuest) return;
+  var label = document.getElementById('guest-modal-label').value;
+  var note = document.getElementById('guest-modal-note').value;
+  fetch(API + '/guests/note', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ phone: _currentGuest.phone, name: _currentGuest.name, label: label, note: note })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        showToast('Сохранено');
+        closeModal('modal-guest');
+        loadGuestsPage(document.getElementById('guests-search').value);
+      } else { showToast('Ошибка'); }
     }).catch(function(){ showToast('Ошибка сети'); });
 }
 
