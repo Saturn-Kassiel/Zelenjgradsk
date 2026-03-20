@@ -438,6 +438,7 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 @media (max-width: 600px) { #scroll-top { bottom: 90px; right: 20px; } }
 </style>
 <script src="config.js?v=2"></script>
+<script src="booking-modal.js"></script>
 </head>
 <body>
 
@@ -2008,9 +2009,17 @@ function loadGPromo() {
 }
 
 function openModal(propId) {
-  var prop = propId ? allPropsData.find(function(p){ return String(p.id)===String(propId); }) : allPropsData[0];
+  if (typeof BookingModal === 'undefined') { console.error('BookingModal не загружен'); return; }
+  var prop = null;
+  if (propId) {
+    prop = allPropsData.find(function(p){ return String(p.id)===String(propId); });
+  }
   if (!prop && allPropsData.length) prop = allPropsData[0];
-  if (!prop) { BookingModal.open({}); return; }
+  if (!prop) {
+    // Данные ещё не загружены — ждём
+    setTimeout(function(){ openModal(propId); }, 300);
+    return;
+  }
   var addr = (prop.address||'').replace(/,?\s*кв\.\s*\d+/i,'').trim();
   BookingModal.open({
     objId: prop.id,
@@ -2018,7 +2027,7 @@ function openModal(propId) {
     objAddr: addr,
     price: Math.round(parseFloat(String(prop.price||'0').replace(/\s/g,'').replace(',','.'))||0),
     maxGuests: parseInt(prop.guests)||3,
-    statuses: (calData && calData[parseInt(prop.id)] ? calData[parseInt(prop.id)].statuses : {})
+    statuses: (typeof calData !== 'undefined' && calData[parseInt(prop.id)] ? calData[parseInt(prop.id)].statuses : {})
   });
 }
 
