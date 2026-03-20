@@ -1922,7 +1922,7 @@ function gRecalc() {
 
   fetch(APPS_URL + '/pricing/calculate', {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ base_price: regularPrice, date_in: inVal, date_out: outStr })
+    body: JSON.stringify({ base_price: regularPrice, date_in: inVal, date_out: outStr, obj_id: objId })
   }).then(function(r){ return r.json(); })
     .then(function(d){
       var pricePerNight = d.ok ? d.price_per_night : regularPrice;
@@ -1932,12 +1932,19 @@ function gRecalc() {
       calcRows.innerHTML = '';
       var row1 = document.createElement('div');
       row1.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:var(--muted)';
-      var factors = [];
-      if (d.ok && d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
-      if (d.ok && d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
-      if (d.ok && d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
-      var label = pricePerNight.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights);
-      if (factors.length) label += ' ('+factors.join(', ')+')';
+      var label;
+      if (d.ok && d.promo) {
+        row1.style.color = 'var(--teal)';
+        label = '🏷 ' + d.promo + ': ' + pricePerNight.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + gNightWord(nights);
+      } else {
+        var factors = [];
+        if (d.ok && d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
+        if (d.ok && d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
+        if (d.ok && d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
+        if (factors.length) row1.style.color = 'var(--teal)';
+        label = pricePerNight.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights);
+        if (factors.length) label += ' ('+factors.join(', ')+')';
+      }
       row1.innerHTML = '<span>'+label+'</span><span>'+baseTotal.toLocaleString('ru')+' ₽</span>';
       calcRows.appendChild(row1);
       if (guestSurcharge > 0) {
@@ -1952,7 +1959,6 @@ function gRecalc() {
       calcRows.appendChild(totEl);
       calcEl.style.display = 'block';
     }).catch(function(){
-      // Fallback — простой расчёт
       var total = regularPrice * nights + guestSurcharge;
       calcRows.innerHTML = '';
       var totEl = document.createElement('div');
