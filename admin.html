@@ -3012,7 +3012,7 @@ function sectionHtml(section) {
   return '<div data-section style="background:var(--white);border-radius:12px;border:1px solid var(--silver);overflow:hidden">' +
     '<div style="display:flex;align-items:center;justify-content:space-between;padding:12px 14px;background:var(--bg);border-bottom:1px solid var(--silver)">' +
       '<input type="text" value="'+(section.title||'').replace(/"/g,'&quot;')+'" placeholder="Название раздела (напр: Театры)" data-field="title" style="font-family:Manrope,sans-serif;font-size:13px;font-weight:700;color:var(--charcoal);border:none;background:transparent;outline:none;flex:1">' +
-      '<button onclick="deleteRowBtn(this)" style="width:28px;height:28px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)" title="Удалить раздел">' +
+      '<button type="button" onclick="this.closest(\'[data-section]\').remove()" style="width:28px;height:28px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)" title="Удалить раздел">' +
         '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
       '</button>' +
     '</div>' +
@@ -3020,24 +3020,16 @@ function sectionHtml(section) {
       '<div data-items style="display:flex;flex-direction:column;gap:6px;margin-bottom:8px">' +
         (section.items||[]).map(function(item){ return sectionItemHtml(item); }).join('') +
       '</div>' +
-      '<button onclick="addSectionItem(this)" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px dashed var(--teal);border-radius:8px;padding:6px 12px;cursor:pointer;width:100%">+ Добавить строку</button>' +
+      '<button type="button" onclick="addSectionItem(this)" style="font-size:11px;font-weight:600;color:var(--teal);background:none;border:1.5px dashed var(--teal);border-radius:8px;padding:6px 12px;cursor:pointer;width:100%">+ Добавить строку</button>' +
     '</div>' +
   '</div>';
 }
 
 function sectionItemHtml(item) {
-  var text = item || '';
-  var isAllow = text.startsWith('+');
-  var isDeny = text.startsWith('-');
-  var cleanText = text.replace(/^[+\-]\s*/, '').replace(/"/g, '&quot;');
+  var text = (item || '').replace(/^[+\-]\s*/, '').replace(/"/g, '&quot;');
   return '<div data-item style="display:flex;align-items:center;gap:8px">' +
-    '<select data-field="type" style="font-size:11px;border:1.5px solid var(--silver);border-radius:8px;padding:5px 8px;background:white;cursor:pointer;outline:none;flex-shrink:0">' +
-      '<option value="neutral"'+(!isAllow&&!isDeny?' selected':'')+'>• Нейтральный</option>' +
-      '<option value="allow"'+(isAllow?' selected':'')+'>✓ Разрешено</option>' +
-      '<option value="deny"'+(isDeny?' selected':'')+'>✗ Запрещено</option>' +
-    '</select>' +
-    '<input type="text" value="'+cleanText+'" placeholder="Текст строки" data-field="text" style="flex:1;font-family:DM Sans,sans-serif;font-size:13px;border:1.5px solid var(--silver);border-radius:8px;padding:7px 10px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor=\'var(--teal)\'" onblur="this.style.borderColor=\'var(--silver)\'">' +
-    '<button onclick="deleteRowBtn(this)" style="width:28px;height:28px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
+    '<input type="text" value="'+text+'" placeholder="Текст строки" data-field="text" style="flex:1;font-family:DM Sans,sans-serif;font-size:13px;border:1.5px solid var(--silver);border-radius:8px;padding:8px 12px;outline:none;transition:border-color 0.2s" onfocus="this.style.borderColor=\'var(--teal)\'" onblur="this.style.borderColor=\'var(--silver)\'">' +
+    '<button type="button" onclick="this.closest(\'[data-item]\').remove()" style="width:28px;height:28px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
       '<svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>' +
     '</button>' +
   '</div>';
@@ -3064,13 +3056,8 @@ function getSectionsValues() {
   if (!el) return [];
   return Array.from(el.querySelectorAll('[data-section]')).map(function(sec){
     var title = sec.querySelector('[data-field="title"]').value.trim();
-    var items = Array.from(sec.querySelectorAll('[data-item]')).map(function(item){
-      var type = item.querySelector('[data-field="type"]').value;
-      var text = item.querySelector('[data-field="text"]').value.trim();
-      if (!text) return null;
-      var prefix = type === 'allow' ? '+ ' : type === 'deny' ? '- ' : '';
-      return prefix + text;
-    }).filter(Boolean);
+    var items = Array.from(sec.querySelectorAll('[data-item] input[type="text"]'))
+      .map(function(inp){ return inp.value.trim(); }).filter(Boolean);
     return { title: title, items: items };
   }).filter(function(s){ return s.title || s.items.length; });
 }
