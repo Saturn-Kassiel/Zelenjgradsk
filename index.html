@@ -2351,18 +2351,10 @@ function cwToggle() {
     document.body.style.position = cwOpen ? 'fixed' : '';
     document.body.style.width = cwOpen ? '100%' : '';
   }
-  if (cwOpen && cwHistory.length === 0) cwInit();
-  else if (cwOpen) {
-    // Показываем сообщения которых ещё нет на экране
+  if (cwOpen) {
     var msgs = document.getElementById('cw-messages');
     var rendered = msgs.querySelectorAll('.cw-msg').length;
-    var total = cwHistory.length;
-    // +1 за приветственное сообщение бота
-    var offset = rendered - 1;
-    if (offset < 0) offset = 0;
-    for (var i = offset; i < total; i++) {
-      if (cwHistory[i]) cwAddMsg(cwHistory[i].content, cwHistory[i].role === 'user' ? 'user' : 'bot');
-    }
+    if (rendered === 0) cwInit();
   }
   // Скрываем значок при открытии чата
   if (cwOpen) {
