@@ -1615,7 +1615,8 @@ function applyPropData(prop) {
         cats.map(function(cat, i){
           return '<div class="nearby-panel'+(i===0?' active':'')+'" id="'+panelIds[i]+'">' +
             categories[cat].map(function(item){
-              return '<div class="nearby-item"><div class="nearby-icon">'+catIcon+'</div><div><div class="nearby-name">'+item.name+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
+              var linkHtml = item.link ? ' <a href="'+item.link+'" target="_blank" style="font-size:11px;color:var(--teal);text-decoration:none;display:inline-flex;align-items:center;gap:3px;margin-left:4px"><svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>На карте</a>' : '';
+              return '<div class="nearby-item"><div class="nearby-icon">'+catIcon+'</div><div><div class="nearby-name">'+item.name+linkHtml+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
             }).join('') +
           '</div>';
         }).join('');
