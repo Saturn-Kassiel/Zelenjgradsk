@@ -1592,6 +1592,12 @@ function showPage(name) {
   if (name === 'alina') loadPromptPage();
   if (name === 'guests') loadGuestsPage();
   if (name === 'pricing') loadPricingPage();
+  // Показываем кнопку экспорта только на актуальных страницах
+  var exportWrap = document.getElementById('export-menu-wrap');
+  if (exportWrap) {
+    var showExport = ['bookings','guests','dashboard'].indexOf(name) !== -1;
+    exportWrap.style.display = showExport ? '' : 'none';
+  }
 }
 
 function topbarPrimary() {
