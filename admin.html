@@ -21,7 +21,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { height: 100%; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--charcoal); display: flex; height: 100%; min-height: 100vh; overflow-x: hidden; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--charcoal); display: flex; height: 100%; min-height: 100vh; overflow-x: hidden; overflow-y: scroll; }
 
 /* ── SIDEBAR ── */
 .sidebar {
@@ -3048,10 +3048,9 @@ function savePromo() {
 }
 
 
-function openModal(id) { document.getElementById(id).classList.add('open'); document.body.style.overflow='hidden'; }
+function openModal(id) { document.getElementById(id).classList.add('open'); }
 function closeModal(id) {
   document.getElementById(id).classList.remove('open');
-  document.body.style.overflow='';
   if (id === 'modal-booking') {
     editingBookingId = null;
     var infoEl = document.getElementById('nb-checkout-info');
@@ -3073,7 +3072,7 @@ function closeModalBg(e,id) { if(e.target===document.getElementById(id)) closeMo
   el.addEventListener('mousedown', function(e) { downOnOverlay = e.target === el; });
   el.addEventListener('click', function(e) { if (downOnOverlay && e.target === el) closeModal('modal-supply'); });
 })();
-document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});document.body.style.overflow='';}});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'){document.querySelectorAll('.modal-overlay.open').forEach(function(m){m.classList.remove('open');});}});
 
 // ── TOAST ──
 var toastTimer;
