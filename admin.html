@@ -796,6 +796,38 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div class="page" id="page-pricing">
       <div style="max-width:900px">
 
+        <!-- КАЛЬКУЛЯТОР -->
+        <div style="background:var(--bg);border-radius:16px;border:1.5px dashed var(--silver);padding:24px;margin-bottom:20px">
+          <div style="font-family:Manrope,sans-serif;font-size:15px;font-weight:700;color:var(--charcoal);margin-bottom:16px">Калькулятор цены</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;align-items:end">
+            <div class="form-group-a" style="margin-bottom:0"><label>Объект</label>
+              <select class="form-input-a" id="calc-obj" onchange="runCalcPrice()" style="padding:10px 12px"></select>
+            </div>
+            <div class="form-group-a" style="margin-bottom:0"><label>Заезд</label><input type="date" class="form-input-a" id="calc-in" onchange="runCalcPrice()"></div>
+            <div class="form-group-a" style="margin-bottom:0"><label>Выезд</label><input type="date" class="form-input-a" id="calc-out" onchange="runCalcPrice()"></div>
+          </div>
+          <div id="calc-result" style="margin-top:16px;display:none">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Базовая цена</div>
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--charcoal)" id="calc-base">—</div>
+              </div>
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Цена за ночь</div>
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="calc-night">—</div>
+              </div>
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Итого</div>
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="calc-total">—</div>
+              </div>
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Применено</div>
+                <div style="font-size:12px;color:var(--charcoal);line-height:1.5" id="calc-factors">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- СЕЗОННЫЕ КОЭФФИЦИЕНТЫ -->
         <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:24px;margin-bottom:20px">
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
@@ -851,39 +883,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
           </div>
           <div id="surcharges-list" style="display:flex;flex-direction:column;gap:8px"></div>
           <div id="surcharges-empty" style="font-size:13px;color:var(--muted);padding:12px 4px;display:none">Наценок нет</div>
-        </div>
-
-        <!-- КАЛЬКУЛЯТОР -->
-        <div style="background:var(--bg);border-radius:16px;border:1.5px dashed var(--silver);padding:24px">
-          <div style="font-family:Manrope,sans-serif;font-size:15px;font-weight:700;color:var(--charcoal);margin-bottom:16px">Калькулятор цены</div>
-          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
-            <div class="form-group-a" style="margin-bottom:0"><label>Объект</label>
-              <select class="form-input-a" id="calc-obj" onchange="calcPrice()" style="padding:10px 12px"></select>
-            </div>
-            <div class="form-group-a" style="margin-bottom:0"><label>Заезд</label><input type="date" class="form-input-a" id="calc-in" onchange="calcPrice()"></div>
-            <div class="form-group-a" style="margin-bottom:0"><label>Выезд</label><input type="date" class="form-input-a" id="calc-out" onchange="calcPrice()"></div>
-            <div></div>
-          </div>
-          <div id="calc-result" style="margin-top:16px;display:none">
-            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
-              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Базовая цена</div>
-                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--charcoal)" id="calc-base">—</div>
-              </div>
-              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Цена за ночь</div>
-                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="calc-night">—</div>
-              </div>
-              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Итого</div>
-                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="calc-total">—</div>
-              </div>
-              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
-                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Применено</div>
-                <div style="font-size:12px;color:var(--charcoal);line-height:1.5" id="calc-factors">—</div>
-              </div>
-            </div>
-          </div>
         </div>
 
       </div>
@@ -3814,7 +3813,7 @@ function initCalcObjs() {
   }).join('');
 }
 
-function calcPrice() {
+function runCalcPrice() {
   var objId = document.getElementById('calc-obj').value;
   var dateIn = document.getElementById('calc-in').value;
   var dateOut = document.getElementById('calc-out').value;
