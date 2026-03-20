@@ -2029,11 +2029,11 @@ function cwFormatText(text) {
     .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:var(--indigo);text-decoration:underline;word-break:break-all">$1</a>');
 }
 
-function cwAddMsg(text, role) {
+function cwAddMsg(text, role, isHtml) {
   var msgs = document.getElementById('cw-messages');
   var div = document.createElement('div');
   div.className = 'cw-msg ' + role;
-  div.innerHTML = '<div class="cw-bubble">' + cwFormatText(text) + '</div>';
+  div.innerHTML = '<div class="cw-bubble">' + (isHtml ? text : cwFormatText(text)) + '</div>';
   msgs.appendChild(div);
   msgs.scrollTop = msgs.scrollHeight;
 }
