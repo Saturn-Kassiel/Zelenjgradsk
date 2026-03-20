@@ -914,7 +914,7 @@ html { overflow-x: hidden; }
 
       <div class="form-group">
         <label class="form-label">Гостей</label>
-        <select class="form-select" id="f-guests"><option>1 гость</option><option selected>2 гостя</option><option>3 гостя</option><option>4 гостя</option></select>
+        <select class="form-select" id="f-guests"><option>1 гость</option><option selected>2 гостя</option><option>3 гостя</option></select>
       </div>
       <div class="form-group">
         <label class="form-label">Комментарий (необязательно)</label>
@@ -1207,7 +1207,18 @@ function openModal() {
   if (overlay) overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
 
-  // Переносим данные из карточки в модал
+  // Обновляем опции гостей из данных объекта
+  var maxGuests = propData.guests || 3;
+  var guestWords = ['','гость','гостя','гостя','гостя','гостей','гостей'];
+  var fGuests = document.getElementById('f-guests');
+  if (fGuests) {
+    var curVal = document.getElementById('bc-guests') ? parseInt((document.getElementById('bc-guests').value||'2').replace(/\D/g,''))||2 : 2;
+    var opts = '';
+    for (var gi = 1; gi <= maxGuests; gi++) {
+      opts += '<option'+(gi===curVal?' selected':'')+'>'+gi+' '+(guestWords[gi]||'гостей')+'</option>';
+    }
+    fGuests.innerHTML = opts;
+  }
   var dateIn = document.getElementById('bc-checkin').value;
   var dateOut = document.getElementById('bc-checkout').value;
   var guestsVal = document.getElementById('bc-guests').value;
