@@ -1954,16 +1954,24 @@ function showChatConfirm(guestName, msg) {
 function sendChatConfirmed() {
   closeModal('modal-chat-confirm');
   if (!_pendingChatMsg) return;
-  var chatUrl = (typeof CHAT_URL !== 'undefined') ? CHAT_URL : '';
-  if (chatUrl) {
-    fetch(chatUrl, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({ action: 'notify', contact: '', dialog: _pendingChatMsg })
-    }).then(function(){ showToast('Уведомление отправлено в чат ✓'); })
-      .catch(function(){ showToast('Ошибка отправки в чат'); });
-  }
+  var msg = _pendingChatMsg;
   _pendingChatMsg = null;
+
+  // Отправляем в Telegram через API сервера
+  fetch(API + '/notify', {
+    method: 'POST',
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ text: msg })
+  }).then(function(){ showToast('Уведомление отправлено ✓'); })
+    .catch(function(){ showToast('Ошибка отправки'); });
+
+  // Отправляем через GAS в чат Алины
+  var gasUrl = 'https://script.google.com/macros/s/AKfycbxMWhVXXAtzAi5tcaYB3YL2Zb-a0x3hTpG-YODKl57lrdBLNleygfzT0qgDMUl-IeWl/exec';
+  fetch(gasUrl, {
+    method: 'POST',
+    headers: {'Content-Type': 'text/plain'},
+    body: JSON.stringify({ action: 'notify', contact: '', dialog: msg })
+  }).catch(function(){});
 }
 
 function cancelChatConfirm() {
