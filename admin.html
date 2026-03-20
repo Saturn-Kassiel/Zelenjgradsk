@@ -70,7 +70,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .btn-danger { background: var(--danger-light); color: var(--danger); border: 1px solid rgba(224,82,82,0.2); }
 .btn-sm { padding: 6px 14px; font-size: 12px; }
 
-.content { padding: 28px 32px; flex: 1; }
+.content { padding: 28px 32px; flex: 1; max-width: 1400px; width: 100%; margin: 0 auto; box-sizing: border-box; }
 
 /* ── PAGES ── */
 .page { display: none; }
@@ -336,8 +336,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .obj-accordion.open .acc-arrow { transform:rotate(180deg); }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="config.js"></script>
 </head>
 <body>
@@ -3339,42 +3337,67 @@ function exportToPdf() {
   var periodBookings = bookings.filter(function(b){
     return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
   });
-
-  var { jsPDF } = window.jspdf;
-  var doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-
-  // Заголовок
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(16);
-  doc.text('Апартаменты Балтики — Отчёт за ' + monthLabel, 14, 18);
-
-  // Статистика
-  var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).reduce(function(s,b){ return s+b.amount; }, 0);
   var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
-  var totalExpenses = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(10);
-  doc.text('Доход: ' + totalIncome.toLocaleString('ru') + ' ₽   |   Расходы: ' + totalExpenses.toLocaleString('ru') + ' ₽   |   Прибыль: ' + (totalIncome-totalExpenses).toLocaleString('ru') + ' ₽   |   Броней: ' + periodBookings.length, 14, 26);
 
-  // Таблица бронирований
+  var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).reduce(function(s,b){ return s+b.amount; }, 0);
+  var totalExp = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
   var statuses = { new:'Новая', confirmed:'Подтверждена', pending:'Ожидает', cancelled:'Отменена', done:'Завершена' };
-  var tableData = periodBookings.map(function(b){
+  var catLabels = { cleaning:'Клининг', supplies:'Расходники', repair:'Ремонт', utilities:'Коммунальные', other:'Прочее' };
+
+  var bookingRows = periodBookings.map(function(b){
     var nights = b.in && b.out ? Math.round((new Date(b.out)-new Date(b.in))/86400000) : 0;
-    return [b.in||'—', b.out||'—', String(nights), b.name||'—', b.phone||'—', b.objName||'—', String(b.amount||0)+' ₽', statuses[b.status]||b.status];
-  });
+    return '<tr><td>'+b.in+'</td><td>'+b.out+'</td><td>'+nights+'</td><td>'+b.name+'</td><td>'+b.phone+'</td><td>'+(b.objName||'—')+'</td><td>'+b.amount.toLocaleString('ru')+' ₽</td><td>'+( statuses[b.status]||b.status)+'</td></tr>';
+  }).join('');
 
-  doc.autoTable({
-    startY: 32,
-    head: [['Заезд','Выезд','Ночей','Гость','Телефон','Объект','Сумма','Статус']],
-    body: tableData,
-    styles: { fontSize: 8, cellPadding: 3 },
-    headStyles: { fillColor: [62, 112, 87], textColor: 255, fontStyle: 'bold' },
-    alternateRowStyles: { fillColor: [245, 247, 250] },
-    columnStyles: { 3: { cellWidth: 40 }, 4: { cellWidth: 32 } }
-  });
+  var expenseRows = periodExpenses.map(function(e){
+    return '<tr><td>'+e.date+'</td><td>'+(catLabels[e.category]||e.category||'—')+'</td><td>'+(e.description||'—')+'</td><td>'+(promoObjNames[String(e.obj_id)]||'—')+'</td><td>'+parseInt(e.amount||0).toLocaleString('ru')+' ₽</td></tr>';
+  }).join('');
 
-  doc.save('baltika_' + period + '.pdf');
-  showToast('PDF файл скачан ✓');
+  var logoUrl = 'https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png';
+
+  var html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт '+monthLabel+'</title><style>'+
+    'body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#222;margin:0;padding:20px}'+
+    '.header{display:flex;align-items:center;gap:14px;margin-bottom:6px}'+
+    '.logo{width:48px;height:48px;border-radius:12px;background:#3E7057;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}'+
+    '.logo img{width:36px;height:36px;object-fit:contain}'+
+    '.brand{font-size:20px;font-weight:800;color:#2e384d;font-family:Arial,sans-serif}'+
+    '.brand-sub{font-size:11px;color:#8892a4;margin-top:2px}'+
+    '.period{font-size:13px;color:#8892a4;margin-bottom:16px;padding-bottom:12px;border-bottom:2px solid #3E7057}'+
+    '.stats{display:flex;gap:16px;margin-bottom:20px}'+
+    '.stat{flex:1;background:#f4f6fb;border-radius:10px;padding:12px 14px}'+
+    '.stat-label{font-size:10px;color:#8892a4;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}'+
+    '.stat-value{font-size:18px;font-weight:800;color:#2e384d}'+
+    '.profit .stat-value{color:'+(totalIncome-totalExp>=0?'#3E7057':'#e05252')+'}'+
+    'h2{font-size:13px;font-weight:800;color:#2e384d;margin:20px 0 10px;text-transform:uppercase;letter-spacing:0.5px}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:20px}'+
+    'th{background:#3E7057;color:white;padding:7px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.3px}'+
+    'td{padding:7px 10px;border-bottom:1px solid #e8eaf0;font-size:11px}'+
+    'tr:nth-child(even) td{background:#f9fafb}'+
+    '.total-row td{font-weight:700;background:#f0f6f3;color:#3E7057}'+
+    '.footer{margin-top:24px;padding-top:12px;border-top:1px solid #e8eaf0;font-size:10px;color:#8892a4;text-align:center}'+
+    '@media print{body{padding:10px}.no-print{display:none}}'+
+  '</style></head><body>'+
+  '<div class="header">'+
+    '<div class="logo"><img src="'+logoUrl+'" onerror="this.style.display=\'none\'"></div>'+
+    '<div><div class="brand">Апартаменты Балтики</div><div class="brand-sub">Зеленоградск, Калининградская область</div></div>'+
+  '</div>'+
+  '<div class="period">Отчёт за '+monthLabel+'</div>'+
+  '<div class="stats">'+
+    '<div class="stat"><div class="stat-label">Доход</div><div class="stat-value">'+totalIncome.toLocaleString('ru')+' ₽</div></div>'+
+    '<div class="stat"><div class="stat-label">Расходы</div><div class="stat-value">'+totalExp.toLocaleString('ru')+' ₽</div></div>'+
+    '<div class="stat profit"><div class="stat-label">Прибыль</div><div class="stat-value">'+(totalIncome-totalExp).toLocaleString('ru')+' ₽</div></div>'+
+    '<div class="stat"><div class="stat-label">Броней</div><div class="stat-value">'+periodBookings.length+'</div></div>'+
+  '</div>'+
+  (periodBookings.length ? '<h2>Бронирования</h2><table><thead><tr><th>Заезд</th><th>Выезд</th><th>Ночей</th><th>Гость</th><th>Телефон</th><th>Объект</th><th>Сумма</th><th>Статус</th></tr></thead><tbody>'+bookingRows+'<tr class="total-row"><td colspan="6"></td><td>'+totalIncome.toLocaleString('ru')+' ₽</td><td>Итого</td></tr></tbody></table>' : '<p style="color:#8892a4">Бронирований нет</p>')+
+  (periodExpenses.length ? '<h2>Расходы</h2><table><thead><tr><th>Дата</th><th>Категория</th><th>Описание</th><th>Объект</th><th>Сумма</th></tr></thead><tbody>'+expenseRows+'<tr class="total-row"><td colspan="3"></td><td>Итого:</td><td>'+totalExp.toLocaleString('ru')+' ₽</td></tr></tbody></table>' : '')+
+  '<div class="footer">Апартаменты Балтики · aparts-baltika.ru · Сформировано '+new Date().toLocaleDateString('ru-RU')+'</div>'+
+  '</body></html>';
+
+  var w = window.open('', '_blank', 'width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+  w.onload = function(){ w.print(); };
+  showToast('Открываю PDF для печати...');
 }
 
 // ── GUESTS ──
