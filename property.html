@@ -2021,7 +2021,7 @@ function cwInit() {
       if (d.ok && d.messages && d.messages.length) {
         d.messages.forEach(function(msg){
           setTimeout(function(){
-            cwAddMsg(msg, 'bot');
+            cwAddMsg(msg, 'bot', true);
             // Показываем красную точку
             var btn = document.getElementById('chat-widget-btn');
             if (btn) btn.classList.add('has-unread');
