@@ -1034,23 +1034,28 @@ function bcRecalc() {
 
   fetch(APPS_URL + '/pricing/calculate', {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ base_price: propData.price, date_in: inVal, date_out: outVal })
+    body: JSON.stringify({ base_price: propData.price, date_in: inVal, date_out: outVal, obj_id: propData.id })
   }).then(function(r){ return r.json(); })
     .then(function(d){
       var pricePerNight = d.ok ? d.price_per_night : propData.price;
       var total = d.ok ? d.total : propData.price * nights;
 
       rowsEl.innerHTML = '';
-      var factors = [];
-      if (d.ok && d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
-      if (d.ok && d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
-      if (d.ok && d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
-
       var row = document.createElement('div');
       row.className = 'booking-calc-row';
-      if (factors.length) row.style.color = 'var(--teal)';
-      var label = pricePerNight.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights);
-      if (factors.length) label += ' (' + factors.join(', ') + ')';
+      var label, isPromo = d.ok && d.promo;
+      if (isPromo) {
+        row.style.color = 'var(--teal)';
+        label = '🏷 ' + d.promo + ': ' + pricePerNight.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights);
+      } else {
+        var factors = [];
+        if (d.ok && d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
+        if (d.ok && d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
+        if (d.ok && d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
+        if (factors.length) row.style.color = 'var(--teal)';
+        label = pricePerNight.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + nightWord(nights);
+        if (factors.length) label += ' (' + factors.join(', ') + ')';
+      }
       row.innerHTML = '<span>' + label + '</span><span>' + total.toLocaleString('ru') + ' ₽</span>';
       rowsEl.appendChild(row);
 
