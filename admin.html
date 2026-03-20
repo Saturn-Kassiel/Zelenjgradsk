@@ -1934,16 +1934,18 @@ function changeStatus(id, sel) {
         '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽\n\n' +
         '🔗 Ваша страница гостя:\n' + guestUrl;
       // Показываем модал подтверждения отправки
-      showChatConfirm(b.name, msg);
+      showChatConfirm(b.name, msg, b.obj);
     }
   });
   loadBookings();
 }
 
 var _pendingChatMsg = null;
+var _pendingChatObjId = null;
 
-function showChatConfirm(guestName, msg) {
+function showChatConfirm(guestName, msg, objId) {
   _pendingChatMsg = msg;
+  _pendingChatObjId = objId || 1;
   var modal = document.getElementById('modal-chat-confirm');
   if (modal) {
     document.getElementById('chat-confirm-name').textContent = guestName;
@@ -1955,22 +1957,22 @@ function sendChatConfirmed() {
   closeModal('modal-chat-confirm');
   if (!_pendingChatMsg) return;
   var msg = _pendingChatMsg;
+  var objId = _pendingChatObjId || 1;
   _pendingChatMsg = null;
+  _pendingChatObjId = null;
 
-  // Отправляем в Telegram через API сервера
+  // Отправляем в Telegram
   fetch(API + '/notify', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ text: msg })
-  }).then(function(){ showToast('Уведомление отправлено ✓'); })
-    .catch(function(){ showToast('Ошибка отправки'); });
+  }).then(function(){ showToast('Уведомление отправлено ✓'); }).catch(function(){});
 
-  // Отправляем через GAS в чат Алины
-  var gasUrl = 'https://script.google.com/macros/s/AKfycbxMWhVXXAtzAi5tcaYB3YL2Zb-a0x3hTpG-YODKl57lrdBLNleygfzT0qgDMUl-IeWl/exec';
-  fetch(gasUrl, {
+  // Сохраняем в очередь для чата гостя
+  fetch(API + '/chat-queue', {
     method: 'POST',
-    headers: {'Content-Type': 'text/plain'},
-    body: JSON.stringify({ action: 'notify', contact: '', dialog: msg })
+    headers: {'Content-Type': 'application/json'},
+    body: JSON.stringify({ obj_id: objId, message: msg })
   }).catch(function(){});
 }
 
@@ -4300,5 +4302,11 @@ function loginSubmit() {
     <div class="login-error" id="login-error">Неверный пароль</div>
   </div>
 </div>
+<!-- Скрытый чат-виджет для отправки сообщений гостям -->
+<div id="cw-messages" style="display:none"></div>
+<script>
+function cwAddMsg(text, role, isHtml) { /* скрытый виджет */ }
+function cwFormatText(t) { return t; }
+</script>
 </body>
 </html>
