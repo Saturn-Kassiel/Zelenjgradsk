@@ -1327,27 +1327,21 @@ function applyPropData(prop) {
       if (nearbySec) nearbySec.style.display = '';
       var categories = {};
       nearby.forEach(function(item){
-        var cat = item.cat || 'other';
+        var cat = item.cat || 'Прочее';
         if (!categories[cat]) categories[cat] = [];
         categories[cat].push(item);
       });
-      var catNames = { cafe:'Кафе', shop:'Магазины', pharm:'Аптеки', sight:'Достопримечательности', other:'Прочее' };
-      var catIcons = {
-        cafe: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8h1a4 4 0 0 1 0 8h-1"/><path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/></svg>',
-        shop: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 2L3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/></svg>',
-        pharm: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 19H5a2 2 0 0 1-2-2V7a2 2 0 0 1 2-2h3"/><path d="M16 5h3a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2h-3"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>',
-        sight: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>',
-        other: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/></svg>'
-      };
+      var catIcon = '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="2" y1="12" x2="22" y2="12"/></svg>';
       var cats = Object.keys(categories);
+      var panelIds = cats.map(function(cat){ return 'np-' + cat.replace(/[^a-zA-Zа-яА-Я0-9]/g,'_'); });
       nearbyEl.innerHTML =
         '<div class="nearby-tabs">' + cats.map(function(cat, i){
-          return '<button class="nearby-tab'+(i===0?' active':'')+'" onclick="switchNearbyTab(this,\'nearby-panel-'+cat+'\')">'+( catNames[cat]||cat)+'</button>';
+          return '<button class="nearby-tab'+(i===0?' active':'')+'" onclick="switchNearbyTab(this,\''+panelIds[i]+'\')">'+cat+'</button>';
         }).join('') + '</div>' +
         cats.map(function(cat, i){
-          return '<div class="nearby-panel'+(i===0?' active':'')+'" id="nearby-panel-'+cat+'">' +
+          return '<div class="nearby-panel'+(i===0?' active':'')+'" id="'+panelIds[i]+'">' +
             categories[cat].map(function(item){
-              return '<div class="nearby-item"><div class="nearby-icon">'+(catIcons[cat]||catIcons.other)+'</div><div><div class="nearby-name">'+item.name+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
+              return '<div class="nearby-item"><div class="nearby-icon">'+catIcon+'</div><div><div class="nearby-name">'+item.name+'</div><div class="nearby-dist">'+item.dist+'</div></div></div>';
             }).join('') +
           '</div>';
         }).join('');
