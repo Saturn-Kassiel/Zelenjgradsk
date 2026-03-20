@@ -1998,8 +1998,18 @@ function cwToggle() {
     document.body.style.position = cwOpen ? 'fixed' : '';
     document.body.style.width = cwOpen ? '100%' : '';
   }
-  if (cwOpen && cwHistory.length === 0) cwInit();
-}
+  if (cwOpen) {
+    var msgs = document.getElementById('cw-messages');
+    var rendered = msgs.querySelectorAll('.cw-msg').length;
+    if (rendered === 0) {
+      cwInit();
+    } else if (rendered - 1 < cwHistory.length) {
+      for (var i = rendered - 1; i < cwHistory.length; i++) {
+        if (cwHistory[i]) cwAddMsg(cwHistory[i].content, cwHistory[i].role === 'user' ? 'user' : 'bot');
+      }
+    }
+    document.getElementById('chat-widget-btn').classList.remove('has-unread');
+  }
 
 function cwOpenChat() {
   if (!cwOpen) cwToggle();
