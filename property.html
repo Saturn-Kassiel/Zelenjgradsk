@@ -1018,6 +1018,22 @@ function calcPrice(dateIn, dateOut, regularPrice) {
   return result;
 }
 
+function openModal() {
+  var overlay = document.getElementById('modal-overlay');
+  if (overlay) overlay.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+function closeModal() {
+  var overlay = document.getElementById('modal-overlay');
+  if (overlay) overlay.classList.remove('open');
+  document.body.style.overflow = '';
+}
+
+function closeModalOutside(e) {
+  if (e.target === e.currentTarget) closeModal();
+}
+
 function bcRecalc() {
   var inVal = document.getElementById('bc-checkin').value;
   var outVal = document.getElementById('bc-checkout').value;
