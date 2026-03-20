@@ -31,7 +31,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 }
 .sidebar-logo {
   padding: 0 20px; border-bottom: 1px solid rgba(255,255,255,0.08);
-  display: flex; align-items: center; gap: 10px; height: 64px; flex-shrink: 0;
+  display: flex; align-items: center; gap: 10px; height: 68px; flex-shrink: 0;
 }
 .logo-dot { width: 8px; height: 8px; border-radius: 50%; background: linear-gradient(135deg,#B8F5D2,#BFEDF2); flex-shrink: 0; }
 .sidebar-logo-text { font-family: 'Manrope', sans-serif; font-size: 13px; font-weight: 700; color: white; line-height: 1.3; }
@@ -56,7 +56,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 .topbar {
   background: var(--white); border-bottom: 1px solid var(--silver);
-  padding: 0 32px; height: 64px; display: flex; align-items: center;
+  padding: 0 32px; height: 68px; display: flex; align-items: center;
   position: sticky; top: 0; z-index: 50;
 }
 .topbar-inner { max-width: 1400px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
@@ -1101,6 +1101,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <label>Сумма, ₽</label>
       <input type="number" class="form-input-a" id="nb-amount" placeholder="0" readonly style="background:var(--bg);color:var(--teal);font-weight:600;font-family:Manrope,sans-serif">
       <div id="nb-amount-hint" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+    </div>
+
+    <div id="nb-breakdown" style="display:none;background:var(--bg);border-radius:10px;border:1px solid var(--silver);padding:12px 14px;margin-bottom:12px;font-size:12px">
+      <div id="nb-breakdown-rows" style="display:flex;flex-direction:column;gap:4px"></div>
     </div>
 
     <input type="hidden" id="nb-out">
@@ -2159,6 +2163,8 @@ function nbRecalc() {
 
   // Расчёт цены через API ценообразования
   var price = promoObjPrices[obj] || objPrices[obj] || 0;
+  var breakdownEl = document.getElementById('nb-breakdown');
+  var breakdownRows = document.getElementById('nb-breakdown-rows');
   if (price && inVal && outStr) {
     fetch(API + '/pricing/calculate', {
       method: 'POST', headers: {'Content-Type':'application/json'},
@@ -2168,38 +2174,50 @@ function nbRecalc() {
         if (!d.ok) return;
         var total = d.total + surcharge;
         amountEl.value = total;
-        var hint = '';
-        if (d.breakdown && d.breakdown.length > 1) {
-          var parts = d.breakdown.map(function(seg){
-            if (seg.type === 'promo') return '🏷 '+seg.label+' '+seg.price_per_night.toLocaleString('ru')+'₽×'+seg.nights+'н';
-            var s = seg.price_per_night.toLocaleString('ru')+'₽×'+seg.nights+'н';
-            if (seg.discount_pct > 0) s += '(−'+seg.discount_pct+'%)';
-            return s;
+        hintEl.textContent = '';
+
+        // Детализация
+        if (breakdownRows) breakdownRows.innerHTML = '';
+        if (breakdownEl) breakdownEl.style.display = 'block';
+
+        if (d.breakdown && d.breakdown.length) {
+          d.breakdown.forEach(function(seg){
+            var row = document.createElement('div');
+            row.style.cssText = 'display:flex;justify-content:space-between;align-items:flex-start;gap:8px;color:var(--muted)';
+            if (seg.type === 'promo') {
+              row.style.color = 'var(--teal)';
+              row.innerHTML = '<span>🏷 '+seg.label+': '+seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' н.</span><span style="flex-shrink:0">'+seg.total.toLocaleString('ru')+' ₽</span>';
+            } else {
+              var factors = [];
+              if (seg.season_coef && seg.season_coef !== 1) factors.push('сезон ×'+seg.season_coef);
+              if (seg.surcharge_coef && seg.surcharge_coef !== 1) factors.push((seg.surcharge_label||'период')+' ×'+seg.surcharge_coef);
+              var lbl = seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' н.';
+              if (factors.length) lbl += ' ('+factors.join(', ')+')';
+              if (seg.discount_pct > 0) lbl += ' −'+seg.discount_pct+'% → '+seg.price_after_discount.toLocaleString('ru')+'₽/н.';
+              row.innerHTML = '<span>'+lbl+'</span><span style="flex-shrink:0">'+seg.total.toLocaleString('ru')+' ₽</span>';
+            }
+            if (breakdownRows) breakdownRows.appendChild(row);
           });
-          hint = parts.join(' + ');
-          hintEl.style.color = 'var(--teal)';
-        } else if (d.promo) {
-          hint = '🏷 '+d.promo+': '+d.price_per_night.toLocaleString('ru')+' ₽/ночь';
-          hintEl.style.color = 'var(--teal)';
-        } else {
-          var factors = [];
-          if (d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
-          if (d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
-          if (d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
-          hint = d.price_per_night.toLocaleString('ru') + ' ₽/ночь × '+nights+' '+nightWord(nights);
-          if (factors.length) hint += ' ('+factors.join(', ')+')';
-          hintEl.style.color = factors.length ? 'var(--teal)' : 'var(--muted)';
         }
-        if (surcharge > 0) hint += ' + '+surcharge.toLocaleString('ru')+' ₽ (доп. гость)';
-        hint += ' → '+total.toLocaleString('ru')+' ₽';
-        hintEl.textContent = hint;
+        if (surcharge > 0) {
+          var rowG = document.createElement('div');
+          rowG.style.cssText = 'display:flex;justify-content:space-between;gap:8px;color:var(--muted)';
+          rowG.innerHTML = '<span>Наценка (доп. гость): '+surcharge.toLocaleString('ru')+' ₽</span><span style="flex-shrink:0">'+surcharge.toLocaleString('ru')+' ₽</span>';
+          if (breakdownRows) breakdownRows.appendChild(rowG);
+        }
+        var totEl = document.createElement('div');
+        totEl.style.cssText = 'display:flex;justify-content:space-between;font-weight:700;color:var(--charcoal);border-top:1px solid var(--silver);padding-top:6px;margin-top:4px;gap:8px';
+        totEl.innerHTML = '<span>Итого: '+nights+' '+nightWord(nights)+', ср. '+Math.round(total/nights).toLocaleString('ru')+' ₽/ночь</span><span style="flex-shrink:0;color:var(--teal)">'+total.toLocaleString('ru')+' ₽</span>';
+        if (breakdownRows) breakdownRows.appendChild(totEl);
       }).catch(function(){
-        var inDate2 = new Date(inVal), outDate2 = new Date(outStr);
-        var calc = calcAdminPrice(inDate2, outDate2, price, obj);
+        if (breakdownEl) breakdownEl.style.display = 'none';
+        var calc = calcAdminPrice(new Date(inVal), new Date(outStr), price, obj);
         var total = calc.total + surcharge;
         amountEl.value = total;
         hintEl.textContent = total.toLocaleString('ru') + ' ₽';
       });
+  } else {
+    if (breakdownEl) breakdownEl.style.display = 'none';
   }
 }
 
