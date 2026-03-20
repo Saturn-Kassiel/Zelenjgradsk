@@ -1612,10 +1612,6 @@ function formatPromoDate(val) {
 }
 
 loadProperties();
-// Инициализируем единый компонент бронирования
-if (typeof BookingModal !== 'undefined') {
-  BookingModal.init({ appsUrl: APPS_URL, chatUrl: CHAT_URL });
-}
 
 var calData = {
   1: { year: new Date().getFullYear(), month: new Date().getMonth(), statuses: {} },
@@ -2010,6 +2006,7 @@ function loadGPromo() {
 
 function openModal(propId) {
   if (typeof BookingModal === 'undefined') { console.error('BookingModal не загружен'); return; }
+  BookingModal.init({ appsUrl: APPS_URL, chatUrl: CHAT_URL });
   var prop = null;
   if (propId) {
     prop = allPropsData.find(function(p){ return String(p.id)===String(propId); });
