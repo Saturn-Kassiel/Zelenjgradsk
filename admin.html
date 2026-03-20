@@ -1920,10 +1920,37 @@ function changeStatus(id, sel) {
   var prevStatus = b.status;
   b.status = sel.value;
   sel.className = 'status-select ss-' + sel.value;
-  var row = [b.id, b.obj, b.name, b.phone, b.in, b.out, b.guests, b.amount, b.status, b.comment];
-  apiWrite('update', 'bookings', row, b.id, function(){
+
+  // Обновляем только иконку действий в строке без перезагрузки
+  var row = sel.closest('tr');
+  if (row) {
+    var actCell = row.querySelector('.booking-actions') || row.querySelector('td:last-child');
+    if (actCell && sel.value === 'confirmed') {
+      // Добавляем кнопку памятки если её нет
+      if (!actCell.querySelector('.memo-btn')) {
+        var memoBtn = document.createElement('button');
+        memoBtn.className = 'icon-btn memo-btn';
+        memoBtn.style.cssText = 'background:rgba(62,112,87,0.1);color:var(--teal)';
+        memoBtn.title = 'Отправить памятку гостю';
+        memoBtn.dataset.id = b.id;
+        memoBtn.dataset.obj = b.obj;
+        memoBtn.dataset.name = encodeURIComponent(b.name);
+        memoBtn.dataset.in = b.in || '';
+        memoBtn.dataset.out = b.out || '';
+        memoBtn.dataset.token = b.token || '';
+        memoBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>';
+        memoBtn.onclick = function(){ sendGuestMemo(b.id, b.obj, b.name, b.in, b.out, b.token); };
+        actCell.insertBefore(memoBtn, actCell.firstChild);
+      }
+    }
+  }
+
+  // Обновляем счётчики вкладок
+  updateTabBadges();
+
+  var apiRow = [b.id, b.obj, b.name, b.phone, b.in, b.out, b.guests, b.amount, b.status, b.comment];
+  apiWrite('update', 'bookings', apiRow, b.id, function(){
     showToast('Статус сохранён');
-    // При подтверждении — отправляем сообщение через Алину
     if (sel.value === 'confirmed' && prevStatus !== 'confirmed') {
       var inFmt = b.in ? b.in.split('-').reverse().join('.') : '—';
       var outFmt = b.out ? b.out.split('-').reverse().join('.') : '—';
@@ -1933,11 +1960,9 @@ function changeStatus(id, sel) {
         '📅 ' + inFmt + ' — ' + outFmt + '\n' +
         '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽\n\n' +
         '🔗 Ваша страница гостя:\n' + guestUrl;
-      // Показываем модал подтверждения отправки
       showChatConfirm(b.name, msg, b.obj);
     }
   });
-  loadBookings();
 }
 
 var _pendingChatMsg = null;
