@@ -1024,6 +1024,112 @@ function calcPrice(dateIn, dateOut, regularPrice) {
   return result;
 }
 
+// ── MODAL BOOKING FUNCTIONS ──
+var propCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+
+function propNightWord(n) { if(n===1) return 'ночь'; if(n<5) return 'ночи'; return 'ночей'; }
+
+function propFormatPhone(inp) {
+  var v = inp.value.replace(/\D/g,'');
+  if (v.startsWith('8')) v = '7' + v.slice(1);
+  if (!v.startsWith('7')) v = '7' + v;
+  v = v.slice(0,11);
+  var r = '+7';
+  if (v.length > 1) r += ' (' + v.slice(1,4);
+  if (v.length >= 4) r += ') ' + v.slice(4,7);
+  if (v.length >= 7) r += '-' + v.slice(7,9);
+  if (v.length >= 9) r += '-' + v.slice(9,11);
+  inp.value = r;
+}
+
+function propChangeNights(delta) {
+  var el = document.getElementById('prop-nights');
+  var val = Math.max(1, Math.min(90, (parseInt(el.value)||1) + delta));
+  el.value = val;
+  propRecalc();
+  propCalRender();
+}
+
+function propRecalc() {
+  var dateIn = document.getElementById('f-checkin').value;
+  var nights = parseInt(document.getElementById('prop-nights').value) || 1;
+  var nlabel = document.getElementById('prop-nights-label');
+  if (nlabel) nlabel.textContent = propNightWord(nights);
+  if (!dateIn) { document.getElementById('f-checkout').value = ''; return; }
+  var d = new Date(dateIn);
+  d.setDate(d.getDate() + nights);
+  document.getElementById('f-checkout').value = d.toISOString().split('T')[0];
+  propCalState.year = new Date(dateIn).getFullYear();
+  propCalState.month = new Date(dateIn).getMonth();
+  propCalRender();
+}
+
+function propCalRender() {
+  var grid = document.getElementById('prop-cal-grid');
+  var title = document.getElementById('prop-cal-title');
+  if (!grid) return;
+  var year = propCalState.year, month = propCalState.month;
+  var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  if (title) title.textContent = monthNames[month] + ' ' + year;
+  var dateIn = document.getElementById('f-checkin').value;
+  var nights = parseInt(document.getElementById('prop-nights').value) || 1;
+  var selStart = dateIn ? new Date(dateIn) : null;
+  var selEnd = selStart ? new Date(selStart) : null;
+  if (selEnd) selEnd.setDate(selEnd.getDate() + nights);
+  var first = new Date(year, month, 1);
+  var startDow = (first.getDay() + 6) % 7;
+  var daysInMonth = new Date(year, month+1, 0).getDate();
+  var cells = '';
+  for (var i = 0; i < startDow; i++) cells += '<div></div>';
+  for (var d = 1; d <= daysInMonth; d++) {
+    var dt = new Date(year, month, d);
+    var key = dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
+    var isOccupied = statuses[key] === 'occupied';
+    var isSelected = selStart && selEnd && dt >= selStart && dt < selEnd;
+    var isToday = dt.toDateString() === new Date().toDateString();
+    var bg = isOccupied ? 'rgba(224,82,82,0.12)' : isSelected ? 'rgba(62,112,87,0.15)' : 'transparent';
+    cells += '<div style="text-align:center;padding:4px 2px;border-radius:6px;font-size:12px;font-weight:'+(isToday?'700':'400')+';background:'+bg+';color:'+(isOccupied?'#E05252':'#2E384D')+'">'+d+'</div>';
+  }
+  grid.innerHTML = cells;
+}
+
+function propCalPrev() {
+  propCalState.month--; if (propCalState.month < 0) { propCalState.month = 11; propCalState.year--; } propCalRender();
+}
+function propCalNext() {
+  propCalState.month++; if (propCalState.month > 11) { propCalState.month = 0; propCalState.year++; } propCalRender();
+}
+
+function submitForm() {
+  var name = document.getElementById('f-name').value.trim();
+  var phone = document.getElementById('f-phone').value.trim();
+  var dateIn = document.getElementById('f-checkin').value;
+  var dateOut = document.getElementById('f-checkout').value;
+  var nights = parseInt(document.getElementById('prop-nights').value)||1;
+  var guests = document.getElementById('f-guests').value;
+  var comment = document.getElementById('f-comment').value.trim();
+  if (!name) { document.getElementById('f-name').style.borderColor='#E05252'; return; }
+  var digits = phone.replace(/\D/g,'');
+  if (digits.length !== 11) { document.getElementById('f-phone').style.borderColor='#E05252'; return; }
+  if (!dateIn) { document.getElementById('f-checkin').style.borderColor='#E05252'; return; }
+  var guestNum = parseInt(guests)||2;
+  var guestSurcharge = guestNum >= 3 ? 750 * nights : 0;
+  var amount = (propData.price || 0) * nights + guestSurcharge;
+  var body = { obj_id: propData.id||1, name: name, phone: phone, date_in: dateIn, date_out: dateOut, guests: guestNum, amount: amount, comment: comment, status: 'new' };
+  fetch(APPS_URL + '/bookings', {
+    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok || d.id) {
+        var form = document.getElementById('booking-form');
+        var success = document.getElementById('success-screen');
+        if (form) form.style.display = 'none';
+        if (success) success.style.display = 'block';
+        fetch(APPS_URL + '/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'new_booking', name:name, phone:phone, date_in:dateIn, date_out:dateOut, nights:nights, amount:amount }) }).catch(function(){});
+      }
+    }).catch(function(){ alert('Ошибка отправки. Попробуйте ещё раз.'); });
+}
+
 function loadTodayPrice() {
   if (!propData.price || !propData.id) return;
   var today = new Date();
