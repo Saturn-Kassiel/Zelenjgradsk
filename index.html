@@ -2354,7 +2354,14 @@ function cwToggle() {
   if (cwOpen) {
     var msgs = document.getElementById('cw-messages');
     var rendered = msgs.querySelectorAll('.cw-msg').length;
-    if (rendered === 0) cwInit();
+    if (rendered === 0) {
+      cwInit();
+    } else if (rendered - 1 < cwHistory.length) {
+      // Дорендериваем сообщения которых нет в DOM (-1 за приветствие бота)
+      for (var i = rendered - 1; i < cwHistory.length; i++) {
+        if (cwHistory[i]) cwAddMsg(cwHistory[i].content, cwHistory[i].role === 'user' ? 'user' : 'bot');
+      }
+    }
   }
   // Скрываем значок при открытии чата
   if (cwOpen) {
