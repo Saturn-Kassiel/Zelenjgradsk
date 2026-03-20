@@ -3871,13 +3871,20 @@ function runCalcPrice() {
       if (d.breakdown && d.breakdown.length) {
         d.breakdown.forEach(function(seg){
           if (seg.type === 'promo') {
-            lines.push('🏷 '+seg.label+': '+seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' н.');
+            lines.push('🏷 '+seg.label+': '+seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' н. = '+seg.total.toLocaleString('ru')+'₽');
           } else {
+            var factors = [];
+            if (seg.season_coef && seg.season_coef !== 1) factors.push('сезон ×'+seg.season_coef);
+            if (seg.surcharge_coef && seg.surcharge_coef !== 1) factors.push((seg.surcharge_label||'период')+' ×'+seg.surcharge_coef);
             var s = seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' н.';
-            if (seg.discount_pct > 0) s += ' (скидка −'+seg.discount_pct+'%)';
+            if (factors.length) s += ' ('+factors.join(', ')+')';
+            if (seg.discount_pct > 0) s += ' − скидка '+seg.discount_pct+'% → '+seg.price_after_discount.toLocaleString('ru')+'₽/н.';
+            s += ' = '+seg.total.toLocaleString('ru')+'₽';
             lines.push(s);
           }
         });
+        lines.push('─────────────────');
+        lines.push('Итого: '+d.nights+' '+nightWord(d.nights)+', ср. '+d.price_per_night.toLocaleString('ru')+'₽/ночь');
       } else {
         lines.push('Базовая цена');
       }
