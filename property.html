@@ -1081,13 +1081,16 @@ function bcRecalc() {
   if (hintEl) hintEl.style.display = 'none';
 
   var nights = Math.round((dateOut - dateIn) / 86400000);
+  var guests = parseInt((document.getElementById('bc-guests').value||'2').replace(/\D/g,'')) || 2;
+  var guestSurcharge = guests >= 3 ? 750 * nights : 0;
 
   fetch(APPS_URL + '/pricing/calculate', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ base_price: propData.price, date_in: inVal, date_out: outVal, obj_id: propData.id })
   }).then(function(r){ return r.json(); })
     .then(function(d){
-      var total = d.ok ? d.total : propData.price * nights;
+      var baseTotal = d.ok ? d.total : propData.price * nights;
+      var total = baseTotal + guestSurcharge;
       rowsEl.innerHTML = '';
 
       if (d.ok && d.breakdown && d.breakdown.length) {
@@ -1111,20 +1114,26 @@ function bcRecalc() {
       } else {
         var row = document.createElement('div');
         row.className = 'booking-calc-row';
-        row.innerHTML = '<span>' + (d.ok ? d.price_per_night.toLocaleString('ru') : propData.price.toLocaleString('ru')) + ' ₽ × ' + nights + ' ' + nightWord(nights) + '</span><span>' + total.toLocaleString('ru') + ' ₽</span>';
+        row.innerHTML = '<span>' + (d.ok ? d.price_per_night.toLocaleString('ru') : propData.price.toLocaleString('ru')) + ' ₽ × ' + nights + ' ' + nightWord(nights) + '</span><span>' + baseTotal.toLocaleString('ru') + ' ₽</span>';
         rowsEl.appendChild(row);
+      }
+
+      if (guestSurcharge > 0) {
+        var rowG = document.createElement('div');
+        rowG.className = 'booking-calc-row';
+        rowG.innerHTML = '<span>Наценка (3-й гость): 750 ₽ × ' + nights + ' ' + nightWord(nights) + '</span><span>' + guestSurcharge.toLocaleString('ru') + ' ₽</span>';
+        rowsEl.appendChild(rowG);
       }
 
       var totEl = document.createElement('div');
       totEl.className = 'booking-calc-row total';
       var avgLabel = 'Итого: ' + nights + ' ' + nightWord(nights);
-      if (d.ok && d.nights > 1) avgLabel += ', ср. ' + d.price_per_night.toLocaleString('ru') + ' ₽/ночь';
+      if (d.ok && d.nights > 1) avgLabel += ', ср. ' + Math.round(total/nights).toLocaleString('ru') + ' ₽/ночь';
       totEl.innerHTML = '<span>' + avgLabel + '</span><span>' + total.toLocaleString('ru') + ' ₽</span>';
       rowsEl.appendChild(totEl);
       calcEl.style.display = 'block';
     }).catch(function(){
-      // Fallback
-      var total = propData.price * nights;
+      var total = propData.price * nights + guestSurcharge;
       rowsEl.innerHTML = '';
       var totEl = document.createElement('div');
       totEl.className = 'booking-calc-row total';
