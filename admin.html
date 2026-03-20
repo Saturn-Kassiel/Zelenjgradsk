@@ -56,9 +56,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 .topbar {
   background: var(--white); border-bottom: 1px solid var(--silver);
-  padding: 0 32px; height: 64px; display: flex; align-items: center; justify-content: space-between;
+  padding: 0 32px; height: 64px; display: flex; align-items: center;
   position: sticky; top: 0; z-index: 50;
 }
+.topbar-inner { max-width: 1400px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
 .topbar-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 .btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; border-radius: 50px; padding: 9px 18px; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; touch-action: manipulation; }
@@ -334,6 +335,9 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .acc-arrow { transition:transform 0.2s;flex-shrink:0; }
 .obj-accordion.open .acc-arrow { transform:rotate(180deg); }
 </style>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 <script src="config.js"></script>
 </head>
 <body>
@@ -405,6 +409,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 <!-- MAIN -->
 <div class="main">
   <div class="topbar">
+    <div class="topbar-inner">
     <div style="display:flex;align-items:center;gap:12px">
       <button class="mobile-menu-btn" onclick="toggleSidebar()">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
@@ -412,14 +417,28 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <div class="topbar-title" id="topbar-title">Бронирования</div>
     </div>
     <div class="topbar-right">
-      <button class="btn btn-outline" id="topbar-secondary" onclick="topbarSecondary()">
-        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-        Экспорт в Excel
-      </button>
+      <div style="position:relative" id="export-menu-wrap">
+        <button class="btn btn-outline" onclick="toggleExportMenu()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Экспорт
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+        </button>
+        <div id="export-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1.5px solid var(--silver);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 24px rgba(46,56,77,0.12);z-index:100">
+          <button onclick="exportToExcel();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D6F42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Скачать Excel (.xlsx)
+          </button>
+          <button onclick="exportToPdf();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Скачать PDF
+          </button>
+        </div>
+      </div>
       <button class="btn btn-primary" id="topbar-primary" onclick="topbarPrimary()">
         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
         Новая бронь
       </button>
+    </div>
     </div>
   </div>
 
@@ -3239,7 +3258,20 @@ function deleteObject(id) {
     }).catch(function(){ showToast('Ошибка сети'); });
 }
 
-// ── EXCEL EXPORT ──
+// ── EXPORT MENU ──
+function toggleExportMenu() {
+  var dd = document.getElementById('export-dropdown');
+  dd.style.display = dd.style.display === 'none' ? '' : 'none';
+}
+document.addEventListener('click', function(e) {
+  if (!document.getElementById('export-menu-wrap').contains(e.target)) {
+    document.getElementById('export-dropdown').style.display = 'none';
+  }
+});
+
+function topbarSecondary() { toggleExportMenu(); }
+
+// ── EXCEL EXPORT (SheetJS) ──
 function exportToExcel() {
   var sel = document.getElementById('dash-period');
   var period = sel ? sel.value : '';
@@ -3247,73 +3279,102 @@ function exportToExcel() {
     var now = new Date();
     period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   }
+  var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var parts = period.split('-');
+  var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
 
   var periodBookings = bookings.filter(function(b){
     return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
   });
 
-  if (!periodBookings.length) { showToast('Нет данных за выбранный период'); return; }
+  var wb = XLSX.utils.book_new();
 
+  // Лист Бронирования
+  var bRows = [['Дата заезда','Дата выезда','Ночей','Гость','Телефон','Объект','Гостей','Сумма (₽)','Статус','Комментарий']];
+  var statuses = { new:'Новая', confirmed:'Подтверждена', pending:'Ожидает', cancelled:'Отменена', done:'Завершена' };
+  periodBookings.forEach(function(b){
+    var nights = b.in && b.out ? Math.round((new Date(b.out)-new Date(b.in))/86400000) : 0;
+    bRows.push([b.in||'', b.out||'', nights, b.name||'', b.phone||'', b.objName||'', b.guests||'', b.amount||0, statuses[b.status]||b.status, b.comment||'']);
+  });
+  var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).reduce(function(s,b){ return s+b.amount; }, 0);
+  bRows.push([]);
+  bRows.push(['','','','','','','','Итого:', totalIncome, '']);
+  var ws1 = XLSX.utils.aoa_to_sheet(bRows);
+  ws1['!cols'] = [{wch:12},{wch:12},{wch:8},{wch:25},{wch:18},{wch:20},{wch:8},{wch:12},{wch:15},{wch:25}];
+  XLSX.utils.book_append_sheet(wb, ws1, 'Бронирования');
+
+  // Лист Расходы
+  var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
+  if (periodExpenses.length) {
+    var catLabels = { cleaning:'Клининг', supplies:'Расходники', repair:'Ремонт', utilities:'Коммунальные', other:'Прочее' };
+    var eRows = [['Дата','Категория','Описание','Объект','Сумма (₽)']];
+    periodExpenses.forEach(function(e){
+      eRows.push([e.date||'', catLabels[e.category]||e.category||'', e.description||'', promoObjNames[String(e.obj_id)]||'', e.amount||0]);
+    });
+    var totalExp = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
+    eRows.push([]);
+    eRows.push(['','','','Итого:', totalExp]);
+    eRows.push(['','','','Прибыль:', totalIncome - totalExp]);
+    var ws2 = XLSX.utils.aoa_to_sheet(eRows);
+    ws2['!cols'] = [{wch:12},{wch:15},{wch:30},{wch:20},{wch:12}];
+    XLSX.utils.book_append_sheet(wb, ws2, 'Расходы');
+  }
+
+  XLSX.writeFile(wb, 'baltika_' + period + '.xlsx');
+  showToast('Excel файл скачан ✓');
+}
+
+// ── PDF EXPORT ──
+function exportToPdf() {
+  var sel = document.getElementById('dash-period');
+  var period = sel ? sel.value : '';
+  if (!period) {
+    var now = new Date();
+    period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
+  }
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   var parts = period.split('-');
   var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
 
-  // Строим CSV
-  var rows = [['Дата заезда','Дата выезда','Ночей','Гость','Телефон','Объект','Гостей','Сумма (₽)','Статус','Комментарий']];
-  periodBookings.forEach(function(b){
-    var nights = b.in && b.out ? Math.round((new Date(b.out)-new Date(b.in))/86400000) : 0;
-    var statuses = { new:'Новая', confirmed:'Подтверждена', pending:'Ожидает', cancelled:'Отменена', done:'Завершена', blocked:'Закрыто' };
-    rows.push([
-      b.in||'', b.out||'', nights,
-      b.name||'', b.phone||'',
-      b.objName||promoObjNames[String(b.obj)]||('Объект '+b.obj),
-      b.guests||'', b.amount||0,
-      statuses[b.status]||b.status,
-      b.comment||''
-    ]);
+  var periodBookings = bookings.filter(function(b){
+    return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
   });
 
-  // Итого
-  var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; })
-    .reduce(function(s,b){ return s+b.amount; }, 0);
-  rows.push([]);
-  rows.push(['','','','','','','','Итого (подтверждённые):', totalIncome + ' ₽', '']);
+  var { jsPDF } = window.jspdf;
+  var doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
 
-  // Расходы за период
+  // Заголовок
+  doc.setFont('helvetica', 'bold');
+  doc.setFontSize(16);
+  doc.text('Апартаменты Балтики — Отчёт за ' + monthLabel, 14, 18);
+
+  // Статистика
+  var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).reduce(function(s,b){ return s+b.amount; }, 0);
   var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
-  if (periodExpenses.length) {
-    rows.push([]);
-    rows.push(['РАСХОДЫ','','','','','','','','','']);
-    rows.push(['Дата','Категория','Описание','Объект','Сумма (₽)','','','','','']);
-    periodExpenses.forEach(function(e){
-      var catLabels = { cleaning:'Клининг', supplies:'Расходники', repair:'Ремонт', utilities:'Коммунальные', other:'Прочее' };
-      rows.push([e.date||'', catLabels[e.category]||e.category||'', e.description||'', promoObjNames[String(e.obj_id)]||('Объект '+(e.obj_id||1)), e.amount||0,'','','','','']);
-    });
-    var totalExp = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
-    rows.push(['','','','Итого расходов:', totalExp + ' ₽','','','','','']);
-    rows.push(['','','','Прибыль:', (totalIncome - totalExp) + ' ₽','','','','','']);
-  }
+  var totalExpenses = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(10);
+  doc.text('Доход: ' + totalIncome.toLocaleString('ru') + ' ₽   |   Расходы: ' + totalExpenses.toLocaleString('ru') + ' ₽   |   Прибыль: ' + (totalIncome-totalExpenses).toLocaleString('ru') + ' ₽   |   Броней: ' + periodBookings.length, 14, 26);
 
-  var csvContent = '\uFEFF' + rows.map(function(row){
-    return row.map(function(cell){
-      var s = String(cell);
-      if (s.indexOf(',')!==-1 || s.indexOf('"')!==-1 || s.indexOf('\n')!==-1) {
-        s = '"' + s.replace(/"/g,'""') + '"';
-      }
-      return s;
-    }).join(',');
-  }).join('\n');
+  // Таблица бронирований
+  var statuses = { new:'Новая', confirmed:'Подтверждена', pending:'Ожидает', cancelled:'Отменена', done:'Завершена' };
+  var tableData = periodBookings.map(function(b){
+    var nights = b.in && b.out ? Math.round((new Date(b.out)-new Date(b.in))/86400000) : 0;
+    return [b.in||'—', b.out||'—', String(nights), b.name||'—', b.phone||'—', b.objName||'—', String(b.amount||0)+' ₽', statuses[b.status]||b.status];
+  });
 
-  var blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-  var url = URL.createObjectURL(blob);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = 'baltika_' + period + '.csv';
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-  showToast('Файл скачан: baltika_' + period + '.csv');
+  doc.autoTable({
+    startY: 32,
+    head: [['Заезд','Выезд','Ночей','Гость','Телефон','Объект','Сумма','Статус']],
+    body: tableData,
+    styles: { fontSize: 8, cellPadding: 3 },
+    headStyles: { fillColor: [62, 112, 87], textColor: 255, fontStyle: 'bold' },
+    alternateRowStyles: { fillColor: [245, 247, 250] },
+    columnStyles: { 3: { cellWidth: 40 }, 4: { cellWidth: 32 } }
+  });
+
+  doc.save('baltika_' + period + '.pdf');
+  showToast('PDF файл скачан ✓');
 }
 
 // ── GUESTS ──
