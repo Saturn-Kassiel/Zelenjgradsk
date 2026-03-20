@@ -1115,6 +1115,12 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <input type="text" class="form-input-a" id="nb-comment" placeholder="Необязательно...">
     </div>
 
+    <label style="display:flex;align-items:flex-start;gap:10px;cursor:pointer;font-size:12px;color:var(--muted);line-height:1.5;margin-bottom:14px">
+      <input id="nb-check-pd" type="checkbox" style="flex-shrink:0;margin-top:2px;width:16px;height:16px;accent-color:var(--teal);cursor:pointer">
+      <span>Администратор получил согласие гостя на обработку персональных данных</span>
+    </label>
+    <div id="nb-check-error" style="display:none;font-size:12px;color:var(--danger);margin-bottom:10px">⚠️ Необходимо подтвердить согласие</div>
+
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:8px">
       <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-booking')">Отмена</button>
       <button class="btn btn-primary" style="justify-content:center" onclick="saveBooking()">Сохранить бронирование</button>
@@ -1630,6 +1636,11 @@ function showPage(name) {
 function topbarPrimary() {
   if (currentPage === 'bookings') {
     nbCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
+    // Сбрасываем чекбокс
+    var checkPd = document.getElementById('nb-check-pd');
+    var checkErr = document.getElementById('nb-check-error');
+    if (checkPd) checkPd.checked = false;
+    if (checkErr) checkErr.style.display = 'none';
     openModal('modal-booking');
     nbRenderCal();
   }
@@ -2390,6 +2401,16 @@ function nbValidate() {
     phoneHint.textContent = '✓ Номер корректен';
     phoneHint.style.color = 'var(--teal)';
     phoneHint.style.display = 'block';
+  }
+
+  // Проверка чекбокса согласия
+  var checkPd = document.getElementById('nb-check-pd');
+  var checkErr = document.getElementById('nb-check-error');
+  if (checkPd && !checkPd.checked) {
+    if (checkErr) checkErr.style.display = 'block';
+    ok = false;
+  } else {
+    if (checkErr) checkErr.style.display = 'none';
   }
 
   return ok;
