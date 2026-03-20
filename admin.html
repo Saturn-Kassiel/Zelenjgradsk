@@ -1468,7 +1468,8 @@ function normalizeRow(sheet, row) {
       amount: row.amount||0,
       status: row.status||'new',
       comment: row.comment||'',
-      token: row.token||''
+      token: row.token||'',
+      created_at: row.created_at||''
     };
   }
   if (sheet === 'expenses') {
