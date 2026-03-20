@@ -1598,6 +1598,11 @@ function showPage(name) {
     var showExport = ['bookings','guests','dashboard'].indexOf(name) !== -1;
     exportWrap.style.display = showExport ? '' : 'none';
   }
+  // Показываем кнопку "Новая бронь" только на странице бронирований
+  var primaryBtn = document.getElementById('topbar-primary');
+  if (primaryBtn) {
+    primaryBtn.style.display = name === 'bookings' ? '' : 'none';
+  }
 }
 
 function topbarPrimary() {
