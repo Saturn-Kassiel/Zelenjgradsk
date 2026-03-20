@@ -639,9 +639,15 @@ html { overflow-x: hidden; }
       <!-- HEADER -->
       <div class="section-block">
         <div class="prop-header">
-          <div class="prop-location">
-            <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
-            Зеленоградск, Калининградская область
+          <div class="prop-location" style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+            <span style="display:flex;align-items:center;gap:5px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Зеленоградск, Калининградская область
+            </span>
+            <a id="prop-map-link" href="#" target="_blank" style="display:none;align-items:center;gap:4px;background:var(--teal);color:white;font-size:11px;font-weight:600;text-decoration:none;padding:4px 10px;border-radius:20px;letter-spacing:0.3px">
+              <svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              На карте
+            </a>
           </div>
           <h1 class="prop-title" style="visibility:hidden">...</h1>
           <div class="prop-tags" id="prop-tags"></div>
@@ -1507,6 +1513,13 @@ function applyPropData(prop) {
   // Название
   var titleEl = document.querySelector('.prop-title');
   if (titleEl) { titleEl.textContent = prop.name; titleEl.style.visibility = 'visible'; }
+
+  // Ссылка на карту
+  var mapLinkEl = document.getElementById('prop-map-link');
+  if (mapLinkEl && prop.map_url) {
+    mapLinkEl.href = prop.map_url;
+    mapLinkEl.style.display = 'inline-flex';
+  }
 
   // Теги (спальни, гости, особенности)
   var tagsEl = document.getElementById('prop-tags');
