@@ -1432,6 +1432,7 @@ function driveDirectUrl(url) {
 
 
 var API = APPS_URL;
+var CHAT_URL_ADMIN = typeof CHAT_URL !== 'undefined' ? CHAT_URL : '';
 
 // ── Маппинг полей из БД в старый формат (для совместимости с остальным кодом) ──
 function normalizeRow(sheet, row) {
@@ -1897,10 +1898,29 @@ function searchBookings(val) { renderBookings(bookingFilter, val); }
 function changeStatus(id, sel) {
   var b = bookings.find(function(x){ return String(x.id)===String(id); });
   if (!b) return;
+  var prevStatus = b.status;
   b.status = sel.value;
   sel.className = 'status-select ss-' + sel.value;
   var row = [b.id, b.obj, b.name, b.phone, b.in, b.out, b.guests, b.amount, b.status, b.comment];
-  apiWrite('update', 'bookings', row, b.id, function(){ showToast('Статус сохранён'); });
+  apiWrite('update', 'bookings', row, b.id, function(){
+    showToast('Статус сохранён');
+    // При подтверждении — отправляем сообщение через Алину
+    if (sel.value === 'confirmed' && prevStatus !== 'confirmed') {
+      var inFmt = b.in ? b.in.split('-').reverse().join('.') : '—';
+      var outFmt = b.out ? b.out.split('-').reverse().join('.') : '—';
+      var guestUrl = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html?id=' + b.obj + '&in=' + (b.in||'') + '&out=' + (b.out||'');
+      var msg = '✅ Бронирование подтверждено!\n\n' +
+        '👤 ' + b.name + '\n' +
+        '📅 ' + inFmt + ' — ' + outFmt + '\n' +
+        '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽\n\n' +
+        '🔗 Ваша страница гостя:\n' + guestUrl;
+      fetch(CHAT_URL_ADMIN || CHAT_URL, {
+        method: 'POST',
+        headers: {'Content-Type': 'text/plain'},
+        body: JSON.stringify({ action: 'notify', contact: b.name + ' ' + b.phone, dialog: msg })
+      }).then(function(){ showToast('Уведомление отправлено в чат ✓'); }).catch(function(){});
+    }
+  });
   loadBookings();
 }
 
