@@ -1203,52 +1203,22 @@ function loadTodayPrice() {
 }
 
 function openModal() {
-  var overlay = document.getElementById('modal-overlay');
-  if (overlay) overlay.classList.add('open');
-  document.body.style.overflow = 'hidden';
-
-  // Обновляем опции гостей из данных объекта
-  var maxGuests = propData.guests || 3;
-  var guestWords = ['','гость','гостя','гостя','гостя','гостей','гостей'];
-  var fGuests = document.getElementById('f-guests');
-  if (fGuests) {
-    var curVal = document.getElementById('bc-guests') ? parseInt((document.getElementById('bc-guests').value||'2').replace(/\D/g,''))||2 : 2;
-    var opts = '';
-    for (var gi = 1; gi <= maxGuests; gi++) {
-      opts += '<option'+(gi===curVal?' selected':'')+'>'+gi+' '+(guestWords[gi]||'гостей')+'</option>';
-    }
-    fGuests.innerHTML = opts;
-  }
-  var dateIn = document.getElementById('bc-checkin').value;
-  var dateOut = document.getElementById('bc-checkout').value;
-  var guestsVal = document.getElementById('bc-guests').value;
-
-  if (dateIn) {
-    var fCheckin = document.getElementById('f-checkin');
-    if (fCheckin) { fCheckin.value = dateIn; }
-  }
-  if (dateOut) {
-    var fCheckout = document.getElementById('f-checkout');
-    if (fCheckout) fCheckout.value = dateOut;
-  }
-  if (dateIn && dateOut) {
-    var nights = Math.round((new Date(dateOut) - new Date(dateIn)) / 86400000);
-    var fNights = document.getElementById('prop-nights');
-    if (fNights && nights > 0) fNights.value = nights;
-    // Триггерим пересчёт
-    if (typeof propRecalc === 'function') propRecalc();
-    if (typeof propCalRender === 'function') propCalRender();
-  }
-  if (guestsVal) {
-    var fGuests = document.getElementById('f-guests');
-    if (fGuests) {
-      var opts = fGuests.options;
-      for (var i = 0; i < opts.length; i++) {
-        if (opts[i].value === guestsVal || opts[i].text === guestsVal) {
-          fGuests.selectedIndex = i; break;
-        }
-      }
-    }
+  if (typeof BookingModal !== 'undefined') {
+    BookingModal.init({ appsUrl: APPS_URL, chatUrl: CHAT_URL });
+    var dateIn = document.getElementById('bc-checkin').value;
+    var dateOut = document.getElementById('bc-checkout').value;
+    var nights = dateIn && dateOut ? Math.round((new Date(dateOut)-new Date(dateIn))/86400000) : 3;
+    var titleEl = document.querySelector('.prop-title');
+    BookingModal.open({
+      objId: propData.id,
+      objName: titleEl ? titleEl.textContent : '',
+      objAddr: (document.querySelector('.prop-location') ? document.querySelector('.prop-location').textContent : '').replace(/[📍]/g,'').trim(),
+      price: propData.price,
+      maxGuests: propData.guests || 3,
+      statuses: typeof statuses !== 'undefined' ? statuses : {},
+      dateIn: dateIn || '',
+      nights: nights > 0 ? nights : 3
+    });
   }
 }
 
@@ -2208,5 +2178,6 @@ initGuestAccess();
 
 
 </script>
+<script src="booking-modal.js"></script>
 </body>
 </html>
