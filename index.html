@@ -2052,10 +2052,22 @@ function updateModalProp() {
   var val = document.getElementById('prop-select').value;
   if (val && propNames[val]) {
     document.getElementById('modal-prop-name').textContent = propNames[val].name;
-    // Показываем только улицу без номера квартиры (убираем "кв. XX")
     var addr = propNames[val].addr || '';
     var addrShort = addr.replace(/,?\s*кв\.\s*\d+/i, '').trim();
     document.getElementById('modal-prop-addr').textContent = addrShort;
+    // Обновляем опции гостей
+    var prop = allPropsData.find(function(p){ return String(p.id)===String(val); });
+    var maxGuests = prop ? (parseInt(prop.guests)||3) : 3;
+    var guestWords = ['','гость','гостя','гостя','гостя','гостей','гостей'];
+    var fGuests = document.getElementById('f-guests');
+    if (fGuests) {
+      var opts = '';
+      for (var i = 1; i <= maxGuests; i++) {
+        var extra = i >= 3 ? ' (+750 ₽/ночь)' : '';
+        opts += '<option value="'+i+'"'+(i===2?' selected':'')+'>'+i+' '+(guestWords[i]||'гостей')+extra+'</option>';
+      }
+      fGuests.innerHTML = opts;
+    }
   }
   gRecalc();
 }
