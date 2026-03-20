@@ -2013,6 +2013,22 @@ function cwInit() {
   } else {
     cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
   }
+  // Проверяем очередь сообщений от управляющего
+  var objId = propData && propData.id ? propData.id : 1;
+  fetch(APPS_URL + '/chat-queue/' + objId)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.messages && d.messages.length) {
+        d.messages.forEach(function(msg){
+          setTimeout(function(){
+            cwAddMsg(msg, 'bot');
+            // Показываем красную точку
+            var btn = document.getElementById('chat-widget-btn');
+            if (btn) btn.classList.add('has-unread');
+          }, 500);
+        });
+      }
+    }).catch(function(){});
 }
 
 function cwClear() {
