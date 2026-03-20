@@ -482,6 +482,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
               <th style="text-align:center">Даты</th>
               <th style="text-align:center">Гостей</th>
               <th style="text-align:center">Сумма</th>
+              <th style="text-align:center">Получена</th>
               <th style="text-align:center">Статус</th>
               <th style="text-align:center">Действия</th>
             </tr>
@@ -1764,7 +1765,7 @@ function parseSheetDate(val) {
 }
 
 function loadBookings() {
-  document.getElementById('bookings-body').innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Загрузка...</td></tr>';
+  document.getElementById('bookings-body').innerHTML = '<tr><td colspan="8" style="text-align:center;padding:28px;color:var(--muted)">Загрузка...</td></tr>';
   apiRead('bookings', function(data) {
     bookings = data.map(function(r) {
       var objId = String(r.obj_id||'1').trim();
@@ -1782,7 +1783,8 @@ function loadBookings() {
         amount: Math.round(parseFloat(amt))||0,
         status: String(r.status||'new'),
         comment: String(r.comment||''),
-        token: String(r.token||'')
+        token: String(r.token||''),
+        created_at: r.created_at || ''
       };
     });
     calStatuses = {1:{},2:{}};
@@ -1877,6 +1879,13 @@ function renderBookings(filter, search) {
       '<td><div class="date-range">'+inD+' — '+outD+'</div><div class="nights">'+nights+' '+nightWord(nights)+'</div></td>' +
       '<td>'+b.guests+'</td>' +
       '<td><span style="font-family:Manrope,sans-serif;font-weight:700">'+b.amount.toLocaleString('ru')+' ₽</span>'+(b.comment?'<div style="font-size:11px;color:var(--muted);margin-top:2px">'+b.comment+'</div>':'')+'</td>' +
+      '<td style="text-align:center">' + (function(){
+        if (!b.created_at) return '<span style="color:var(--muted);font-size:11px">—</span>';
+        var d = new Date(b.created_at);
+        var date = d.getDate().toString().padStart(2,'0')+'.'+(d.getMonth()+1).toString().padStart(2,'0')+'.'+d.getFullYear();
+        var time = d.getHours().toString().padStart(2,'0')+':'+d.getMinutes().toString().padStart(2,'0');
+        return '<div style="font-size:12px;font-weight:500;color:var(--charcoal)">'+date+'</div><div style="font-size:11px;color:var(--muted)">'+time+'</div>';
+      })() + '</td>' +
       '<td><select class="status-select ss-'+b.status+'"'+(isDisabled?' disabled style="opacity:0.7;cursor:default"':'')+' onchange="changeStatus(\''+b.id+'\',this)">'+opts+'</select></td>' +
       '<td><div class="action-btns">' +
         (b.status==='confirmed' ? '<button class="icon-btn memo-btn" data-id="'+b.id+'" data-obj="'+b.obj+'" data-name="'+encodeURIComponent(b.name)+'" data-in="'+(b.in||'')+'" data-out="'+(b.out||'')+'" data-token="'+(b.token||'')+'" title="Отправить памятку гостю" style="background:rgba(62,112,87,0.1);color:var(--teal)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>' : '') +
