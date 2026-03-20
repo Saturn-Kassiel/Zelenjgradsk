@@ -1925,28 +1925,33 @@ function gRecalc() {
     body: JSON.stringify({ base_price: regularPrice, date_in: inVal, date_out: outStr, obj_id: objId })
   }).then(function(r){ return r.json(); })
     .then(function(d){
-      var pricePerNight = d.ok ? d.price_per_night : regularPrice;
       var baseTotal = d.ok ? d.total : regularPrice * nights;
       var total = baseTotal + guestSurcharge;
 
       calcRows.innerHTML = '';
-      var row1 = document.createElement('div');
-      row1.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:var(--muted)';
-      var label;
-      if (d.ok && d.promo) {
-        row1.style.color = 'var(--teal)';
-        label = '🏷 ' + d.promo + ': ' + pricePerNight.toLocaleString('ru') + ' ₽ × ' + nights + ' ' + gNightWord(nights);
+      if (d.ok && d.breakdown && d.breakdown.length) {
+        d.breakdown.forEach(function(seg){
+          var row = document.createElement('div');
+          row.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px';
+          var label;
+          if (seg.type === 'promo') {
+            row.style.color = 'var(--teal)';
+            label = '🏷 ' + seg.label + ': ' + seg.price_per_night.toLocaleString('ru') + ' ₽ × ' + seg.nights + ' ' + gNightWord(seg.nights);
+          } else {
+            row.style.color = 'var(--muted)';
+            label = seg.price_per_night.toLocaleString('ru') + ' ₽ × ' + seg.nights + ' ' + gNightWord(seg.nights);
+            if (seg.discount_pct > 0) label += ' (скидка −' + seg.discount_pct + '%)';
+          }
+          row.innerHTML = '<span>'+label+'</span><span>'+seg.total.toLocaleString('ru')+' ₽</span>';
+          calcRows.appendChild(row);
+        });
       } else {
-        var factors = [];
-        if (d.ok && d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
-        if (d.ok && d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
-        if (d.ok && d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
-        if (factors.length) row1.style.color = 'var(--teal)';
-        label = pricePerNight.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights);
-        if (factors.length) label += ' ('+factors.join(', ')+')';
+        var row1 = document.createElement('div');
+        row1.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:var(--muted)';
+        var pricePerNight = d.ok ? d.price_per_night : regularPrice;
+        row1.innerHTML = '<span>'+pricePerNight.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights)+'</span><span>'+baseTotal.toLocaleString('ru')+' ₽</span>';
+        calcRows.appendChild(row1);
       }
-      row1.innerHTML = '<span>'+label+'</span><span>'+baseTotal.toLocaleString('ru')+' ₽</span>';
-      calcRows.appendChild(row1);
       if (guestSurcharge > 0) {
         var rowG = document.createElement('div');
         rowG.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:var(--muted)';
