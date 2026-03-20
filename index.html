@@ -1075,11 +1075,13 @@ document.addEventListener('keydown', function(e) {
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Дата заезда <span style="color:#E05252">*</span></label>
-          <input type="date" class="form-input" id="f-checkin" onchange="gRecalc();this.style.borderColor=''">
+          <input type="hidden" id="f-checkin">
+          <div id="f-checkin-disp" class="form-input" style="display:flex;align-items:center;color:#AFB9D0;cursor:default">Выберите дату ↓</div>
         </div>
         <div class="form-group">
           <label class="form-label">Дата выезда</label>
-          <input type="date" class="form-input" id="f-checkout-vis" onchange="gFromCheckout()">
+          <input type="hidden" id="f-checkout-vis">
+          <div id="f-checkout-disp" class="form-input" style="display:flex;align-items:center;background:#F4F6FB;color:#AFB9D0">Рассчитывается</div>
         </div>
       </div>
 
@@ -1810,7 +1812,11 @@ function gCalSelectDay(date) {
   var y = date.getFullYear();
   var m = String(date.getMonth()+1).padStart(2,'0');
   var d = String(date.getDate()).padStart(2,'0');
-  document.getElementById('f-checkin').value = y+'-'+m+'-'+d;
+  var dateStr = y+'-'+m+'-'+d;
+  document.getElementById('f-checkin').value = dateStr;
+  var fmt = date.getDate().toString().padStart(2,'0') + '.' + (date.getMonth()+1).toString().padStart(2,'0') + '.' + date.getFullYear();
+  var disp = document.getElementById('f-checkin-disp');
+  if (disp) { disp.textContent = fmt; disp.style.color = 'var(--charcoal)'; disp.style.border = ''; }
   gRecalc();
   gRenderCal();
 }
@@ -1878,6 +1884,10 @@ function gRecalc() {
   outDate.setDate(outDate.getDate() + nights);
   var outStr = outDate.toISOString().split('T')[0];
   document.getElementById('f-checkout').value = outStr;
+  var dOut = new Date(outStr + 'T00:00:00');
+  var fmtOut = dOut.getDate().toString().padStart(2,'0') + '.' + (dOut.getMonth()+1).toString().padStart(2,'0') + '.' + dOut.getFullYear();
+  var dispOut = document.getElementById('f-checkout-disp');
+  if (dispOut) { dispOut.textContent = fmtOut; dispOut.style.color = 'var(--charcoal)'; }
   var visEl = document.getElementById('f-checkout-vis');
   if (visEl) visEl.value = outStr;
   var nlabel = document.getElementById('f-nights-label');
@@ -2078,7 +2088,7 @@ function submitForm() {
 
   if (!name.value.trim()) { name.style.borderColor='var(--danger)'; ok=false; }
   if (!phone.value.trim() || phone.value.replace(/\D/g,'').length!==11) { phone.style.borderColor='var(--danger)'; ok=false; }
-  if (!checkin.value) { checkin.style.borderColor='var(--danger)'; ok=false; }
+  if (!checkin.value) { var fd=document.getElementById('f-checkin-disp'); if(fd) fd.style.border='1.5px solid var(--danger)'; ok=false; }
   if (!obj.value) { obj.style.borderColor='var(--danger)'; ok=false; }
   if (!ok) return;
 
