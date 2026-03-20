@@ -1005,7 +1005,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <div class="form-group-a">
       <label>Объект</label>
-      <select class="form-select-a" id="nb-obj" onchange="nbRecalc()">
+      <select class="form-select-a" id="nb-obj" onchange="nbUpdateGuests();nbRecalc()">
         <option value="1">Балтийский бриз — 4 000 ₽/ночь</option>
         <option value="2">Янтарный закат — 5 000 ₽/ночь</option>
       </select>
@@ -1604,6 +1604,22 @@ function toggleSidebar() {
 function closeSidebar() {
   document.getElementById('sidebar').classList.remove('open');
   document.getElementById('overlay-bg').classList.remove('show');
+}
+
+function nbUpdateGuests() {
+  var objId = document.getElementById('nb-obj').value;
+  var obj = objects.find(function(o){ return String(o.id) === String(objId); });
+  var maxGuests = obj ? (parseInt(obj.guests)||3) : 3;
+  var sel = document.getElementById('nb-guests');
+  if (!sel) return;
+  var guestWords = ['','гость','гостя','гостя','гостя','гостей','гостей'];
+  var cur = sel.value;
+  var opts = '';
+  for (var i = 1; i <= maxGuests; i++) {
+    var extra = i >= 3 ? ' (+750 ₽/ночь)' : '';
+    opts += '<option value="'+i+'"'+(String(i)===cur?' selected':'')+'>'+i+extra+'</option>';
+  }
+  sel.innerHTML = opts;
 }
 
 // ── PROMO-AWARE PRICE CALC ──
