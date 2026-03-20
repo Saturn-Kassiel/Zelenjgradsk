@@ -1053,6 +1053,39 @@ function openModal() {
   var overlay = document.getElementById('modal-overlay');
   if (overlay) overlay.classList.add('open');
   document.body.style.overflow = 'hidden';
+
+  // Переносим данные из карточки в модал
+  var dateIn = document.getElementById('bc-checkin').value;
+  var dateOut = document.getElementById('bc-checkout').value;
+  var guestsVal = document.getElementById('bc-guests').value;
+
+  if (dateIn) {
+    var fCheckin = document.getElementById('f-checkin');
+    if (fCheckin) { fCheckin.value = dateIn; }
+  }
+  if (dateOut) {
+    var fCheckout = document.getElementById('f-checkout');
+    if (fCheckout) fCheckout.value = dateOut;
+  }
+  if (dateIn && dateOut) {
+    var nights = Math.round((new Date(dateOut) - new Date(dateIn)) / 86400000);
+    var fNights = document.getElementById('prop-nights');
+    if (fNights && nights > 0) fNights.value = nights;
+    // Триггерим пересчёт
+    if (typeof propRecalc === 'function') propRecalc();
+    if (typeof propCalRender === 'function') propCalRender();
+  }
+  if (guestsVal) {
+    var fGuests = document.getElementById('f-guests');
+    if (fGuests) {
+      var opts = fGuests.options;
+      for (var i = 0; i < opts.length; i++) {
+        if (opts[i].value === guestsVal || opts[i].text === guestsVal) {
+          fGuests.selectedIndex = i; break;
+        }
+      }
+    }
+  }
 }
 
 function closeModal() {
