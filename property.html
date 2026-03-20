@@ -927,9 +927,17 @@ html { overflow-x: hidden; }
     </div>
     <div class="success-screen" id="success-screen">
       <div class="success-icon"><svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg></div>
-      <h2 class="success-title">Заявка отправлена!</h2>
+      <h2 class="success-title">Заявка получена!</h2>
       <p class="success-text">Мы свяжемся с вами для подтверждения бронирования.</p>
-      <button class="btn-book-main" style="margin-top:20px" onclick="closeModal()">Закрыть</button>
+      <div style="margin:20px 0;background:rgba(62,112,87,0.07);border-radius:14px;padding:16px 18px;text-align:left">
+        <div style="font-size:13px;font-weight:700;color:var(--charcoal);margin-bottom:8px">💬 Хотите получить ответ прямо сейчас?</div>
+        <div style="font-size:13px;color:var(--muted);line-height:1.6">Откройте чат внизу страницы и напишите <b style="color:var(--charcoal)">«заявка»</b> — наш помощник Алина сразу подтвердит получение и ответит на вопросы.</div>
+        <button onclick="cwOpenChat();closeModal();" style="margin-top:12px;display:flex;align-items:center;gap:8px;background:var(--teal);color:white;border:none;border-radius:50px;padding:10px 18px;font-size:13px;font-weight:600;cursor:pointer;font-family:DM Sans,sans-serif">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+          Открыть чат с Алиной
+        </button>
+      </div>
+      <button class="btn-book-main" style="margin-top:4px;background:transparent;color:var(--muted);border:1.5px solid var(--silver);font-size:13px" onclick="closeModal()">Закрыть</button>
     </div>
   </div>
 </div>
@@ -1114,26 +1122,57 @@ function submitForm() {
   if (!dateIn) { document.getElementById('f-checkin').style.borderColor='#E05252'; return; }
   var guestNum = parseInt(guests)||2;
   var guestSurcharge = guestNum >= 3 ? 750 * nights : 0;
-  var amount = (propData.price || 0) * nights + guestSurcharge;
-  var body = { obj_id: propData.id||1, name: name, phone: phone, date_in: dateIn, date_out: dateOut, guests: guestNum, amount: amount, comment: comment, status: 'new' };
-  fetch(APPS_URL + '/bookings', {
-    method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok || d.id) {
-        var form = document.getElementById('booking-form');
-        var success = document.getElementById('success-screen');
-        if (form) form.style.display = 'none';
-        if (success) success.style.display = 'block';
-        // Уведомление в Telegram управляющему
-        fetch(APPS_URL + '/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'new_booking', name:name, phone:phone, date_in:dateIn, date_out:dateOut, nights:nights, amount:amount }) }).catch(function(){});
-        // Уведомление управляющему через Алину
-        var bookingInfo = '📋 Новая заявка от ' + name + ' (' + phone + ')\nДаты: ' + dateIn + ' — ' + dateOut + ', ' + nights + ' ночей\nСумма: ' + amount.toLocaleString('ru') + ' ₽';
-        fetch(CHAT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'notify', contact: name + ' ' + phone, dialog: bookingInfo }) }).catch(function(){});
-        // Сохраняем контакт
-        fetch(APPS_URL + '/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:name, phone:phone, source:'booking' }) }).catch(function(){});
-      }
-    }).catch(function(){ alert('Ошибка отправки. Попробуйте ещё раз.'); });
+
+  // Сначала получаем детализацию цены
+  var pricePromise = propData.price && dateIn && dateOut
+    ? fetch(APPS_URL + '/pricing/calculate', {
+        method: 'POST', headers: {'Content-Type':'application/json'},
+        body: JSON.stringify({ base_price: propData.price, date_in: dateIn, date_out: dateOut, obj_id: propData.id })
+      }).then(function(r){ return r.json(); }).catch(function(){ return null; })
+    : Promise.resolve(null);
+
+  pricePromise.then(function(pc) {
+    var baseAmount = pc && pc.ok ? pc.total : (propData.price||0) * nights;
+    var amount = baseAmount + guestSurcharge;
+
+    // Формируем детализацию для уведомления
+    var nightWord = function(n){ return n===1?'ночь':n<5?'ночи':'ночей'; };
+    var breakdown = '';
+    if (pc && pc.ok && pc.breakdown && pc.breakdown.length) {
+      pc.breakdown.forEach(function(seg){
+        if (seg.type === 'promo') {
+          breakdown += '\n🏷 '+seg.label+': '+seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' н. = '+seg.total.toLocaleString('ru')+'₽';
+        } else {
+          var s = seg.price_per_night.toLocaleString('ru')+'₽ × '+seg.nights+' '+nightWord(seg.nights);
+          if (seg.discount_pct > 0) s += ' −'+seg.discount_pct+'%';
+          s += ' = '+seg.total.toLocaleString('ru')+'₽';
+          breakdown += '\n'+s;
+        }
+      });
+    }
+    if (guestSurcharge > 0) breakdown += '\n+750₽/ночь (3-й гость) = '+guestSurcharge.toLocaleString('ru')+'₽';
+
+    var body = { obj_id: propData.id||1, name: name, phone: phone, date_in: dateIn, date_out: dateOut, guests: guestNum, amount: amount, comment: comment, status: 'new' };
+    fetch(APPS_URL + '/bookings', {
+      method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body)
+    }).then(function(r){ return r.json(); })
+      .then(function(d){
+        if (d.ok || d.id) {
+          var form = document.getElementById('booking-form');
+          var success = document.getElementById('success-screen');
+          if (form) form.style.display = 'none';
+          if (success) success.style.display = 'block';
+          // Уведомление в Telegram
+          fetch(APPS_URL + '/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'new_booking', name:name, phone:phone, date_in:dateIn, date_out:dateOut, nights:nights, amount:amount }) }).catch(function(){});
+          // Уведомление через Алину с детализацией
+          var bookingInfo = '📋 Новая заявка от '+name+' ('+phone+')\n📅 '+dateIn+' — '+dateOut+', '+nights+' '+nightWord(nights)+breakdown+'\n💰 Итого: '+amount.toLocaleString('ru')+' ₽';
+          if (comment) bookingInfo += '\n💬 ' + comment;
+          fetch(CHAT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'notify', contact: name+' '+phone, dialog: bookingInfo }) }).catch(function(){});
+          // Сохраняем контакт
+          fetch(APPS_URL + '/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:name, phone:phone, source:'booking' }) }).catch(function(){});
+        }
+      }).catch(function(){ alert('Ошибка отправки. Попробуйте ещё раз.'); });
+  });
 }
 
 function loadTodayPrice() {
@@ -1941,6 +1980,10 @@ function cwToggle() {
     document.body.style.width = cwOpen ? '100%' : '';
   }
   if (cwOpen && cwHistory.length === 0) cwInit();
+}
+
+function cwOpenChat() {
+  if (!cwOpen) cwToggle();
 }
 
 function cwInit() {
