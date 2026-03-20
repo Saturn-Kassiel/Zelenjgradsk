@@ -1911,45 +1911,56 @@ function gRecalc() {
     }
   }
 
-  // Расчёт стоимости
+  // Расчёт стоимости через API ценообразования
   if (!objId) { calcEl.style.display='none'; return; }
   var prop = allPropsData.find(function(p){ return String(p.id)===String(objId); });
   if (!prop) { calcEl.style.display='none'; return; }
   var regularPrice = Math.round(parseFloat(String(prop.price).replace(/\s/g,'').replace(',','.'))||0);
 
-  // Промо
-  var hasPromo = gPromoData && gPromoData.obj_id===String(objId) && gPromoData.price && gPromoData.date_from && gPromoData.date_to;
-  var rows = [];
-  if (!hasPromo) {
-    rows.push({ label: regularPrice.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights), amount: regularPrice*nights });
-  } else {
-    var pFrom = gPromoData.date_from; var pTo = gPromoData.date_to;
-    var rN=0; var pN=0; var dd=new Date(inDate);
-    while(dd<outDate){ if(dd>=pFrom&&dd<pTo)pN++;else rN++; dd.setDate(dd.getDate()+1); }
-    if(rN>0) rows.push({ label: regularPrice.toLocaleString('ru')+' ₽ × '+rN+' '+gNightWord(rN), amount: regularPrice*rN });
-    if(pN>0) rows.push({ label: (gPromoData.label||'Акция')+': '+gPromoData.price.toLocaleString('ru')+' ₽ × '+pN+' '+gNightWord(pN), amount: gPromoData.price*pN, isPromo:true });
-  }
-
-  // Наценка за 3-го гостя
   var guests3 = parseInt(document.getElementById('f-guests') ? document.getElementById('f-guests').value : '2') || 2;
-  if (guests3 >= 3) {
-    var surcharge = 750 * nights;
-    rows.push({ label: 'Наценка (3-й гость): 750 ₽ × ' + nights + ' ' + gNightWord(nights), amount: surcharge });
-  }
+  var guestSurcharge = guests3 >= 3 ? 750 * nights : 0;
 
-  var total = rows.reduce(function(s,r){return s+r.amount;},0);
-  calcRows.innerHTML = '';
-  rows.forEach(function(r) {
-    var el = document.createElement('div');
-    el.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:'+(r.isPromo?'var(--teal)':'var(--muted)');
-    el.innerHTML='<span>'+r.label+'</span><span>'+r.amount.toLocaleString('ru')+' ₽</span>';
-    calcRows.appendChild(el);
-  });
-  var totEl = document.createElement('div');
-  totEl.style.cssText = 'display:flex;justify-content:space-between;font-weight:700;color:var(--charcoal);border-top:1px solid var(--silver);padding-top:8px;margin-top:4px';
-  totEl.innerHTML='<span>Предварительно</span><span>'+total.toLocaleString('ru')+' ₽</span>';
-  calcRows.appendChild(totEl);
-  calcEl.style.display = 'block';
+  fetch(APPS_URL + '/pricing/calculate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ base_price: regularPrice, date_in: inVal, date_out: outStr })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      var pricePerNight = d.ok ? d.price_per_night : regularPrice;
+      var baseTotal = d.ok ? d.total : regularPrice * nights;
+      var total = baseTotal + guestSurcharge;
+
+      calcRows.innerHTML = '';
+      var row1 = document.createElement('div');
+      row1.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:var(--muted)';
+      var factors = [];
+      if (d.ok && d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
+      if (d.ok && d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
+      if (d.ok && d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
+      var label = pricePerNight.toLocaleString('ru')+' ₽ × '+nights+' '+gNightWord(nights);
+      if (factors.length) label += ' ('+factors.join(', ')+')';
+      row1.innerHTML = '<span>'+label+'</span><span>'+baseTotal.toLocaleString('ru')+' ₽</span>';
+      calcRows.appendChild(row1);
+      if (guestSurcharge > 0) {
+        var rowG = document.createElement('div');
+        rowG.style.cssText = 'display:flex;justify-content:space-between;margin-bottom:4px;color:var(--muted)';
+        rowG.innerHTML = '<span>Наценка (3-й гость): 750 ₽ × '+nights+' '+gNightWord(nights)+'</span><span>'+guestSurcharge.toLocaleString('ru')+' ₽</span>';
+        calcRows.appendChild(rowG);
+      }
+      var totEl = document.createElement('div');
+      totEl.style.cssText = 'display:flex;justify-content:space-between;font-weight:700;color:var(--charcoal);border-top:1px solid var(--silver);padding-top:8px;margin-top:4px';
+      totEl.innerHTML = '<span>Предварительно</span><span>'+total.toLocaleString('ru')+' ₽</span>';
+      calcRows.appendChild(totEl);
+      calcEl.style.display = 'block';
+    }).catch(function(){
+      // Fallback — простой расчёт
+      var total = regularPrice * nights + guestSurcharge;
+      calcRows.innerHTML = '';
+      var totEl = document.createElement('div');
+      totEl.style.cssText = 'display:flex;justify-content:space-between;font-weight:700;color:var(--charcoal)';
+      totEl.innerHTML = '<span>Предварительно</span><span>'+total.toLocaleString('ru')+' ₽</span>';
+      calcRows.appendChild(totEl);
+      calcEl.style.display = 'block';
+    });
 }
 
 function gNightWord(n) { if(n===1)return'ночь';if(n<5)return'ночи';return'ночей'; }
