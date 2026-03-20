@@ -3818,7 +3818,7 @@ function calcPrice() {
   var objId = document.getElementById('calc-obj').value;
   var dateIn = document.getElementById('calc-in').value;
   var dateOut = document.getElementById('calc-out').value;
-  if (!objId || !dateIn || !dateOut || dateIn >= dateOut) {
+  if (!objId || !dateIn || !dateOut || new Date(dateIn) >= new Date(dateOut)) {
     document.getElementById('calc-result').style.display = 'none';
     return;
   }
