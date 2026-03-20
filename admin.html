@@ -3121,14 +3121,13 @@ function addObjRule(editorId, isAllow) {
 }
 
 function nearbyRowHtml(item) {
-  var cats = ['cafe','shop','pharm','sight','other'];
-  var catNames = { cafe:'Кафе', shop:'Магазины', pharm:'Аптеки', sight:'Достопримечательности', other:'Прочее' };
+  var cat = (item.cat || '').replace(/"/g, '&quot;');
+  var name = (item.name || '').replace(/"/g, '&quot;');
+  var dist = (item.dist || '').replace(/"/g, '&quot;');
   return '<div data-row style="display:flex;gap:8px;align-items:center">' +
-    '<select class="form-input-a" style="flex:0 0 140px;margin:0;padding:8px 10px" data-field="cat">' +
-      cats.map(function(c){ return '<option value="'+c+'"'+(item.cat===c?' selected':'')+'>'+catNames[c]+'</option>'; }).join('') +
-    '</select>' +
-    '<input type="text" class="form-input-a" value="'+(item.name||'').replace(/"/g,'&quot;')+'" placeholder="Название" style="flex:1;margin:0" data-field="name">' +
-    '<input type="text" class="form-input-a" value="'+(item.dist||'').replace(/"/g,'&quot;')+'" placeholder="180 м · часы" style="flex:1;margin:0" data-field="dist">' +
+    '<input type="text" class="form-input-a" value="'+cat+'" placeholder="Категория (Кафе, Пляж...)" data-field="cat" style="flex:0 0 150px;margin:0;padding:9px 12px">' +
+    '<input type="text" class="form-input-a" value="'+name+'" placeholder="Название" data-field="name" style="flex:1;margin:0">' +
+    '<input type="text" class="form-input-a" value="'+dist+'" placeholder="180 м · часы" data-field="dist" style="flex:1;margin:0">' +
     '<button onclick="deleteRowBtn(this)" style="width:30px;height:30px;flex-shrink:0;border-radius:8px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger)">' +
       '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
     '</button>' +
@@ -3138,8 +3137,9 @@ function nearbyRowHtml(item) {
 function addNearbyItem() {
   var el = document.getElementById('nearby-editor');
   var div = document.createElement('div');
-  div.innerHTML = nearbyRowHtml({ cat:'cafe', name:'', dist:'' });
+  div.innerHTML = nearbyRowHtml({ cat: '', name: '', dist: '' });
   el.appendChild(div.firstChild);
+  el.lastChild.querySelector('[data-field="cat"]').focus();
 }
 
 function directionRowHtml(item) {
