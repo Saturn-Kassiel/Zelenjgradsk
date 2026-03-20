@@ -1158,7 +1158,7 @@ function submitForm() {
     }).then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok || d.id) {
-          var form = document.getElementById('booking-form');
+          var form = document.getElementById('form-screen');
           var success = document.getElementById('success-screen');
           if (form) form.style.display = 'none';
           if (success) success.style.display = 'block';
