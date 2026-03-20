@@ -376,8 +376,19 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
   box-shadow: 0 4px 24px rgba(62,112,87,0.35);
   display: flex; align-items: center; justify-content: center;
   transition: transform 0.2s, box-shadow 0.2s;
+  overflow: visible;
 }
 #chat-widget-btn:hover { transform: scale(1.08); box-shadow: 0 6px 32px rgba(62,112,87,0.45); }
+#chat-widget-btn.has-unread::after {
+  content: '';
+  position: absolute;
+  top: -2px; right: -2px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #E05252; border: 2px solid white;
+  z-index: 1001;
+  animation: badgePop 0.3s cubic-bezier(0.175,0.885,0.32,1.275);
+}
+@keyframes badgePop { 0% { transform: scale(0); } 100% { transform: scale(1); } }
 #chat-widget-btn svg { transition: opacity 0.2s; }
 #chat-widget-btn .icon-close { display: none; }
 
