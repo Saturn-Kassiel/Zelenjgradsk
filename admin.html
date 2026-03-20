@@ -390,6 +390,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Алина (промпт)
     </div>
+    <div class="nav-item" onclick="showPage('pricing')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+      Ценообразование
+    </div>
     <div class="nav-item" onclick="showPage('promo')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Промо / Спецпредложение
@@ -786,6 +790,103 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         </div>
       </div>
       <div id="guests-list" style="display:flex;flex-direction:column;gap:10px"></div>
+    </div>
+
+    <!-- ══ PRICING ══ -->
+    <div class="page" id="page-pricing">
+      <div style="max-width:900px">
+
+        <!-- СЕЗОННЫЕ КОЭФФИЦИЕНТЫ -->
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:24px;margin-bottom:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:var(--charcoal)">Сезонные коэффициенты</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:3px">Множитель к базовой цене для каждого месяца</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="saveSeasons()">Сохранить</button>
+          </div>
+          <div id="seasons-grid" style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px"></div>
+        </div>
+
+        <!-- СКИДКИ ЗА ДЛИТЕЛЬНОСТЬ -->
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:24px;margin-bottom:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:var(--charcoal)">Скидки за длительность</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:3px">При бронировании от N ночей — скидка %</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="addDiscount()" style="display:flex;align-items:center;gap:6px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Добавить
+            </button>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;margin-bottom:10px">
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">От ночей</div>
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">Скидка %</div>
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">Название</div>
+            <div></div>
+          </div>
+          <div id="discounts-list" style="display:flex;flex-direction:column;gap:8px"></div>
+          <div id="discounts-empty" style="font-size:13px;color:var(--muted);padding:12px 4px;display:none">Скидок нет</div>
+        </div>
+
+        <!-- НАЦЕНКИ ПЕРИОДОВ -->
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:24px;margin-bottom:20px">
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px">
+            <div>
+              <div style="font-family:Manrope,sans-serif;font-size:16px;font-weight:700;color:var(--charcoal)">Наценки периодов</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:3px">Коэффициент на конкретные даты (напр. праздники)</div>
+            </div>
+            <button class="btn btn-primary btn-sm" onclick="addSurcharge()" style="display:flex;align-items:center;gap:6px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+              Добавить
+            </button>
+          </div>
+          <div style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;margin-bottom:10px">
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">Название</div>
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">С</div>
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">По</div>
+            <div style="font-size:11px;font-weight:600;color:var(--muted);text-transform:uppercase;padding:0 4px">Коэфф</div>
+            <div></div>
+          </div>
+          <div id="surcharges-list" style="display:flex;flex-direction:column;gap:8px"></div>
+          <div id="surcharges-empty" style="font-size:13px;color:var(--muted);padding:12px 4px;display:none">Наценок нет</div>
+        </div>
+
+        <!-- КАЛЬКУЛЯТОР -->
+        <div style="background:var(--bg);border-radius:16px;border:1.5px dashed var(--silver);padding:24px">
+          <div style="font-family:Manrope,sans-serif;font-size:15px;font-weight:700;color:var(--charcoal);margin-bottom:16px">Калькулятор цены</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr auto;gap:12px;align-items:end">
+            <div class="form-group-a" style="margin-bottom:0"><label>Объект</label>
+              <select class="form-input-a" id="calc-obj" onchange="calcPrice()" style="padding:10px 12px"></select>
+            </div>
+            <div class="form-group-a" style="margin-bottom:0"><label>Заезд</label><input type="date" class="form-input-a" id="calc-in" onchange="calcPrice()"></div>
+            <div class="form-group-a" style="margin-bottom:0"><label>Выезд</label><input type="date" class="form-input-a" id="calc-out" onchange="calcPrice()"></div>
+            <div></div>
+          </div>
+          <div id="calc-result" style="margin-top:16px;display:none">
+            <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Базовая цена</div>
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--charcoal)" id="calc-base">—</div>
+              </div>
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Цена за ночь</div>
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="calc-night">—</div>
+              </div>
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Итого</div>
+                <div style="font-family:Manrope,sans-serif;font-size:18px;font-weight:800;color:var(--teal)" id="calc-total">—</div>
+              </div>
+              <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
+                <div style="font-size:11px;color:var(--muted);margin-bottom:4px">Применено</div>
+                <div style="font-size:12px;color:var(--charcoal);line-height:1.5" id="calc-factors">—</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
     </div>
 
     <!-- ══ DASHBOARD ══ -->
@@ -1445,14 +1546,14 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', promo:'Промо / Спецпредложение' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', pricing:'Ценообразование', promo:'Промо / Спецпредложение' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','promo'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','pricing','promo'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
@@ -1460,6 +1561,7 @@ function showPage(name) {
   if (name === 'objects') loadObjectsPage();
   if (name === 'alina') loadPromptPage();
   if (name === 'guests') loadGuestsPage();
+  if (name === 'pricing') loadPricingPage();
 }
 
 function topbarPrimary() {
@@ -2020,24 +2122,36 @@ function nbRecalc() {
     surchargeRow.style.display = 'none';
   }
 
-  // Умный расчёт с учётом промо
-  var price = objPrices[obj] || 0;
-  var inDate2 = new Date(inVal);
-  var outDate2 = new Date(inVal);
-  outDate2.setDate(outDate2.getDate() + nights);
-  var calc = calcAdminPrice(inDate2, outDate2, price, obj);
-  var total = calc.total + surcharge;
-
-  amountEl.value = total;
-  var hint = '';
-  calc.rows.forEach(function(r, i) {
-    if (i > 0) hint += ' + ';
-    hint += r.label + ' = ' + r.amount.toLocaleString('ru') + ' ₽';
-  });
-  if (surcharge > 0) hint += ' + ' + surcharge.toLocaleString('ru') + ' ₽ (наценка)';
-  hint += ' → Итого: ' + total.toLocaleString('ru') + ' ₽';
-  hintEl.textContent = hint;
-  hintEl.style.color = calc.hasPromo ? 'var(--teal)' : 'var(--muted)';
+  // Расчёт цены через API ценообразования
+  var price = promoObjPrices[obj] || objPrices[obj] || 0;
+  if (price && inVal && outStr) {
+    fetch(API + '/pricing/calculate', {
+      method: 'POST', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ base_price: price, date_in: inVal, date_out: outStr })
+    }).then(function(r){ return r.json(); })
+      .then(function(d){
+        if (!d.ok) return;
+        var total = d.total + surcharge;
+        amountEl.value = total;
+        var factors = [];
+        if (d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
+        if (d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
+        if (d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
+        var hint = d.price_per_night.toLocaleString('ru') + ' ₽/ночь × '+nights+' '+nightWord(nights);
+        if (factors.length) hint += ' ('+factors.join(', ')+')';
+        if (surcharge > 0) hint += ' + '+surcharge.toLocaleString('ru')+' ₽ (доп. гость)';
+        hint += ' → '+total.toLocaleString('ru')+' ₽';
+        hintEl.textContent = hint;
+        hintEl.style.color = factors.length ? 'var(--teal)' : 'var(--muted)';
+      }).catch(function(){
+        // Fallback на старый расчёт
+        var inDate2 = new Date(inVal), outDate2 = new Date(outStr);
+        var calc = calcAdminPrice(inDate2, outDate2, price, obj);
+        var total = calc.total + surcharge;
+        amountEl.value = total;
+        hintEl.textContent = total.toLocaleString('ru') + ' ₽';
+      });
+  }
 }
 
 function nbValidatePhone(val) {
@@ -3517,6 +3631,215 @@ function saveGuestNote() {
         loadGuestsPage(document.getElementById('guests-search').value);
       } else { showToast('Ошибка'); }
     }).catch(function(){ showToast('Ошибка сети'); });
+}
+
+// ── PRICING ──
+var _seasons = [];
+var _discounts = [];
+var _surcharges = [];
+
+function loadPricingPage() {
+  Promise.all([
+    fetch(API + '/pricing/seasons').then(function(r){ return r.json(); }),
+    fetch(API + '/pricing/discounts').then(function(r){ return r.json(); }),
+    fetch(API + '/pricing/surcharges').then(function(r){ return r.json(); })
+  ]).then(function(results){
+    _seasons = results[0].data || [];
+    _discounts = results[1].data || [];
+    _surcharges = results[2].data || [];
+    renderSeasons();
+    renderDiscounts();
+    renderSurcharges();
+    initCalcObjs();
+  }).catch(function(){});
+}
+
+function renderSeasons() {
+  var grid = document.getElementById('seasons-grid');
+  if (!grid) return;
+  var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  grid.innerHTML = _seasons.map(function(s){
+    var basePrice = parseInt(Object.values(promoObjPrices)[0]||4000);
+    var price = Math.round(basePrice * parseFloat(s.coefficient));
+    var coef = parseFloat(s.coefficient);
+    var color = coef > 1.2 ? 'var(--danger)' : coef > 1.0 ? 'var(--warning)' : coef < 1.0 ? 'var(--teal)' : 'var(--muted)';
+    return '<div style="background:var(--bg);border-radius:12px;padding:14px;border:1.5px solid var(--silver)">' +
+      '<div style="font-size:12px;font-weight:700;color:var(--charcoal);margin-bottom:10px">'+monthNames[s.month]+'</div>' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">' +
+        '<span style="font-size:11px;color:var(--muted)">Коэфф:</span>' +
+        '<input type="number" step="0.05" min="0.1" max="5" value="'+parseFloat(s.coefficient).toFixed(2)+'" data-month="'+s.month+'" onchange="updateSeasonPreview(this)" style="width:70px;font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:'+color+';border:1.5px solid var(--silver);border-radius:8px;padding:4px 8px;outline:none;text-align:center">' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--muted)">≈ <span class="season-price-preview-'+s.month+'" style="font-weight:600;color:var(--charcoal)">'+price.toLocaleString('ru')+'</span> ₽/ночь</div>' +
+    '</div>';
+  }).join('');
+}
+
+function updateSeasonPreview(input) {
+  var month = input.dataset.month;
+  var coef = parseFloat(input.value) || 1;
+  var basePrice = parseInt(Object.values(promoObjPrices)[0]||4000);
+  var price = Math.round(basePrice * coef);
+  var el = document.querySelector('.season-price-preview-'+month);
+  if (el) el.textContent = price.toLocaleString('ru');
+  var color = coef > 1.2 ? 'var(--danger)' : coef > 1.0 ? 'var(--warning)' : coef < 1.0 ? 'var(--teal)' : 'var(--muted)';
+  input.style.color = color;
+}
+
+function saveSeasons() {
+  var inputs = document.querySelectorAll('#seasons-grid input[data-month]');
+  var promises = Array.from(inputs).map(function(inp){
+    var month = inp.dataset.month;
+    var coef = parseFloat(inp.value)||1;
+    return fetch(API + '/pricing/seasons/'+month, {
+      method: 'PUT',
+      headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({ coefficient: coef, label: '' })
+    });
+  });
+  Promise.all(promises).then(function(){ showToast('Сезонные коэффициенты сохранены ✓'); loadPricingPage(); })
+    .catch(function(){ showToast('Ошибка сохранения'); });
+}
+
+function renderDiscounts() {
+  var list = document.getElementById('discounts-list');
+  var empty = document.getElementById('discounts-empty');
+  if (!list) return;
+  if (!_discounts.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = _discounts.map(function(d){
+    return '<div data-id="'+d.id+'" style="display:grid;grid-template-columns:1fr 1fr 2fr auto;gap:8px;align-items:center">' +
+      '<input type="number" value="'+d.nights_from+'" min="1" placeholder="7" class="form-input-a" data-field="nights_from" style="margin:0;padding:9px 12px">' +
+      '<input type="number" value="'+d.discount_pct+'" min="0" max="99" step="0.5" placeholder="10" class="form-input-a" data-field="discount_pct" style="margin:0;padding:9px 12px">' +
+      '<input type="text" value="'+(d.label||'')+'" placeholder="Длительное проживание" class="form-input-a" data-field="label" style="margin:0;padding:9px 12px">' +
+      '<button onclick="deleteDiscount('+d.id+')" style="width:34px;height:34px;border-radius:10px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger);flex-shrink:0">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+      '</button>' +
+    '</div>';
+  }).join('');
+  // Кнопка Сохранить
+  list.innerHTML += '<div style="margin-top:8px"><button class="btn btn-outline btn-sm" onclick="saveDiscounts()">Сохранить скидки</button></div>';
+}
+
+function addDiscount() {
+  if (_discounts.length >= 5) { showToast('Максимум 5 позиций'); return; }
+  fetch(API + '/pricing/discounts', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ nights_from: 7, discount_pct: 5, label: '' })
+  }).then(function(r){ return r.json(); })
+    .then(function(){ loadPricingPage(); }).catch(function(){});
+}
+
+function deleteDiscount(id) {
+  fetch(API + '/pricing/discounts/'+id, { method: 'DELETE' })
+    .then(function(){ loadPricingPage(); showToast('Удалено'); }).catch(function(){});
+}
+
+function saveDiscounts() {
+  var rows = document.querySelectorAll('#discounts-list [data-id]');
+  var promises = Array.from(rows).map(function(row){
+    var id = row.dataset.id;
+    return fetch(API + '/pricing/discounts/'+id, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        nights_from: parseInt(row.querySelector('[data-field="nights_from"]').value)||1,
+        discount_pct: parseFloat(row.querySelector('[data-field="discount_pct"]').value)||0,
+        label: row.querySelector('[data-field="label"]').value.trim()
+      })
+    });
+  });
+  Promise.all(promises).then(function(){ showToast('Скидки сохранены ✓'); loadPricingPage(); }).catch(function(){});
+}
+
+function renderSurcharges() {
+  var list = document.getElementById('surcharges-list');
+  var empty = document.getElementById('surcharges-empty');
+  if (!list) return;
+  if (!_surcharges.length) { list.innerHTML = ''; empty.style.display = ''; return; }
+  empty.style.display = 'none';
+  list.innerHTML = _surcharges.map(function(s){
+    var df = s.date_from ? String(s.date_from).substr(0,10) : '';
+    var dt = s.date_to ? String(s.date_to).substr(0,10) : '';
+    return '<div data-id="'+s.id+'" style="display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:center">' +
+      '<input type="text" value="'+(s.label||'')+'" placeholder="Новогодние праздники" class="form-input-a" data-field="label" style="margin:0;padding:9px 12px">' +
+      '<input type="date" value="'+df+'" class="form-input-a" data-field="date_from" style="margin:0;padding:9px 12px">' +
+      '<input type="date" value="'+dt+'" class="form-input-a" data-field="date_to" style="margin:0;padding:9px 12px">' +
+      '<input type="number" value="'+parseFloat(s.coefficient).toFixed(2)+'" step="0.05" min="0.5" max="5" placeholder="1.50" class="form-input-a" data-field="coefficient" style="margin:0;padding:9px 12px">' +
+      '<button onclick="deleteSurcharge('+s.id+')" style="width:34px;height:34px;border-radius:10px;border:1.5px solid var(--silver);background:transparent;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--danger);flex-shrink:0">' +
+        '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"/></svg>' +
+      '</button>' +
+    '</div>';
+  }).join('');
+  list.innerHTML += '<div style="margin-top:8px"><button class="btn btn-outline btn-sm" onclick="saveSurcharges()">Сохранить наценки</button></div>';
+}
+
+function addSurcharge() {
+  if (_surcharges.length >= 5) { showToast('Максимум 5 позиций'); return; }
+  var now = new Date();
+  var df = now.getFullYear()+'-01-01';
+  var dt = now.getFullYear()+'-01-08';
+  fetch(API + '/pricing/surcharges', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ label: 'Новый период', date_from: df, date_to: dt, coefficient: 1.5 })
+  }).then(function(r){ return r.json(); })
+    .then(function(){ loadPricingPage(); }).catch(function(){});
+}
+
+function deleteSurcharge(id) {
+  fetch(API + '/pricing/surcharges/'+id, { method: 'DELETE' })
+    .then(function(){ loadPricingPage(); showToast('Удалено'); }).catch(function(){});
+}
+
+function saveSurcharges() {
+  var rows = document.querySelectorAll('#surcharges-list [data-id]');
+  var promises = Array.from(rows).map(function(row){
+    var id = row.dataset.id;
+    return fetch(API + '/pricing/surcharges/'+id, {
+      method: 'PUT', headers: {'Content-Type':'application/json'},
+      body: JSON.stringify({
+        label: row.querySelector('[data-field="label"]').value.trim(),
+        date_from: row.querySelector('[data-field="date_from"]').value,
+        date_to: row.querySelector('[data-field="date_to"]').value,
+        coefficient: parseFloat(row.querySelector('[data-field="coefficient"]').value)||1
+      })
+    });
+  });
+  Promise.all(promises).then(function(){ showToast('Наценки сохранены ✓'); loadPricingPage(); }).catch(function(){});
+}
+
+// ── КАЛЬКУЛЯТОР ──
+function initCalcObjs() {
+  var sel = document.getElementById('calc-obj');
+  if (!sel) return;
+  sel.innerHTML = Object.keys(promoObjNames).map(function(id){
+    return '<option value="'+id+'">'+promoObjNames[id]+'</option>';
+  }).join('');
+}
+
+function calcPrice() {
+  var objId = document.getElementById('calc-obj').value;
+  var dateIn = document.getElementById('calc-in').value;
+  var dateOut = document.getElementById('calc-out').value;
+  if (!objId || !dateIn || !dateOut || dateIn >= dateOut) {
+    document.getElementById('calc-result').style.display = 'none';
+    return;
+  }
+  var basePrice = parseInt(promoObjPrices[objId]||4000);
+  fetch(API + '/pricing/calculate', {
+    method: 'POST', headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ base_price: basePrice, date_in: dateIn, date_out: dateOut })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok) return;
+      document.getElementById('calc-result').style.display = '';
+      document.getElementById('calc-base').textContent = basePrice.toLocaleString('ru') + ' ₽';
+      document.getElementById('calc-night').textContent = d.price_per_night.toLocaleString('ru') + ' ₽';
+      document.getElementById('calc-total').textContent = d.total.toLocaleString('ru') + ' ₽';
+      var factors = [];
+      if (d.season_coef !== 1) factors.push('Сезон ×'+d.season_coef);
+      if (d.discount_pct > 0) factors.push('Скидка −'+d.discount_pct+'%');
+      if (d.surcharge_coef !== 1) factors.push('Период ×'+d.surcharge_coef);
+      document.getElementById('calc-factors').textContent = factors.length ? factors.join(', ') : 'Базовая цена';
+    }).catch(function(){});
 }
 
 // ── ALINA PROMPT ──
