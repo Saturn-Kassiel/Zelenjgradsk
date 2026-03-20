@@ -1583,20 +1583,11 @@ function renderPromoCard(promo, allProps) {
 
     if (days <= 0) {
       // Последний день
-      countdown.style.display = 'block';
-      countdown.style.background = 'rgba(224,82,82,0.12)';
-      countdown.style.color = '#C0392B';
-      countdown.innerHTML = '🔥 <strong>Последний день акции!</strong>';
+      countdown.style.display = 'none';
     } else if (days <= 3) {
-      countdown.style.display = 'block';
-      countdown.style.background = 'rgba(224,82,82,0.1)';
-      countdown.style.color = '#C0392B';
-      countdown.innerHTML = '🔥 До конца акции: <strong>' + days + ' ' + (days===1?'день':days<5?'дня':'дней') + '</strong> — успейте забронировать!';
+      countdown.style.display = 'none';
     } else {
-      countdown.style.display = 'block';
-      countdown.style.background = 'rgba(224,154,43,0.1)';
-      countdown.style.color = '#B07D1A';
-      countdown.innerHTML = '⏰ До конца акции: <strong>' + days + ' ' + (days===1?'день':days<5?'дня':'дней') + '</strong>';
+      countdown.style.display = 'none';
     }
   } else {
     periodEl.style.display = 'none';
