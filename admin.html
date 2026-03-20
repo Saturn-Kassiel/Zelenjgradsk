@@ -806,6 +806,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             <div class="form-group-a" style="margin-bottom:0"><label>Заезд</label><input type="date" class="form-input-a" id="calc-in" onchange="runCalcPrice()"></div>
             <div class="form-group-a" style="margin-bottom:0"><label>Выезд</label><input type="date" class="form-input-a" id="calc-out" onchange="runCalcPrice()"></div>
           </div>
+          <div id="calc-date-error" style="display:none;margin-top:10px;font-size:12px;color:var(--danger);background:rgba(224,82,82,0.08);border-radius:8px;padding:8px 12px">⚠️ Дата выезда должна быть позже даты заезда</div>
           <div id="calc-result" style="margin-top:16px;display:none">
             <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:10px">
               <div style="background:var(--white);border-radius:12px;padding:14px;border:1px solid var(--silver)">
@@ -3843,10 +3844,18 @@ function runCalcPrice() {
   var objId = document.getElementById('calc-obj').value;
   var dateIn = document.getElementById('calc-in').value;
   var dateOut = document.getElementById('calc-out').value;
-  if (!objId || !dateIn || !dateOut || new Date(dateIn) >= new Date(dateOut)) {
+  var errEl = document.getElementById('calc-date-error');
+  if (!objId || !dateIn || !dateOut) {
     document.getElementById('calc-result').style.display = 'none';
+    if (errEl) errEl.style.display = 'none';
     return;
   }
+  if (new Date(dateIn) >= new Date(dateOut)) {
+    document.getElementById('calc-result').style.display = 'none';
+    if (errEl) errEl.style.display = '';
+    return;
+  }
+  if (errEl) errEl.style.display = 'none';
   var basePrice = parseInt(promoObjPrices[objId]||4000);
   fetch(API + '/pricing/calculate', {
     method: 'POST', headers: {'Content-Type':'application/json'},
