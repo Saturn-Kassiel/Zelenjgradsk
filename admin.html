@@ -1267,6 +1267,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             <div class="form-group-a"><label>Wi-Fi сеть</label><input type="text" class="form-input-a" id="obj-wifi-name" placeholder="Zarya"></div>
             <div class="form-group-a" style="margin-bottom:0"><label>Пароль Wi-Fi</label><input type="text" class="form-input-a" id="obj-wifi-pass" placeholder="88888888"></div>
           </div>
+          <div class="form-group-a" style="margin-top:10px;margin-bottom:0">
+            <label style="display:flex;align-items:center;gap:6px">
+              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2.5" stroke-linecap="round"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+              Ссылка на объект в Яндекс.Картах
+            </label>
+            <input type="url" class="form-input-a" id="obj-map-url" placeholder="https://yandex.ru/maps/...">
+          </div>
         </div>
       </div>
 
@@ -3463,6 +3470,7 @@ function openObjectModal(id) {
   document.getElementById('obj-door-code').value = o.door_code||'';
   document.getElementById('obj-wifi-name').value = o.wifi_name||'';
   document.getElementById('obj-wifi-pass').value = o.wifi_pass||'';
+  document.getElementById('obj-map-url').value = o.map_url||'';
   for (var i=1; i<=10; i++) {
     document.getElementById('obj-img-'+i).value = o['image_'+i]||'';
   }
@@ -3491,7 +3499,8 @@ function saveObject() {
     apt_number: document.getElementById('obj-apt-number').value.trim(),
     door_code: document.getElementById('obj-door-code').value.trim(),
     wifi_name: document.getElementById('obj-wifi-name').value.trim(),
-    wifi_pass: document.getElementById('obj-wifi-pass').value.trim()
+    wifi_pass: document.getElementById('obj-wifi-pass').value.trim(),
+    map_url: document.getElementById('obj-map-url').value.trim()
   };
   for (var i=1; i<=10; i++) {
     body['image_'+i] = document.getElementById('obj-img-'+i).value.trim() || null;
