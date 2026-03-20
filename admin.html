@@ -1927,7 +1927,7 @@ function changeStatus(id, sel) {
     if (sel.value === 'confirmed' && prevStatus !== 'confirmed') {
       var inFmt = b.in ? b.in.split('-').reverse().join('.') : '—';
       var outFmt = b.out ? b.out.split('-').reverse().join('.') : '—';
-      var guestUrl = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html?id=' + b.obj + '&in=' + (b.in||'') + '&out=' + (b.out||'');
+      var guestUrl = 'https://aparts-baltika.ru/guest.html?id=' + b.obj + '&in=' + (b.in||'') + '&out=' + (b.out||'');
       var msg = '✅ Бронирование подтверждено!\n\n' +
         '👤 ' + b.name + '\n' +
         '📅 ' + inFmt + ' — ' + outFmt + '\n' +
@@ -2003,7 +2003,7 @@ function confirmMemo() {
   var m = _pendingMemo; _pendingMemo = null;
 
   var token = Math.random().toString(36).substr(2, 10) + Date.now().toString(36);
-  var base = 'https://saturn-kassiel.github.io/Zelenjgradsk/guest.html';
+  var base = 'https://aparts-baltika.ru/guest.html';
   var accessUrl = base + '?id=' + m.objId + '&token=' + token +
     (m.checkinDate  ? '&in='  + m.checkinDate  : '') +
     (m.checkoutDate ? '&out=' + m.checkoutDate : '');
