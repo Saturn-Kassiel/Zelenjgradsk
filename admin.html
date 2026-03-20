@@ -1247,7 +1247,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             <div class="form-group-a"><label>Гостей max</label><input type="number" class="form-input-a" id="obj-guests" value="2"></div>
           </div>
           <div class="form-group-a"><label>Адрес публичный</label><input type="text" class="form-input-a" id="obj-address" placeholder="Зеленоградск, ул. Большая Окружная, 26"></div>
-          <div class="form-group-a" style="margin-bottom:0"><label>Особенности (через ;)</label><input type="text" class="form-input-a" id="obj-features" placeholder="Wi-Fi;Парковка"></div>
         </div>
       </div>
 
@@ -3196,10 +3195,11 @@ function getDirectionValues() {
 }
 
 function populateEditors(o) {
-  // Удобства
+  // Удобства (берём amenities, fallback на features)
   var amEl = document.getElementById('amenities-editor');
   amEl.innerHTML = '';
-  var amenities = (o.amenities || o.features || '').split(';').map(function(s){ return s.trim(); }).filter(Boolean);
+  var amenitiesStr = o.amenities || o.features || '';
+  var amenities = amenitiesStr.split(';').map(function(s){ return s.trim(); }).filter(Boolean);
   amenities.forEach(function(a){
     var div = document.createElement('div');
     div.innerHTML = editorRowHtml(a, 'Удобство');
@@ -3309,7 +3309,6 @@ function openObjectModal(id) {
   document.getElementById('obj-price').value = o.price||'';
   document.getElementById('obj-rooms').value = o.rooms||1;
   document.getElementById('obj-guests').value = o.guests||2;
-  document.getElementById('obj-features').value = o.features||'';
   document.getElementById('obj-address').value = o.address||'';
   document.getElementById('obj-address-secret').value = o.address_secret||'';
   document.getElementById('obj-apt-number').value = o.apt_number||'';
@@ -3333,7 +3332,7 @@ function saveObject() {
     price: parseInt(document.getElementById('obj-price').value)||0,
     rooms: parseInt(document.getElementById('obj-rooms').value)||1,
     guests: parseInt(document.getElementById('obj-guests').value)||2,
-    features: getEditorValues('amenities-editor') || document.getElementById('obj-features').value.trim(),
+    features: getEditorValues('amenities-editor'),
     amenities: getEditorValues('amenities-editor'),
     rules: getEditorValues('rules-editor'),
     nearby: getNearbyValues(),
