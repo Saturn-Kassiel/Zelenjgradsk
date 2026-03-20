@@ -831,15 +831,13 @@ html { overflow-x: hidden; }
         </div>
 
         <div style="display:grid;grid-template-columns:1fr 1fr;border:1.5px solid var(--silver);border-radius:14px;overflow:hidden;margin-bottom:12px">
-          <div style="padding:12px 14px;border-right:1px solid var(--silver)">
+          <div style="padding:12px 14px;border-right:1px solid var(--silver);cursor:pointer" onclick="document.getElementById('bc-checkin').showPicker&&document.getElementById('bc-checkin').showPicker()">
             <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Заезд</div>
-            <input type="hidden" id="bc-checkin">
-            <div id="bc-checkin-disp" style="font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--muted);cursor:default;min-height:22px">— выберите ниже</div>
+            <input type="date" id="bc-checkin" style="border:none;background:transparent;font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--charcoal);outline:none;width:100%;cursor:pointer" onchange="bcRecalc()">
           </div>
-          <div style="padding:12px 14px;">
+          <div style="padding:12px 14px;cursor:pointer" onclick="document.getElementById('bc-checkout').showPicker&&document.getElementById('bc-checkout').showPicker()">
             <div style="font-size:10px;font-weight:600;letter-spacing:1px;text-transform:uppercase;color:var(--muted);margin-bottom:4px">Выезд</div>
-            <input type="hidden" id="bc-checkout">
-            <div id="bc-checkout-disp" style="font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--muted);min-height:22px">— выберите ниже</div>
+            <input type="date" id="bc-checkout" style="border:none;background:transparent;font-family:DM Sans,sans-serif;font-size:14px;font-weight:500;color:var(--charcoal);outline:none;width:100%;cursor:pointer" onchange="bcRecalc()">
           </div>
         </div>
 
@@ -856,27 +854,6 @@ html { overflow-x: hidden; }
 
         <button class="btn-book-main" onclick="openModal()">Забронировать</button>
         <p class="booking-note">Цену подтверждает управляющий</p>
-
-        <!-- Мини-календарь виджета -->
-        <div style="border:1.5px solid var(--silver);border-radius:12px;overflow:hidden;margin-bottom:12px;font-size:13px">
-          <div style="display:flex;align-items:center;justify-content:space-between;padding:6px 12px;background:var(--bg);border-bottom:1px solid var(--silver)">
-            <button type="button" onclick="bcCalPrev()" style="width:24px;height:24px;border:none;background:transparent;cursor:pointer;font-size:15px;color:var(--muted)">‹</button>
-            <div id="bc-cal-title" style="font-size:12px;font-weight:600;color:var(--charcoal)"></div>
-            <button type="button" onclick="bcCalNext()" style="width:24px;height:24px;border:none;background:transparent;cursor:pointer;font-size:15px;color:var(--muted)">›</button>
-          </div>
-          <div style="padding:6px">
-            <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:2px">
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Пн</div>
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Вт</div>
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Ср</div>
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Чт</div>
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Пт</div>
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Сб</div>
-              <div style="text-align:center;font-size:9px;font-weight:600;color:var(--muted);padding:2px 0">Вс</div>
-            </div>
-            <div id="bc-cal-grid" style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px"></div>
-          </div>
-        </div>
 
         <div id="bc-date-error" style="display:none;font-size:12px;color:#d16b6b;background:rgba(209,107,107,0.08);border-radius:8px;padding:8px 12px;margin-bottom:8px">⚠️ Дата выезда должна быть позже даты заезда</div>
         <div id="bc-calc" style="display:none">
@@ -913,13 +890,11 @@ html { overflow-x: hidden; }
       <div class="form-row">
         <div class="form-group">
           <label class="form-label">Дата заезда <span style="color:#E05252">*</span></label>
-          <input type="hidden" id="f-checkin">
-          <div id="f-checkin-disp" class="form-input" style="display:flex;align-items:center;color:#AFB9D0;cursor:default">Выберите дату ↓</div>
+          <input type="date" class="form-input" id="f-checkin" onchange="propRecalc();propCalRender();this.style.borderColor=''">
         </div>
         <div class="form-group">
           <label class="form-label">Дата выезда</label>
-          <input type="hidden" id="f-checkout">
-          <div id="f-checkout-disp" class="form-input" style="display:flex;align-items:center;background:#F4F6FB;color:#AFB9D0">Рассчитывается</div>
+          <input type="date" class="form-input" id="f-checkout" readonly style="background:#F4F6FB;color:#6B7A99">
         </div>
       </div>
       <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#F4F6FB;border-radius:10px;border:1px solid #E1E5F1;margin-bottom:14px">
@@ -1100,16 +1075,6 @@ function propChangeNights(delta) {
   propCalRender();
 }
 
-function propCalSelect(dateStr) {
-  document.getElementById('f-checkin').value = dateStr;
-  var d = new Date(dateStr + 'T00:00:00');
-  var fmt = d.getDate().toString().padStart(2,'0') + '.' + (d.getMonth()+1).toString().padStart(2,'0') + '.' + d.getFullYear();
-  var disp = document.getElementById('f-checkin-disp');
-  if (disp) { disp.textContent = fmt; disp.style.color = '#2E384D'; disp.style.borderColor = ''; }
-  propRecalc();
-  propCalRender();
-}
-
 function propRecalc() {
   var dateIn = document.getElementById('f-checkin').value;
   var nights = parseInt(document.getElementById('prop-nights').value) || 1;
@@ -1118,12 +1083,7 @@ function propRecalc() {
   if (!dateIn) { document.getElementById('f-checkout').value = ''; return; }
   var d = new Date(dateIn);
   d.setDate(d.getDate() + nights);
-  var dateOut = d.toISOString().split('T')[0];
-  document.getElementById('f-checkout').value = dateOut;
-  var dOut = new Date(dateOut + 'T00:00:00');
-  var fmtOut = dOut.getDate().toString().padStart(2,'0') + '.' + (dOut.getMonth()+1).toString().padStart(2,'0') + '.' + dOut.getFullYear();
-  var dispOut = document.getElementById('f-checkout-disp');
-  if (dispOut) { dispOut.textContent = fmtOut; dispOut.style.color = '#2E384D'; }
+  document.getElementById('f-checkout').value = d.toISOString().split('T')[0];
   propCalState.year = new Date(dateIn).getFullYear();
   propCalState.month = new Date(dateIn).getMonth();
   propCalRender();
@@ -1152,11 +1112,8 @@ function propCalRender() {
     var isOccupied = statuses[key] === 'occupied';
     var isSelected = selStart && selEnd && dt >= selStart && dt < selEnd;
     var isToday = dt.toDateString() === new Date().toDateString();
-    var isPast = dt < new Date(new Date().toDateString());
     var bg = isOccupied ? 'rgba(224,82,82,0.12)' : isSelected ? 'rgba(62,112,87,0.15)' : 'transparent';
-    var dtStr = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    var clickable = !isOccupied && !isPast;
-    cells += '<div '+(clickable?'onclick="propCalSelect(''+dtStr+'')"':'')+' style="text-align:center;padding:4px 2px;border-radius:6px;font-size:12px;font-weight:'+(isToday?'700':'400')+';background:'+bg+';color:'+(isOccupied||isPast?'#AFB9D0':'#2E384D')+';cursor:'+(clickable?'pointer':'default')+'">'+d+'</div>';
+    cells += '<div style="text-align:center;padding:4px 2px;border-radius:6px;font-size:12px;font-weight:'+(isToday?'700':'400')+';background:'+bg+';color:'+(isOccupied?'#E05252':'#2E384D')+'">'+d+'</div>';
   }
   grid.innerHTML = cells;
 }
@@ -1179,7 +1136,7 @@ function submitForm() {
   if (!name) { document.getElementById('f-name').style.borderColor='#E05252'; return; }
   var digits = phone.replace(/\D/g,'');
   if (digits.length !== 11) { document.getElementById('f-phone').style.borderColor='#E05252'; return; }
-  if (!dateIn) { var fd=document.getElementById('f-checkin-disp'); if(fd) fd.style.border='1.5px solid #E05252'; return; }
+  if (!dateIn) { document.getElementById('f-checkin').style.borderColor='#E05252'; return; }
   var guestNum = parseInt(guests)||2;
   var guestSurcharge = guestNum >= 3 ? 750 * nights : 0;
 
@@ -1291,57 +1248,6 @@ function closeModal() {
 
 function closeModalOutside(e) {
   if (e.target === e.currentTarget) closeModal();
-}
-
-var bcCalState = { year: new Date().getFullYear(), month: new Date().getMonth() };
-
-function bcCalRender() {
-  var grid = document.getElementById('bc-cal-grid');
-  var title = document.getElementById('bc-cal-title');
-  if (!grid) return;
-  var monthNames = ['Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  if (title) title.textContent = monthNames[bcCalState.month] + ' ' + bcCalState.year;
-  var inVal = document.getElementById('bc-checkin').value;
-  var outVal = document.getElementById('bc-checkout').value;
-  var selStart = inVal ? new Date(inVal + 'T00:00:00') : null;
-  var selEnd = outVal ? new Date(outVal + 'T00:00:00') : null;
-  var first = new Date(bcCalState.year, bcCalState.month, 1);
-  var startDow = (first.getDay() + 6) % 7;
-  var daysInMonth = new Date(bcCalState.year, bcCalState.month+1, 0).getDate();
-  var cells = '';
-  for (var i = 0; i < startDow; i++) cells += '<div></div>';
-  for (var d = 1; d <= daysInMonth; d++) {
-    var dt = new Date(bcCalState.year, bcCalState.month, d);
-    var key = dt.getFullYear()+'-'+(dt.getMonth()+1)+'-'+dt.getDate();
-    var isOcc = typeof statuses !== 'undefined' && statuses[key] === 'occupied';
-    var isSel = selStart && selEnd && dt >= selStart && dt < selEnd;
-    var isToday = dt.toDateString() === new Date().toDateString();
-    var isPast = dt < new Date(new Date().toDateString());
-    var bg = isOcc ? 'rgba(224,82,82,0.12)' : isSel ? 'rgba(62,112,87,0.15)' : 'transparent';
-    var dtStr = dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    var clickable = !isOcc && !isPast;
-    cells += '<div '+(clickable?'onclick="bcCalSelect(''+dtStr+'')"':'')+' style="text-align:center;padding:4px 2px;border-radius:6px;font-size:11px;font-weight:'+(isToday?'700':'400')+';background:'+bg+';color:'+(isOcc||isPast?'#AFB9D0':'#2E384D')+';cursor:'+(clickable?'pointer':'default')+'">'+d+'</div>';
-  }
-  grid.innerHTML = cells;
-}
-
-function bcCalPrev() { bcCalState.month--; if(bcCalState.month<0){bcCalState.month=11;bcCalState.year--;} bcCalRender(); }
-function bcCalNext() { bcCalState.month++; if(bcCalState.month>11){bcCalState.month=0;bcCalState.year++;} bcCalRender(); }
-
-function bcCalSelect(dateStr) {
-  document.getElementById('bc-checkin').value = dateStr;
-  var d = new Date(dateStr + 'T00:00:00');
-  var fmt = d.getDate().toString().padStart(2,'0') + '.' + (d.getMonth()+1).toString().padStart(2,'0') + '.' + d.getFullYear();
-  var disp = document.getElementById('bc-checkin-disp');
-  if (disp) { disp.textContent = fmt; disp.style.color = 'var(--charcoal)'; }
-  // Авто-выезд +3 ночи
-  var dOut = new Date(d); dOut.setDate(dOut.getDate()+3);
-  var outStr = dOut.getFullYear()+'-'+String(dOut.getMonth()+1).padStart(2,'0')+'-'+String(dOut.getDate()).padStart(2,'0');
-  document.getElementById('bc-checkout').value = outStr;
-  var fmtOut = dOut.getDate().toString().padStart(2,'0') + '.' + (dOut.getMonth()+1).toString().padStart(2,'0') + '.' + dOut.getFullYear();
-  var dispOut = document.getElementById('bc-checkout-disp');
-  if (dispOut) { dispOut.textContent = fmtOut; dispOut.style.color = 'var(--charcoal)'; }
-  bcRecalc();
 }
 
 function bcRecalc() {
@@ -1595,7 +1501,6 @@ function applyPropData(prop) {
   if (bookingPriceEl) bookingPriceEl.textContent = price.toLocaleString('ru');
 
   loadPromoForProp();
-bcCalRender();
 
   // Галерея
   var photos = [];
@@ -2104,10 +2009,29 @@ function cwToggle() {
       }
     }
     document.getElementById('chat-widget-btn').classList.remove('has-unread');
+    // Проверяем новые сообщения от управляющего при каждом открытии
+    cwCheckQueue();
   }
 
 function cwOpenChat() {
   if (!cwOpen) cwToggle();
+}
+
+function cwCheckQueue() {
+  var objId = propData && propData.id ? propData.id : 1;
+  fetch(APPS_URL + '/chat-queue/' + objId)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.messages && d.messages.length) {
+        d.messages.forEach(function(msg, i){
+          setTimeout(function(){
+            cwAddMsg(msg, 'bot', true);
+            var btn = document.getElementById('chat-widget-btn');
+            if (btn) btn.classList.add('has-unread');
+          }, 500 * (i + 1));
+        });
+      }
+    }).catch(function(){});
 }
 
 function cwInit() {
@@ -2118,22 +2042,8 @@ function cwInit() {
   } else {
     cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
   }
-  // Проверяем очередь сообщений от управляющего
-  var objId = propData && propData.id ? propData.id : 1;
-  fetch(APPS_URL + '/chat-queue/' + objId)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok && d.messages && d.messages.length) {
-        d.messages.forEach(function(msg){
-          setTimeout(function(){
-            cwAddMsg(msg, 'bot', true);
-            // Показываем красную точку
-            var btn = document.getElementById('chat-widget-btn');
-            if (btn) btn.classList.add('has-unread');
-          }, 500);
-        });
-      }
-    }).catch(function(){});
+  // Проверяем очередь всегда при инициализации
+  cwCheckQueue();
 }
 
 function cwClear() {
