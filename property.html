@@ -1044,17 +1044,18 @@ function bcRecalc() {
         d.breakdown.forEach(function(seg){
           var row = document.createElement('div');
           row.className = 'booking-calc-row';
-          var label, amount;
           if (seg.type === 'promo') {
             row.style.color = 'var(--teal)';
-            label = '🏷 ' + seg.label + ': ' + seg.price_per_night.toLocaleString('ru') + ' ₽ × ' + seg.nights + ' ' + nightWord(seg.nights);
-            amount = seg.total;
+            row.innerHTML = '<span>🏷 ' + seg.label + ': ' + seg.price_per_night.toLocaleString('ru') + ' ₽ × ' + seg.nights + ' ' + nightWord(seg.nights) + '</span><span>' + seg.total.toLocaleString('ru') + ' ₽</span>';
           } else {
-            label = seg.price_per_night.toLocaleString('ru') + ' ₽ × ' + seg.nights + ' ' + nightWord(seg.nights);
-            if (seg.discount_pct > 0) label += ' (скидка −' + seg.discount_pct + '%)';
-            amount = seg.total;
+            var factors = [];
+            if (seg.season_coef && seg.season_coef !== 1) factors.push('сезон ×'+seg.season_coef);
+            if (seg.surcharge_coef && seg.surcharge_coef !== 1) factors.push((seg.surcharge_label||'период')+' ×'+seg.surcharge_coef);
+            var label = seg.price_per_night.toLocaleString('ru') + ' ₽ × ' + seg.nights + ' ' + nightWord(seg.nights);
+            if (factors.length) label += ' (' + factors.join(', ') + ')';
+            if (seg.discount_pct > 0) label += ' − ' + seg.discount_pct + '% → ' + seg.price_after_discount.toLocaleString('ru') + ' ₽/н.';
+            row.innerHTML = '<span>' + label + '</span><span>' + seg.total.toLocaleString('ru') + ' ₽</span>';
           }
-          row.innerHTML = '<span>' + label + '</span><span>' + amount.toLocaleString('ru') + ' ₽</span>';
           rowsEl.appendChild(row);
         });
       } else {
@@ -1066,7 +1067,9 @@ function bcRecalc() {
 
       var totEl = document.createElement('div');
       totEl.className = 'booking-calc-row total';
-      totEl.innerHTML = '<span>Итого</span><span>' + total.toLocaleString('ru') + ' ₽</span>';
+      var avgLabel = 'Итого: ' + nights + ' ' + nightWord(nights);
+      if (d.ok && d.nights > 1) avgLabel += ', ср. ' + d.price_per_night.toLocaleString('ru') + ' ₽/ночь';
+      totEl.innerHTML = '<span>' + avgLabel + '</span><span>' + total.toLocaleString('ru') + ' ₽</span>';
       rowsEl.appendChild(totEl);
       calcEl.style.display = 'block';
     }).catch(function(){
