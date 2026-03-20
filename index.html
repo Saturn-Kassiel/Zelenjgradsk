@@ -2373,10 +2373,29 @@ function cwToggle() {
       }
     }
   }
-  // Скрываем значок при открытии чата
   if (cwOpen) {
     document.getElementById('chat-widget-btn').classList.remove('has-unread');
+    cwCheckQueue();
   }
+}
+
+function cwCheckQueue() {
+  // Определяем objId из выбранного объекта
+  var selEl = document.getElementById('prop-select');
+  var objId = selEl ? (selEl.value || '1') : '1';
+  fetch(APPS_URL + '/chat-queue/' + objId)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.messages && d.messages.length) {
+        d.messages.forEach(function(msg, i){
+          setTimeout(function(){
+            cwAddMsg(msg, 'bot', true);
+            var btn = document.getElementById('chat-widget-btn');
+            if (btn && !cwOpen) btn.classList.add('has-unread');
+          }, 500 * (i + 1));
+        });
+      }
+    }).catch(function(){});
 }
 
 function cwInit() {
