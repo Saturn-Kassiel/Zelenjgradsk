@@ -2125,24 +2125,28 @@ function nbRecalc() {
   if (price && inVal && outStr) {
     fetch(API + '/pricing/calculate', {
       method: 'POST', headers: {'Content-Type':'application/json'},
-      body: JSON.stringify({ base_price: price, date_in: inVal, date_out: outStr })
+      body: JSON.stringify({ base_price: price, date_in: inVal, date_out: outStr, obj_id: obj })
     }).then(function(r){ return r.json(); })
       .then(function(d){
         if (!d.ok) return;
         var total = d.total + surcharge;
         amountEl.value = total;
-        var factors = [];
-        if (d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
-        if (d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
-        if (d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
         var hint = d.price_per_night.toLocaleString('ru') + ' ₽/ночь × '+nights+' '+nightWord(nights);
-        if (factors.length) hint += ' ('+factors.join(', ')+')';
+        if (d.promo) {
+          hint += ' (🏷 '+d.promo+')';
+          hintEl.style.color = 'var(--teal)';
+        } else {
+          var factors = [];
+          if (d.season_coef !== 1) factors.push('сезон ×'+d.season_coef);
+          if (d.discount_pct > 0) factors.push('скидка −'+d.discount_pct+'%');
+          if (d.surcharge_coef !== 1) factors.push('период ×'+d.surcharge_coef);
+          if (factors.length) hint += ' ('+factors.join(', ')+')';
+          hintEl.style.color = factors.length ? 'var(--teal)' : 'var(--muted)';
+        }
         if (surcharge > 0) hint += ' + '+surcharge.toLocaleString('ru')+' ₽ (доп. гость)';
         hint += ' → '+total.toLocaleString('ru')+' ₽';
         hintEl.textContent = hint;
-        hintEl.style.color = factors.length ? 'var(--teal)' : 'var(--muted)';
       }).catch(function(){
-        // Fallback на старый расчёт
         var inDate2 = new Date(inVal), outDate2 = new Date(outStr);
         var calc = calcAdminPrice(inDate2, outDate2, price, obj);
         var total = calc.total + surcharge;
@@ -3836,7 +3840,7 @@ function runCalcPrice() {
   var basePrice = parseInt(promoObjPrices[objId]||4000);
   fetch(API + '/pricing/calculate', {
     method: 'POST', headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ base_price: basePrice, date_in: dateIn, date_out: dateOut })
+    body: JSON.stringify({ base_price: basePrice, date_in: dateIn, date_out: dateOut, obj_id: objId })
   }).then(function(r){ return r.json(); })
     .then(function(d){
       if (!d.ok) return;
@@ -3845,9 +3849,13 @@ function runCalcPrice() {
       document.getElementById('calc-night').textContent = d.price_per_night.toLocaleString('ru') + ' ₽';
       document.getElementById('calc-total').textContent = d.total.toLocaleString('ru') + ' ₽';
       var factors = [];
-      if (d.season_coef !== 1) factors.push('Сезон ×'+d.season_coef);
-      if (d.discount_pct > 0) factors.push('Скидка −'+d.discount_pct+'%');
-      if (d.surcharge_coef !== 1) factors.push('Период ×'+d.surcharge_coef);
+      if (d.promo) {
+        factors.push('🏷 ' + d.promo);
+      } else {
+        if (d.season_coef !== 1) factors.push('Сезон ×'+d.season_coef);
+        if (d.discount_pct > 0) factors.push('Скидка −'+d.discount_pct+'%');
+        if (d.surcharge_coef !== 1) factors.push('Период ×'+d.surcharge_coef);
+      }
       document.getElementById('calc-factors').textContent = factors.length ? factors.join(', ') : 'Базовая цена';
     }).catch(function(){});
 }
