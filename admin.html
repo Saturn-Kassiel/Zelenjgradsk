@@ -1398,6 +1398,25 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
   </div>
 </div>
 
+<div class="modal-overlay" id="modal-chat-confirm">
+  <div class="modal" style="max-width:400px;padding:28px">
+    <div style="text-align:center;margin-bottom:20px">
+      <div style="width:52px;height:52px;border-radius:50%;background:rgba(62,112,87,0.1);display:flex;align-items:center;justify-content:center;margin:0 auto 14px">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="var(--teal)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+      </div>
+      <div class="modal-title" style="font-size:17px">Отправить подтверждение?</div>
+      <div style="font-size:13px;color:var(--muted);margin-top:8px">Отправить подтверждение бронирования в чат сайта гостю <b id="chat-confirm-name"></b>?</div>
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="cancelChatConfirm()">Отмена</button>
+      <button class="btn btn-primary" style="justify-content:center" onclick="sendChatConfirmed()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+        Отправить
+      </button>
+    </div>
+  </div>
+</div>
+
 <div class="modal-overlay" id="modal-confirm">
   <div class="modal" style="max-width:400px;padding:28px">
     <div style="text-align:center;margin-bottom:20px">
@@ -1914,14 +1933,42 @@ function changeStatus(id, sel) {
         '📅 ' + inFmt + ' — ' + outFmt + '\n' +
         '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽\n\n' +
         '🔗 Ваша страница гостя:\n' + guestUrl;
-      fetch(CHAT_URL_ADMIN || CHAT_URL, {
-        method: 'POST',
-        headers: {'Content-Type': 'text/plain'},
-        body: JSON.stringify({ action: 'notify', contact: b.name + ' ' + b.phone, dialog: msg })
-      }).then(function(){ showToast('Уведомление отправлено в чат ✓'); }).catch(function(){});
+      // Показываем модал подтверждения отправки
+      showChatConfirm(b.name, msg);
     }
   });
   loadBookings();
+}
+
+var _pendingChatMsg = null;
+
+function showChatConfirm(guestName, msg) {
+  _pendingChatMsg = msg;
+  var modal = document.getElementById('modal-chat-confirm');
+  if (modal) {
+    document.getElementById('chat-confirm-name').textContent = guestName;
+    openModal('modal-chat-confirm');
+  }
+}
+
+function sendChatConfirmed() {
+  closeModal('modal-chat-confirm');
+  if (!_pendingChatMsg) return;
+  var chatUrl = (typeof CHAT_URL !== 'undefined') ? CHAT_URL : '';
+  if (chatUrl) {
+    fetch(chatUrl, {
+      method: 'POST',
+      headers: {'Content-Type': 'text/plain'},
+      body: JSON.stringify({ action: 'notify', contact: '', dialog: _pendingChatMsg })
+    }).then(function(){ showToast('Уведомление отправлено в чат ✓'); })
+      .catch(function(){ showToast('Ошибка отправки в чат'); });
+  }
+  _pendingChatMsg = null;
+}
+
+function cancelChatConfirm() {
+  closeModal('modal-chat-confirm');
+  _pendingChatMsg = null;
 }
 
 var _pendingMemo = null;
