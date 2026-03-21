@@ -334,6 +334,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .obj-accordion-body { padding:0 16px 14px; }
 .acc-arrow { transition:transform 0.2s;flex-shrink:0; }
 .obj-accordion.open .acc-arrow { transform:rotate(180deg); }
+
+/* ── DOCS ── */
+.docs-accordion { display:flex; flex-direction:column; gap:8px; }
+.docs-item { background:var(--white); border-radius:14px; border:1px solid var(--silver); overflow:hidden; }
+.docs-head { display:flex; align-items:center; justify-content:space-between; padding:16px 20px; cursor:pointer; user-select:none; transition:background 0.15s; }
+.docs-head:hover { background:var(--bg); }
+.docs-head span { font-size:14px; font-weight:600; color:var(--charcoal); }
+.docs-arrow { transition:transform 0.2s; flex-shrink:0; color:var(--muted); }
+.docs-item.open .docs-arrow { transform:rotate(180deg); }
+.docs-body { display:none; padding:0 20px 16px; }
+.docs-item.open .docs-body { display:block; }
+.docs-body p { font-size:13px; color:var(--muted); line-height:1.7; margin-bottom:8px; }
+.docs-body p:last-child { margin-bottom:0; }
+.docs-body b { color:var(--charcoal); }
+.docs-tab-content { display:block; }
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="config.js"></script>
@@ -397,6 +412,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div class="nav-item" onclick="showPage('promo')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/></svg>
       Промо / Спецпредложение
+    </div>
+    <div class="nav-item" onclick="showPage('docs')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+      Функционал сайта
     </div>
   </nav>
   <div class="sidebar-footer">
@@ -891,6 +910,234 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     </div>
 
     <!-- ══ DASHBOARD ══ -->
+    <div class="page" id="page-docs">
+      <div style="margin-bottom:24px">
+        <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Функционал сайта</h2>
+        <p style="font-size:13px;color:var(--muted)">Описание всех функций и процессов платформы</p>
+      </div>
+
+      <!-- Вкладки -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px" id="docs-tabs">
+        <button class="filter-tab active" data-docs-tab="chat" onclick="switchDocsTab('chat',this)">💬 Чат и Алина</button>
+        <button class="filter-tab" data-docs-tab="bookings" onclick="switchDocsTab('bookings',this)">📋 Бронирования</button>
+        <button class="filter-tab" data-docs-tab="pricing" onclick="switchDocsTab('pricing',this)">💰 Ценообразование</button>
+        <button class="filter-tab" data-docs-tab="guests" onclick="switchDocsTab('guests',this)">👤 Гости и доступ</button>
+      </div>
+
+      <!-- Вкладка: Чат и Алина -->
+      <div id="docs-tab-chat" class="docs-tab-content">
+        <div class="docs-accordion">
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Как работает чат на сайте</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>На каждой странице сайта (главная и страница объекта) есть чат-виджет в правом нижнем углу. Гость нажимает на кнопку и открывается чат с ИИ-помощником Алиной.</p>
+              <p>Алина отвечает на вопросы об апартаментах, ценах, условиях. Если вопрос сложный — предлагает передать контакт управляющему.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Передача контакта управляющему</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Когда Алина понимает что не может помочь — она пишет «передам администратору». После этого чат переходит в режим ожидания контакта.</p>
+              <p>Гость вводит телефон, @username Telegram или номер WhatsApp. Сообщение с контактом и историей диалога отправляется управляющему через GAS.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Сообщения от управляющего в чат гостя</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>При смене статуса бронирования на «Подтверждена» появляется окно подтверждения. Нажав «Отправить» — сообщение с деталями брони и ссылкой на страницу гостя отправляется в чат на сайте.</p>
+              <p>Гость увидит сообщение при следующем открытии чата — появится красная точка на кнопке чата.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Промпт Алины</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Поведение Алины настраивается в разделе «Алина (промпт)» в сайдбаре. Там можно задать информацию об объектах, правилах, ценах и особых условиях.</p>
+              <p>Чем подробнее заполнен промпт — тем точнее и полезнее отвечает Алина.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Вкладка: Бронирования -->
+      <div id="docs-tab-bookings" class="docs-tab-content" style="display:none">
+        <div class="docs-accordion">
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Статусы заявок и переходы</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p><b>Новая</b> — заявка только что поступила. Можно перевести в «Рассматривается» или «Подтверждена».</p>
+              <p><b>Рассматривается</b> — вы изучаете заявку. Можно подтвердить или вернуть в «Новую».</p>
+              <p><b>Подтверждена</b> — бронирование активно. Можно перевести в «Завершена» или «Отменена».</p>
+              <p><b>Завершена / Отменена</b> — финальные статусы, изменить нельзя.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Уведомления в Telegram</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>При каждой новой заявке с сайта автоматически отправляется уведомление в Telegram-канал управляющего с именем, телефоном, датами и суммой.</p>
+              <p>Также уведомление приходит когда гость передаёт контакт через чат Алины.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Сообщение гостю при подтверждении</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>При смене статуса на «Подтверждена» появляется диалог — отправить гостю подтверждение в чат. Сообщение содержит детали брони и ссылку «Ваша заявка».</p>
+              <p>По ссылке гость попадает на страницу объекта где после проверки токена открываются данные для заезда: адрес, код домофона, Wi-Fi.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Памятка гостю</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>У подтверждённых бронирований появляется кнопка отправки памятки — иконка самолётика. Памятка отправляется в Telegram и содержит ссылку на персональную страницу гостя с данными для заезда.</p>
+              <p>Ссылка действительна только с токеном — без него данные не показываются.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Вкладка: Ценообразование -->
+      <div id="docs-tab-pricing" class="docs-tab-content" style="display:none">
+        <div class="docs-accordion">
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Как рассчитывается цена</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Цена считается посуточно. Для каждой ночи: <b>базовая цена × сезонный коэффициент × коэффициент надбавки</b>.</p>
+              <p>Если на дату действует спецпредложение — берётся его фиксированная цена вместо расчётной.</p>
+              <p>После расчёта применяется скидка за длительность — только к обычным ночам (не к промо).</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Сезонные коэффициенты</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Для каждого месяца можно задать коэффициент (1.0 = без изменений, 1.5 = +50%, 0.8 = −20%). Настраиваются в разделе «Ценообразование».</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Надбавки за период</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Надбавки — временные повышения цены для праздников или пиковых дат (например Новый год, майские). Задаётся коэффициент и диапазон дат.</p>
+              <p>Надбавка применяется поверх сезонного коэффициента.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Скидки за длительность</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Чем дольше бронирование — тем больше скидка. Например: от 7 ночей −10%, от 14 ночей −15%. Применяется ко всем обычным ночам брони.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Спецпредложения (промо)</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Промо — фиксированная цена за конкретный период. Отображается на сайте как спецпредложение. Промо-цена имеет приоритет над обычным расчётом.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- Вкладка: Гости и доступ -->
+      <div id="docs-tab-guests" class="docs-tab-content" style="display:none">
+        <div class="docs-accordion">
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Страница гостя</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Каждому гостю при подтверждении формируется персональная ссылка на страницу объекта с токеном. По этой ссылке показываются секретные данные: адрес, номер квартиры, код домофона, Wi-Fi.</p>
+              <p>Без токена в URL эти данные скрыты — обычные посетители их не видят.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Токен доступа</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Токен — уникальная строка которая привязана к бронированию. Генерируется автоматически при подтверждении или при отправке памятки. Сохраняется в базе данных.</p>
+              <p>Токен проверяется на сервере — если он не найден в БД, данные для заезда не отображаются.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>База гостей</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>В разделе «Гости» хранится история всех гостей с контактами и количеством бронирований. База пополняется автоматически при каждой новой заявке.</p>
+            </div>
+          </div>
+
+          <div class="docs-item">
+            <div class="docs-head" onclick="toggleDocs(this)">
+              <span>Данные для заезда в кабинете</span>
+              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
+            </div>
+            <div class="docs-body">
+              <p>Адрес, код домофона, Wi-Fi и другие данные заезда настраиваются в разделе «Объекты». Там же можно указать скрытый адрес (address_secret) который показывается только гостям с токеном.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
     <div class="page" id="page-dashboard">
       <!-- Фильтр периода -->
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
@@ -4324,6 +4571,20 @@ function savePrompt() {
 function resetPrompt() {
   if (!confirm('Сбросить изменения? Данные перезагрузятся с сервера.')) return;
   loadPromptPage();
+}
+
+// ── DOCS ──
+function switchDocsTab(tab, btn) {
+  document.querySelectorAll('.docs-tab-content').forEach(function(el){ el.style.display = 'none'; });
+  document.querySelectorAll('#docs-tabs .filter-tab').forEach(function(t){ t.classList.remove('active'); });
+  var el = document.getElementById('docs-tab-' + tab);
+  if (el) el.style.display = 'block';
+  if (btn) btn.classList.add('active');
+}
+
+function toggleDocs(head) {
+  var item = head.parentElement;
+  item.classList.toggle('open');
 }
 
 // ── AUTH ──
