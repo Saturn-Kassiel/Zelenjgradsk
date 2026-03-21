@@ -2118,11 +2118,7 @@ function submitForm() {
             '📅 ' + checkinFormatted + ' — ' + checkoutFormatted + ' (' + nights + ' ' + nightsWord + ')\n' +
             '👤 ' + guestsWord + '\n\n' +
             'Управляющий свяжется с вами для подтверждения.';
-          cwHistory.push({role: 'assistant', content: chatMsg});
-          try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
-          document.getElementById('chat-widget-btn').classList.add('has-unread');
-          // Если чат открыт — показать сообщение сразу
-          if (cwOpen) { cwAddMsg(chatMsg, 'bot'); }
+          ChatWidget.onBookingSuccess(name.value.trim(), objName, checkin.value, checkout, nights);
         } catch(e) {}
       }
     })
@@ -2297,237 +2293,10 @@ document.querySelectorAll('.feature-card').forEach(function(el, i) {
 #cw-send:hover { opacity: 0.88; }
 </style>
 
-<button id="chat-widget-btn" onclick="cwToggle()" aria-label="Открыть чат">
-  <svg class="icon-chat" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-  <svg class="icon-close" width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-</button>
 
-<div id="chat-widget-box">
-  <div id="cw-header">
-    <div class="cw-av"><img src="https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png" style="width:28px;height:28px;object-fit:contain;border-radius:50%"></div>
-    <div class="cw-info">
-      <div class="cw-name">Апартаменты Балтики</div>
-      <div class="cw-sub"><span class="cw-dot"></span>онлайн · обычно отвечает сразу</div>
-    </div>
-    <button onclick="cwClear()" style="width:28px;height:28px;border-radius:50%;background:rgba(255,255,255,0.15);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:background 0.15s" title="Очистить чат" onmouseover="this.style.background='rgba(255,255,255,0.25)'" onmouseout="this.style.background='rgba(255,255,255,0.15)'">
-      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg>
-    </button>
-    <button class="cw-close" onclick="cwToggle()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
-    </button>
-  </div>
-  <div id="cw-messages"></div>
 
-  <div id="cw-input-row">
-    <input id="cw-inp" type="text" placeholder="Напишите вопрос..." onkeydown="if(event.key==='Enter')cwSend()"/>
-    <button id="cw-send" onclick="cwSend()">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
-    </button>
-  </div>
-</div>
 
-<script>
-var cwHistory = [];
-var cwOpen = false;
-var cwWaitingContact = false;
 
-// Загружаем историю из localStorage
-(function() {
-  try {
-    var saved = localStorage.getItem('chat_history');
-    if (saved) cwHistory = JSON.parse(saved);
-  } catch(e) {}
-})();
-
-if (window.visualViewport) {
-  window.visualViewport.addEventListener('resize', function() {
-    var box = document.getElementById('chat-widget-box');
-    if (!box || !cwOpen || window.innerWidth > 600) return;
-    var h = window.visualViewport.height;
-    box.style.height = h + 'px';
-    box.style.top = (window.visualViewport.offsetTop) + 'px';
-  });
-}
-
-function cwToggle() {
-  cwOpen = !cwOpen;
-  var box = document.getElementById('chat-widget-box');
-  var btn = document.getElementById('chat-widget-btn');
-  box.classList.toggle('open', cwOpen);
-  btn.querySelector('.icon-chat').style.display = cwOpen ? 'none' : 'block';
-  btn.querySelector('.icon-close').style.display = cwOpen ? 'block' : 'none';
-  if (window.innerWidth <= 600) {
-    document.body.style.overflow = cwOpen ? 'hidden' : '';
-    document.body.style.position = cwOpen ? 'fixed' : '';
-    document.body.style.width = cwOpen ? '100%' : '';
-  }
-  if (cwOpen) {
-    var msgs = document.getElementById('cw-messages');
-    var rendered = msgs.querySelectorAll('.cw-msg').length;
-    if (rendered === 0) {
-      cwInit();
-    } else if (rendered - 1 < cwHistory.length) {
-      // Дорендериваем сообщения которых нет в DOM (-1 за приветствие бота)
-      for (var i = rendered - 1; i < cwHistory.length; i++) {
-        if (cwHistory[i]) cwAddMsg(cwHistory[i].content, cwHistory[i].role === 'user' ? 'user' : 'bot');
-      }
-    }
-  }
-  if (cwOpen) {
-    document.getElementById('chat-widget-btn').classList.remove('has-unread');
-    cwCheckQueue();
-  }
-}
-
-function cwCheckQueue() {
-  // Определяем objId из выбранного объекта
-  var selEl = document.getElementById('prop-select');
-  var objId = selEl ? (selEl.value || '1') : '1';
-  fetch(APPS_URL + '/chat-queue/' + objId)
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok && d.messages && d.messages.length) {
-        d.messages.forEach(function(msg, i){
-          setTimeout(function(){
-            cwAddMsg(msg, 'bot', true);
-            var btn = document.getElementById('chat-widget-btn');
-            if (btn && !cwOpen) btn.classList.add('has-unread');
-          }, 500 * (i + 1));
-        });
-      }
-    }).catch(function(){});
-}
-
-function cwInit() {
-  if (cwHistory.length > 0) {
-    cwHistory.forEach(function(m) {
-      cwAddMsg(m.content, m.role === 'user' ? 'user' : 'bot');
-    });
-  } else {
-    cwAddMsg('Привет! 👋 Если есть вопросы по апартаментам — спрашивайте, расскажу всё честно 🌊', 'bot');
-  }
-}
-
-function cwClear() {
-  cwHistory = [];
-  try { localStorage.removeItem('chat_history'); } catch(e) {}
-  document.getElementById('cw-messages').innerHTML = '';
-  cwInit();
-}
-
-function cwFormatText(text) {
-  return text
-    .replace(/\n/g, '<br>')
-    .replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, '<a href="$2" target="_blank" style="color:var(--indigo);text-decoration:underline">$1</a>')
-    .replace(/(https?:\/\/[^\s<]+)/g, '<a href="$1" target="_blank" style="color:var(--indigo);text-decoration:underline;word-break:break-all">$1</a>');
-}
-
-function cwAddMsg(text, role, isHtml) {
-  var msgs = document.getElementById('cw-messages');
-  var div = document.createElement('div');
-  div.className = 'cw-msg ' + role;
-  div.innerHTML = '<div class="cw-bubble">' + (isHtml ? text : cwFormatText(text)) + '</div>';
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function cwTyping() {
-  var msgs = document.getElementById('cw-messages');
-  var div = document.createElement('div');
-  div.className = 'cw-msg bot'; div.id = 'cw-typ';
-  div.innerHTML = '<div class="cw-bubble cw-typing">печатает...</div>';
-  msgs.appendChild(div);
-  msgs.scrollTop = msgs.scrollHeight;
-}
-
-function cwRemoveTyping() { var e = document.getElementById('cw-typ'); if(e) e.remove(); }
-
-async function cwSend() {
-  var inp = document.getElementById('cw-inp');
-  var text = inp.value.trim(); if (!text) return;
-  inp.value = '';
-  cwAddMsg(text, 'user');
-
-  // Режим ожидания контакта
-  if (cwWaitingContact) {
-    // Проверка контакта
-    var digits = text.replace(/\D/g, '');
-    var hasUsername = text.indexOf('@') !== -1;
-    var hasWhatsapp = /whatsapp|вотсап|ватсап/i.test(text);
-    var hasPhone = digits.length >= 10;
-
-    if (!hasUsername && !hasPhone) {
-      if (hasWhatsapp) {
-        cwAddMsg('Напишите номер для WhatsApp — например, +79001234567', 'bot');
-      } else {
-        cwAddMsg('Похоже контакт неполный. Напишите номер телефона, @username в Telegram или номер для WhatsApp', 'bot');
-      }
-      return;
-    }
-
-    cwWaitingContact = false;
-    cwAddMsg('Управляющий получил ваш контакт и свяжется в ближайшее время 🙏', 'bot');
-    var dialogLines = cwHistory.slice(-10).map(function(m) {
-      return (m.role === 'user' ? 'Гость: ' : 'Алина: ') + m.content;
-    }).join('\n');
-    fetch(CHAT_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      body: JSON.stringify({action: 'notify', contact: text, dialog: dialogLines})
-    }).catch(function(){});
-    return;
-  }
-
-  cwHistory.push({role: 'user', content: text});
-  if (window.innerWidth <= 600) {
-    var sugs = document.getElementById('cw-sugs');
-    if (sugs) sugs.style.display = 'none';
-  }
-  cwTyping();
-  try {
-    var res = await fetch(CHAT_URL, {
-      method: 'POST',
-      headers: {'Content-Type': 'text/plain'},
-      redirect: 'follow',
-      body: JSON.stringify({action: 'chat', messages: cwHistory})
-    });
-    var rawText = await res.text();
-    var data;
-    try { data = JSON.parse(rawText); } catch(e) {
-      cwRemoveTyping();
-      cwAddMsg('Не удалось получить ответ. Попробуйте ещё раз.', 'bot');
-      return;
-    }
-    cwRemoveTyping();
-    if (data.error) { cwAddMsg('Не удалось получить ответ. Напишите нам напрямую.', 'bot'); return; }
-    cwHistory.push({role: 'assistant', content: data.reply});
-    cwAddMsg(data.reply, 'bot');
-    try { localStorage.setItem('chat_history', JSON.stringify(cwHistory.slice(-20))); } catch(e) {}
-    // Показываем значок если чат закрыт
-    if (!cwOpen) {
-      document.getElementById('chat-widget-btn').classList.add('has-unread');
-    }
-
-    // Перехват передачи управляющему
-    if (data.reply && data.reply.includes('передам администратору')) {
-      cwWaitingContact = true;
-      setTimeout(function() {
-        cwAddMsg('Ваш контакт получит только управляющий. Как лучше с вами связаться? (телефон, Telegram или WhatsApp)', 'bot');
-      }, 600);
-    }
-
-    // Логирование теперь на сервере
-  } catch(e) {
-    cwRemoveTyping();
-    cwAddMsg('Что-то пошло не так. Попробуйте чуть позже.', 'bot');
-  }
-}
-
-function cwSug(btn) {
-  document.getElementById('cw-inp').value = btn.textContent;
-  cwSend();
-}
-</script>
 
 
 <!-- SCROLL TO TOP -->
@@ -2559,5 +2328,16 @@ function cookieAccept() {
 }
 </script>
 <script src="booking-modal.js"></script>
+<script src="chat-widget.js"></script>
+<script>
+ChatWidget.init({
+  appsUrl: APPS_URL,
+  chatUrl: CHAT_URL,
+  getObjId: function() {
+    var sel = document.getElementById('prop-select');
+    return sel ? (sel.value || '1') : '1';
+  }
+});
+</script>
 </body>
 </html>
