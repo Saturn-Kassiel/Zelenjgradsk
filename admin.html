@@ -1995,7 +1995,7 @@ function renderBookings(filter, search) {
   if (newCount > 0) { badge.textContent = newCount; badge.style.display = ''; } else badge.style.display = 'none';
 
   // Значок на активной вкладке — количество в текущем фильтре
-  document.querySelectorAll('.filter-tab').forEach(function(tab) {
+  document.querySelectorAll('#page-bookings .filter-tab').forEach(function(tab) {
     var tabBadge = tab.querySelector('.tab-badge');
     if (!tabBadge) {
       tabBadge = document.createElement('span');
@@ -2022,7 +2022,7 @@ function updateTabBadges() {
   var newCount = bookings.filter(function(b){ return b.status==='new'; }).length;
   var badge = document.getElementById('new-badge');
   if (badge) { badge.textContent = newCount; badge.style.display = newCount > 0 ? '' : 'none'; }
-  document.querySelectorAll('.filter-tab').forEach(function(tab) {
+  document.querySelectorAll('#page-bookings .filter-tab').forEach(function(tab) {
     var tabBadge = tab.querySelector('.tab-badge');
     if (!tabBadge) {
       tabBadge = document.createElement('span');
