@@ -1515,8 +1515,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div class="modal-title" id="docs-modal-title" style="font-size:17px;margin-bottom:20px">Добавить раздел</div>
 
     <div class="form-group-a" style="margin-bottom:14px">
-      <label>Вкладка</label>
+      <label style="display:flex;align-items:center;justify-content:space-between">
+        Вкладка
+        <span onclick="toggleNewTabInput()" style="font-size:11px;color:var(--teal);cursor:pointer;font-weight:600">+ Новая вкладка</span>
+      </label>
       <select id="docs-tab-select" class="form-select-a"></select>
+      <div id="new-tab-input-wrap" style="display:none;margin-top:8px;display:none">
+        <div style="display:flex;gap:8px">
+          <input type="text" id="new-tab-icon" class="form-input-a" placeholder="📄" style="width:60px;flex-shrink:0">
+          <input type="text" id="new-tab-name" class="form-input-a" placeholder="Название вкладки" style="flex:1">
+          <button class="btn btn-primary btn-sm" onclick="createTabFromModal()" style="flex-shrink:0;border-radius:10px">Создать</button>
+        </div>
+      </div>
     </div>
 
     <div class="form-group-a" style="margin-bottom:14px">
@@ -4567,6 +4577,36 @@ function deleteDocTab(id, title) {
   openModal('modal-confirm');
 }
 
+function toggleNewTabInput() {
+  var wrap = document.getElementById('new-tab-input-wrap');
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+  if (wrap.style.display === 'block') {
+    document.getElementById('new-tab-icon').value = '📄';
+    document.getElementById('new-tab-name').value = '';
+    document.getElementById('new-tab-name').focus();
+  }
+}
+
+function createTabFromModal() {
+  var icon = document.getElementById('new-tab-icon').value.trim() || '📄';
+  var title = document.getElementById('new-tab-name').value.trim();
+  if (!title) { showToast('Введите название вкладки'); return; }
+  fetch(API + '/doc-tabs', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ title: title, icon: icon, sort_order: _docsTabs.length })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.data) {
+        _docsTabs.push(d.data);
+        renderDocsTabSelect();
+        document.getElementById('docs-tab-select').value = String(d.data.id);
+        document.getElementById('new-tab-input-wrap').style.display = 'none';
+        showToast('Вкладка «' + title + '» создана');
+      }
+    }).catch(function(){ showToast('Ошибка создания вкладки'); });
+}
+
 function openDocsItemModal() {
   if (!_docsTabs.length) { showToast('Сначала создайте вкладку'); return; }
   _editingDocsId = null;
@@ -4642,6 +4682,36 @@ function confirmDocsDelete() {
 function toggleDocs(head) {
   var item = head.parentElement;
   item.classList.toggle('open');
+}
+
+function toggleNewTabInput() {
+  var wrap = document.getElementById('new-tab-input-wrap');
+  wrap.style.display = wrap.style.display === 'none' ? 'block' : 'none';
+  if (wrap.style.display === 'block') {
+    document.getElementById('new-tab-icon').value = '📄';
+    document.getElementById('new-tab-name').value = '';
+    document.getElementById('new-tab-name').focus();
+  }
+}
+
+function createTabFromModal() {
+  var icon = document.getElementById('new-tab-icon').value.trim() || '📄';
+  var title = document.getElementById('new-tab-name').value.trim();
+  if (!title) { showToast('Введите название вкладки'); return; }
+  fetch(API + '/doc-tabs', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ title: title, icon: icon, sort_order: _docsTabs.length })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok && d.data) {
+        _docsTabs.push(d.data);
+        renderDocsTabSelect();
+        document.getElementById('docs-tab-select').value = String(d.data.id);
+        document.getElementById('new-tab-input-wrap').style.display = 'none';
+        showToast('Вкладка «' + title + '» создана');
+      }
+    }).catch(function(){ showToast('Ошибка создания вкладки'); });
 }
 
 function openDocsItemModal() {
