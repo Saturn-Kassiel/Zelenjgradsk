@@ -922,19 +922,16 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         </button>
       </div>
 
-      <!-- Вкладки -->
-      <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:24px" id="docs-tabs">
-        <button class="filter-tab active" data-docs-tab="chat" onclick="switchDocsTab('chat',this)">💬 Чат и Алина</button>
-        <button class="filter-tab" data-docs-tab="bookings" onclick="switchDocsTab('bookings',this)">📋 Бронирования</button>
-        <button class="filter-tab" data-docs-tab="pricing" onclick="switchDocsTab('pricing',this)">💰 Ценообразование</button>
-        <button class="filter-tab" data-docs-tab="guests" onclick="switchDocsTab('guests',this)">👤 Гости и доступ</button>
+      <!-- Вкладки (динамические) -->
+      <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:24px" id="docs-tabs">
+        <button class="btn btn-outline btn-sm" onclick="openAddTabModal()" style="border-radius:50px">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Вкладка
+        </button>
       </div>
 
-      <!-- Контент вкладок -->
-      <div id="docs-tab-chat" class="docs-tab-content"><div class="docs-accordion" id="docs-list-chat"></div></div>
-      <div id="docs-tab-bookings" class="docs-tab-content" style="display:none"><div class="docs-accordion" id="docs-list-bookings"></div></div>
-      <div id="docs-tab-pricing" class="docs-tab-content" style="display:none"><div class="docs-accordion" id="docs-list-pricing"></div></div>
-      <div id="docs-tab-guests" class="docs-tab-content" style="display:none"><div class="docs-accordion" id="docs-list-guests"></div></div>
+      <!-- Контент вкладок (динамический) -->
+      <div id="docs-tabs-content"></div>
 
     </div>
 
@@ -1487,6 +1484,28 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
   </div>
 </div>
 
+<!-- MODAL: ADD TAB -->
+<div class="modal-overlay" id="modal-add-tab" onclick="closeModalBg(event,'modal-add-tab')">
+  <div class="modal" style="max-width:420px;padding:28px">
+    <button class="modal-close" onclick="closeModal('modal-add-tab')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title" style="font-size:17px;margin-bottom:20px">Новая вкладка</div>
+    <div class="form-group-a" style="margin-bottom:14px">
+      <label>Иконка (эмодзи)</label>
+      <input type="text" class="form-input-a" id="tab-icon-input" placeholder="📄" maxlength="4" style="width:80px">
+    </div>
+    <div class="form-group-a" style="margin-bottom:20px">
+      <label>Название вкладки</label>
+      <input type="text" class="form-input-a" id="tab-title-input" placeholder="Например: Телеграм и уведомления">
+    </div>
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-add-tab')">Отмена</button>
+      <button class="btn btn-primary" style="justify-content:center" onclick="saveNewTab()">Создать</button>
+    </div>
+  </div>
+</div>
+
 <!-- MODAL: DOCS ITEM -->
 <div class="modal-overlay" id="modal-docs-item" onclick="closeModalBg(event,'modal-docs-item')">
   <div class="modal" style="max-width:520px;padding:28px">
@@ -1497,12 +1516,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <div class="form-group-a" style="margin-bottom:14px">
       <label>Вкладка</label>
-      <select id="docs-tab-select" class="form-select-a">
-        <option value="chat">💬 Чат и Алина</option>
-        <option value="bookings">📋 Бронирования</option>
-        <option value="pricing">💰 Ценообразование</option>
-        <option value="guests">👤 Гости и доступ</option>
-      </select>
+      <select id="docs-tab-select" class="form-select-a"></select>
     </div>
 
     <div class="form-group-a" style="margin-bottom:14px">
@@ -2200,6 +2214,7 @@ function deleteBooking(id) {
   if (!b) return;
   pendingDeleteId = id;
   document.getElementById('confirm-text').textContent = b.name + ' · ' + formatDate(b.in) + ' — ' + formatDate(b.out);
+  document.getElementById('modal-confirm').querySelector('.btn-danger').onclick = confirmDelete;
   openModal('modal-confirm');
 }
 
@@ -4411,24 +4426,64 @@ function resetPrompt() {
 
 // ── DOCS ──
 var _docsData = [];
+var _docsTabs = [];
 var _editingDocsId = null;
-var _currentDocsTab = 'chat';
+var _currentDocsTab = null;
 
 function loadDocsPage() {
-  fetch(API + '/docs')
-    .then(function(r){ return r.json(); })
-    .then(function(d){
-      _docsData = d.data || [];
-      renderDocsTab(_currentDocsTab);
-    }).catch(function(){});
+  Promise.all([
+    fetch(API + '/doc-tabs').then(function(r){ return r.json(); }),
+    fetch(API + '/docs').then(function(r){ return r.json(); })
+  ]).then(function(results) {
+    _docsTabs = results[0].data || [];
+    _docsData = results[1].data || [];
+    renderDocsTabs();
+  }).catch(function(){ showToast('Ошибка загрузки документации'); });
 }
 
-function renderDocsTab(tab) {
-  var tabs = ['chat','bookings','pricing','guests'];
-  tabs.forEach(function(t) {
-    var list = document.getElementById('docs-list-' + t);
+function renderDocsTabs() {
+  var tabsEl = document.getElementById('docs-tabs');
+  var contentEl = document.getElementById('docs-tabs-content');
+  if (!tabsEl || !contentEl) return;
+
+  // Render tab buttons (keep + button at start)
+  var addBtn = tabsEl.querySelector('button');
+  tabsEl.innerHTML = '';
+  tabsEl.appendChild(addBtn);
+
+  _docsTabs.forEach(function(tab, idx) {
+    var btn = document.createElement('button');
+    btn.className = 'filter-tab' + (idx === 0 ? ' active' : '');
+    btn.dataset.docsTab = tab.id;
+        btn.innerHTML = tab.icon + ' ' + tab.title +
+      ' <span class="doc-tab-del" style="margin-left:6px;opacity:0.5;font-size:10px;cursor:pointer" title="Удалить вкладку">✕</span>';
+    btn.querySelector('.doc-tab-del').onclick = (function(t){ return function(e){ e.stopPropagation(); deleteDocTab(t.id, t.title); }; })(tab);
+    btn.onclick = (function(t, b){ return function(){ switchDocsTab(t.id, b); }; })(tab, btn);
+        tabsEl.appendChild(btn);
+  });
+
+  // Render content areas
+  contentEl.innerHTML = '';
+  _docsTabs.forEach(function(tab, idx) {
+    var div = document.createElement('div');
+    div.id = 'docs-tab-' + tab.id;
+    div.className = 'docs-tab-content';
+    if (idx !== 0) div.style.display = 'none';
+    div.innerHTML = '<div class="docs-accordion" id="docs-list-' + tab.id + '"></div>';
+    contentEl.appendChild(div);
+  });
+
+  if (_docsTabs.length > 0) {
+    _currentDocsTab = _docsTabs[0].id;
+    renderDocsTab(_currentDocsTab);
+  }
+}
+
+function renderDocsTab(tabId) {
+  _docsTabs.forEach(function(tab) {
+    var list = document.getElementById('docs-list-' + tab.id);
     if (!list) return;
-    var items = _docsData.filter(function(x){ return x.tab === t; });
+    var items = _docsData.filter(function(x){ return String(x.tab) === String(tab.id); });
     if (!items.length) {
       list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Разделов пока нет — нажмите «Добавить раздел»</div>';
       return;
@@ -4455,7 +4510,6 @@ function renderDocsTab(tab) {
           '</div>' +
         '</div>' +
         '<div class="docs-body">' + paras + '</div>';
-      // Attach event handlers after innerHTML
       var btns = wrap.querySelectorAll('.icon-btn');
       btns[0].onclick = (function(id){ return function(e){ e.stopPropagation(); editDocsItem(id); }; })(item.id);
       btns[1].onclick = (function(id){ return function(e){ e.stopPropagation(); deleteDocsItem(id); }; })(item.id);
@@ -4464,14 +4518,125 @@ function renderDocsTab(tab) {
   });
 }
 
-function switchDocsTab(tab, btn) {
-  _currentDocsTab = tab;
+function switchDocsTab(tabId, btn) {
+  _currentDocsTab = tabId;
   document.querySelectorAll('.docs-tab-content').forEach(function(el){ el.style.display = 'none'; });
   document.querySelectorAll('#docs-tabs .filter-tab').forEach(function(t){ t.classList.remove('active'); });
-  var el = document.getElementById('docs-tab-' + tab);
+  var el = document.getElementById('docs-tab-' + tabId);
   if (el) el.style.display = 'block';
   if (btn) btn.classList.add('active');
 }
+
+function toggleDocs(head) {
+  var item = head.parentElement;
+  item.classList.toggle('open');
+}
+
+function openAddTabModal() {
+  document.getElementById('tab-icon-input').value = '📄';
+  document.getElementById('tab-title-input').value = '';
+  openModal('modal-add-tab');
+}
+
+function saveNewTab() {
+  var icon = document.getElementById('tab-icon-input').value.trim() || '📄';
+  var title = document.getElementById('tab-title-input').value.trim();
+  if (!title) { showToast('Введите название вкладки'); return; }
+  fetch(API + '/doc-tabs', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ title: title, icon: icon, sort_order: _docsTabs.length })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        closeModal('modal-add-tab');
+        showToast('Вкладка добавлена');
+        loadDocsPage();
+      }
+    }).catch(function(){ showToast('Ошибка'); });
+}
+
+var _pendingDocsDelete = null;
+
+function deleteDocTab(id, title) {
+  _pendingDocsDelete = { type: 'tab', id: id };
+  document.getElementById('confirm-text').textContent = 'Вкладка «' + title + '» и все её разделы будут удалены.';
+  document.getElementById('modal-confirm').querySelector('.btn-danger').textContent = 'Удалить';
+  document.getElementById('modal-confirm').querySelector('.btn-danger').onclick = confirmDocsDelete;
+  openModal('modal-confirm');
+}
+
+function openDocsItemModal() {
+  _editingDocsId = null;
+  document.getElementById('docs-modal-title').textContent = 'Добавить раздел';
+  // Set current tab in select
+  renderDocsTabSelect();
+  document.getElementById('docs-title-input').value = '';
+  document.getElementById('docs-body-input').value = '';
+  openModal('modal-docs-item');
+}
+
+function renderDocsTabSelect() {
+  var sel = document.getElementById('docs-tab-select');
+  sel.innerHTML = _docsTabs.map(function(tab) {
+    return '<option value="' + tab.id + '"' + (String(tab.id) === String(_currentDocsTab) ? ' selected' : '') + '>' + tab.icon + ' ' + tab.title + '</option>';
+  }).join('');
+}
+
+function editDocsItem(id) {
+  var item = _docsData.find(function(x){ return x.id === id; });
+  if (!item) return;
+  _editingDocsId = id;
+  document.getElementById('docs-modal-title').textContent = 'Редактировать раздел';
+  renderDocsTabSelect();
+  document.getElementById('docs-tab-select').value = item.tab;
+  document.getElementById('docs-title-input').value = item.title;
+  document.getElementById('docs-body-input').value = item.body;
+  openModal('modal-docs-item');
+}
+
+function saveDocsItem() {
+  var tab = document.getElementById('docs-tab-select').value;
+  var title = document.getElementById('docs-title-input').value.trim();
+  var body = document.getElementById('docs-body-input').value.trim();
+  if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
+  var method = _editingDocsId ? 'PUT' : 'POST';
+  var url = API + '/docs' + (_editingDocsId ? '/' + _editingDocsId : '');
+  fetch(url, {
+    method: method,
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ tab: tab, title: title, body: body, sort_order: 0 })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        closeModal('modal-docs-item');
+        showToast(_editingDocsId ? 'Раздел обновлён' : 'Раздел добавлен');
+        loadDocsPage();
+      }
+    }).catch(function(){ showToast('Ошибка сохранения'); });
+}
+
+function deleteDocsItem(id) {
+  _pendingDocsDelete = { type: 'item', id: id };
+  document.getElementById('confirm-text').textContent = 'Раздел будет удалён безвозвратно.';
+  document.getElementById('modal-confirm').querySelector('.btn-danger').onclick = confirmDocsDelete;
+  openModal('modal-confirm');
+}
+
+function confirmDocsDelete() {
+  if (!_pendingDocsDelete) return;
+  closeModal('modal-confirm');
+  var url = _pendingDocsDelete.type === 'tab'
+    ? API + '/doc-tabs/' + _pendingDocsDelete.id
+    : API + '/docs/' + _pendingDocsDelete.id;
+  var msg = _pendingDocsDelete.type === 'tab' ? 'Вкладка удалена' : 'Раздел удалён';
+  _pendingDocsDelete = null;
+  fetch(url, { method: 'DELETE' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){ if (d.ok) { showToast(msg); loadDocsPage(); } })
+    .catch(function(){});
+}
+
 
 function toggleDocs(head) {
   var item = head.parentElement;
@@ -4522,12 +4687,24 @@ function saveDocsItem() {
 }
 
 function deleteDocsItem(id) {
-  if (!confirm('Удалить этот раздел?')) return;
-  fetch(API + '/docs/' + id, { method: 'DELETE' })
+  _pendingDocsDelete = { type: 'item', id: id };
+  document.getElementById('confirm-text').textContent = 'Раздел будет удалён безвозвратно.';
+  document.getElementById('modal-confirm').querySelector('.btn-danger').onclick = confirmDocsDelete;
+  openModal('modal-confirm');
+}
+
+function confirmDocsDelete() {
+  if (!_pendingDocsDelete) return;
+  closeModal('modal-confirm');
+  var url = _pendingDocsDelete.type === 'tab'
+    ? API + '/doc-tabs/' + _pendingDocsDelete.id
+    : API + '/docs/' + _pendingDocsDelete.id;
+  var msg = _pendingDocsDelete.type === 'tab' ? 'Вкладка удалена' : 'Раздел удалён';
+  _pendingDocsDelete = null;
+  fetch(url, { method: 'DELETE' })
     .then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok) { showToast('Раздел удалён'); loadDocsPage(); }
-    }).catch(function(){});
+    .then(function(d){ if (d.ok) { showToast(msg); loadDocsPage(); } })
+    .catch(function(){});
 }
 
 function switchDocsTab(tab, btn) {
