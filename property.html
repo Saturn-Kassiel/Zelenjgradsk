@@ -1003,6 +1003,9 @@ function submitForm() {
           fetch(CHAT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'notify', contact: name+' '+phone, dialog: bookingInfo }) }).catch(function(){});
           // Сохраняем контакт
           fetch(APPS_URL + '/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:name, phone:phone, source:'booking' }) }).catch(function(){});
+          // Сообщение в чат
+          var objName = (propData && propData.name) ? propData.name : 'Апартаменты';
+          ChatWidget.onBookingSuccess(name, objName, dateIn, dateOut, nights);
         }
       }).catch(function(){ alert('Ошибка отправки. Попробуйте ещё раз.'); });
   });
