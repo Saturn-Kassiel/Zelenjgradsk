@@ -1803,28 +1803,26 @@ function initGuestAccess() {
   var objId = params.get('id');
   if (!token || !objId) return;
 
-  // Verify token via GAS
+  // Проверяем токен и получаем данные объекта из API
   fetch(APPS_URL + '/bookings/token/' + encodeURIComponent(token))
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.ok) {
-        // Token valid - load secret data from CSV (same as main page)
-        fetch(SHEET_URL)
-          .then(function(r){ return r.text(); })
-          .then(function(text){
-            var props = parseCSV(text);
-            var prop = props.find(function(p){ return String(p.id) === String(objId); });
-            if (prop) {
-              document.getElementById('s-address').textContent = prop.address_secret || '—';
-              document.getElementById('s-apt').textContent = prop.apt_number || '—';
-              document.getElementById('s-door').textContent = prop.door_code || '—';
-              document.getElementById('s-wifi-name').textContent = prop.wifi_name || '—';
-              document.getElementById('s-wifi-pass').textContent = prop.wifi_pass || '—';
-              document.getElementById('secret-section').classList.add('visible');
-              document.getElementById('secret-section').scrollIntoView({behavior:'smooth', block:'center'});
-            }
-          });
+        return fetch(APPS_URL + '/objects/' + objId);
       }
+      throw new Error('invalid token');
+    })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      var prop = d.data || d;
+      document.getElementById('s-address').textContent = prop.address_secret || '—';
+      document.getElementById('s-apt').textContent = prop.apt_number || '—';
+      document.getElementById('s-door').textContent = prop.door_code || '—';
+      document.getElementById('s-wifi-name').textContent = prop.wifi_name || '—';
+      document.getElementById('s-wifi-pass').textContent = prop.wifi_pass || '—';
+      var sec = document.getElementById('secret-section');
+      sec.style.display = 'block';
+      sec.scrollIntoView({behavior:'smooth', block:'center'});
     }).catch(function(){});
 }
 initGuestAccess();
