@@ -1935,6 +1935,25 @@ function filterBookings(filter, btn) {
 }
 function searchBookings(val) { renderBookings(bookingFilter, val); }
 
+function updateTabBadges() {
+  var newCount = bookings.filter(function(b){ return b.status==='new'; }).length;
+  var badge = document.getElementById('new-badge');
+  if (badge) { badge.textContent = newCount; badge.style.display = newCount > 0 ? '' : 'none'; }
+  document.querySelectorAll('.filter-tab').forEach(function(tab) {
+    var tabBadge = tab.querySelector('.tab-badge');
+    if (!tabBadge) {
+      tabBadge = document.createElement('span');
+      tabBadge.className = 'tab-badge';
+      tabBadge.style.cssText = 'margin-left:5px;background:var(--teal);color:white;border-radius:20px;padding:1px 7px;font-size:11px;font-weight:700';
+      tab.appendChild(tabBadge);
+    }
+    var tabFilter = tab.dataset.filter || 'all';
+    var count = tabFilter === 'all' ? bookings.filter(function(b){ return b.status!=='blocked'; }).length : bookings.filter(function(b){ return b.status===tabFilter; }).length;
+    tabBadge.textContent = count;
+    tabBadge.style.display = count > 0 ? 'inline' : 'none';
+  });
+}
+
 function changeStatus(id, sel) {
   var b = bookings.find(function(x){ return String(x.id)===String(id); });
   if (!b) return;
