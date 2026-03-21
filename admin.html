@@ -3277,6 +3277,7 @@ loadObjects(function(){
   loadCleaning();
   loadPromoAdmin();
   loadAdminPromo();
+  loadDocsPage();
 });
 
 function updateObjSelects() {
@@ -4567,9 +4568,9 @@ function deleteDocTab(id, title) {
 }
 
 function openDocsItemModal() {
+  if (!_docsTabs.length) { showToast('Сначала создайте вкладку'); return; }
   _editingDocsId = null;
   document.getElementById('docs-modal-title').textContent = 'Добавить раздел';
-  // Set current tab in select
   renderDocsTabSelect();
   document.getElementById('docs-title-input').value = '';
   document.getElementById('docs-body-input').value = '';
