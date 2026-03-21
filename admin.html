@@ -4434,8 +4434,7 @@ function renderDocsTab(tab) {
       return;
     }
     list.innerHTML = items.map(function(item) {
-      var paras = item.body.split('
-').filter(function(p){ return p.trim(); }).map(function(p){
+      var paras = item.body.split('\n').filter(function(p){ return p.trim(); }).map(function(p){
         return '<p>' + p + '</p>';
       }).join('');
       return '<div class="docs-item" id="docs-item-'+item.id+'">' +
