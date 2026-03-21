@@ -911,9 +911,15 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-docs">
-      <div style="margin-bottom:24px">
-        <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Функционал сайта</h2>
-        <p style="font-size:13px;color:var(--muted)">Описание всех функций и процессов платформы</p>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Функционал сайта</h2>
+          <p style="font-size:13px;color:var(--muted)">Описание функций и процессов платформы</p>
+        </div>
+        <button class="btn btn-primary" onclick="openDocsItemModal()">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          Добавить раздел
+        </button>
       </div>
 
       <!-- Вкладки -->
@@ -924,220 +930,14 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <button class="filter-tab" data-docs-tab="guests" onclick="switchDocsTab('guests',this)">👤 Гости и доступ</button>
       </div>
 
-      <!-- Вкладка: Чат и Алина -->
-      <div id="docs-tab-chat" class="docs-tab-content">
-        <div class="docs-accordion">
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Как работает чат на сайте</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>На каждой странице сайта (главная и страница объекта) есть чат-виджет в правом нижнем углу. Гость нажимает на кнопку и открывается чат с ИИ-помощником Алиной.</p>
-              <p>Алина отвечает на вопросы об апартаментах, ценах, условиях. Если вопрос сложный — предлагает передать контакт управляющему.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Передача контакта управляющему</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Когда Алина понимает что не может помочь — она пишет «передам администратору». После этого чат переходит в режим ожидания контакта.</p>
-              <p>Гость вводит телефон, @username Telegram или номер WhatsApp. Сообщение с контактом и историей диалога отправляется управляющему через GAS.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Сообщения от управляющего в чат гостя</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>При смене статуса бронирования на «Подтверждена» появляется окно подтверждения. Нажав «Отправить» — сообщение с деталями брони и ссылкой на страницу гостя отправляется в чат на сайте.</p>
-              <p>Гость увидит сообщение при следующем открытии чата — появится красная точка на кнопке чата.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Промпт Алины</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Поведение Алины настраивается в разделе «Алина (промпт)» в сайдбаре. Там можно задать информацию об объектах, правилах, ценах и особых условиях.</p>
-              <p>Чем подробнее заполнен промпт — тем точнее и полезнее отвечает Алина.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Вкладка: Бронирования -->
-      <div id="docs-tab-bookings" class="docs-tab-content" style="display:none">
-        <div class="docs-accordion">
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Статусы заявок и переходы</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p><b>Новая</b> — заявка только что поступила. Можно перевести в «Рассматривается» или «Подтверждена».</p>
-              <p><b>Рассматривается</b> — вы изучаете заявку. Можно подтвердить или вернуть в «Новую».</p>
-              <p><b>Подтверждена</b> — бронирование активно. Можно перевести в «Завершена» или «Отменена».</p>
-              <p><b>Завершена / Отменена</b> — финальные статусы, изменить нельзя.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Уведомления в Telegram</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>При каждой новой заявке с сайта автоматически отправляется уведомление в Telegram-канал управляющего с именем, телефоном, датами и суммой.</p>
-              <p>Также уведомление приходит когда гость передаёт контакт через чат Алины.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Сообщение гостю при подтверждении</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>При смене статуса на «Подтверждена» появляется диалог — отправить гостю подтверждение в чат. Сообщение содержит детали брони и ссылку «Ваша заявка».</p>
-              <p>По ссылке гость попадает на страницу объекта где после проверки токена открываются данные для заезда: адрес, код домофона, Wi-Fi.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Памятка гостю</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>У подтверждённых бронирований появляется кнопка отправки памятки — иконка самолётика. Памятка отправляется в Telegram и содержит ссылку на персональную страницу гостя с данными для заезда.</p>
-              <p>Ссылка действительна только с токеном — без него данные не показываются.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Вкладка: Ценообразование -->
-      <div id="docs-tab-pricing" class="docs-tab-content" style="display:none">
-        <div class="docs-accordion">
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Как рассчитывается цена</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Цена считается посуточно. Для каждой ночи: <b>базовая цена × сезонный коэффициент × коэффициент надбавки</b>.</p>
-              <p>Если на дату действует спецпредложение — берётся его фиксированная цена вместо расчётной.</p>
-              <p>После расчёта применяется скидка за длительность — только к обычным ночам (не к промо).</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Сезонные коэффициенты</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Для каждого месяца можно задать коэффициент (1.0 = без изменений, 1.5 = +50%, 0.8 = −20%). Настраиваются в разделе «Ценообразование».</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Надбавки за период</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Надбавки — временные повышения цены для праздников или пиковых дат (например Новый год, майские). Задаётся коэффициент и диапазон дат.</p>
-              <p>Надбавка применяется поверх сезонного коэффициента.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Скидки за длительность</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Чем дольше бронирование — тем больше скидка. Например: от 7 ночей −10%, от 14 ночей −15%. Применяется ко всем обычным ночам брони.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Спецпредложения (промо)</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Промо — фиксированная цена за конкретный период. Отображается на сайте как спецпредложение. Промо-цена имеет приоритет над обычным расчётом.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
-
-      <!-- Вкладка: Гости и доступ -->
-      <div id="docs-tab-guests" class="docs-tab-content" style="display:none">
-        <div class="docs-accordion">
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Страница гостя</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Каждому гостю при подтверждении формируется персональная ссылка на страницу объекта с токеном. По этой ссылке показываются секретные данные: адрес, номер квартиры, код домофона, Wi-Fi.</p>
-              <p>Без токена в URL эти данные скрыты — обычные посетители их не видят.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Токен доступа</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Токен — уникальная строка которая привязана к бронированию. Генерируется автоматически при подтверждении или при отправке памятки. Сохраняется в базе данных.</p>
-              <p>Токен проверяется на сервере — если он не найден в БД, данные для заезда не отображаются.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>База гостей</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>В разделе «Гости» хранится история всех гостей с контактами и количеством бронирований. База пополняется автоматически при каждой новой заявке.</p>
-            </div>
-          </div>
-
-          <div class="docs-item">
-            <div class="docs-head" onclick="toggleDocs(this)">
-              <span>Данные для заезда в кабинете</span>
-              <svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </div>
-            <div class="docs-body">
-              <p>Адрес, код домофона, Wi-Fi и другие данные заезда настраиваются в разделе «Объекты». Там же можно указать скрытый адрес (address_secret) который показывается только гостям с токеном.</p>
-            </div>
-          </div>
-
-        </div>
-      </div>
+      <!-- Контент вкладок -->
+      <div id="docs-tab-chat" class="docs-tab-content"><div class="docs-accordion" id="docs-list-chat"></div></div>
+      <div id="docs-tab-bookings" class="docs-tab-content" style="display:none"><div class="docs-accordion" id="docs-list-bookings"></div></div>
+      <div id="docs-tab-pricing" class="docs-tab-content" style="display:none"><div class="docs-accordion" id="docs-list-pricing"></div></div>
+      <div id="docs-tab-guests" class="docs-tab-content" style="display:none"><div class="docs-accordion" id="docs-list-guests"></div></div>
 
     </div>
+
     <div class="page" id="page-dashboard">
       <!-- Фильтр периода -->
       <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
@@ -1687,6 +1487,41 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
   </div>
 </div>
 
+<!-- MODAL: DOCS ITEM -->
+<div class="modal-overlay" id="modal-docs-item" onclick="closeModalBg(event,'modal-docs-item')">
+  <div class="modal" style="max-width:520px;padding:28px">
+    <button class="modal-close" onclick="closeModal('modal-docs-item')">
+      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>
+    </button>
+    <div class="modal-title" id="docs-modal-title" style="font-size:17px;margin-bottom:20px">Добавить раздел</div>
+
+    <div class="form-group-a" style="margin-bottom:14px">
+      <label>Вкладка</label>
+      <select id="docs-tab-select" class="form-select-a">
+        <option value="chat">💬 Чат и Алина</option>
+        <option value="bookings">📋 Бронирования</option>
+        <option value="pricing">💰 Ценообразование</option>
+        <option value="guests">👤 Гости и доступ</option>
+      </select>
+    </div>
+
+    <div class="form-group-a" style="margin-bottom:14px">
+      <label>Заголовок раздела</label>
+      <input type="text" class="form-input-a" id="docs-title-input" placeholder="Например: Как работает чат">
+    </div>
+
+    <div class="form-group-a" style="margin-bottom:20px">
+      <label>Текст (каждый абзац — новая строка)</label>
+      <textarea class="form-input-a" id="docs-body-input" rows="6" style="resize:vertical;line-height:1.6" placeholder="Опишите функцию или процесс..."></textarea>
+    </div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+      <button class="btn btn-outline" style="justify-content:center" onclick="closeModal('modal-docs-item')">Отмена</button>
+      <button class="btn btn-primary" style="justify-content:center" onclick="saveDocsItem()">Сохранить</button>
+    </div>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div class="toast" id="toast">
   <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="20 6 9 17 4 12"/></svg>
@@ -1851,14 +1686,14 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', pricing:'Ценообразование', promo:'Промо / Спецпредложение' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', pricing:'Ценообразование', promo:'Промо / Спецпредложение', docs:'Функционал сайта' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','pricing','promo'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','pricing','promo','docs'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
@@ -1867,6 +1702,7 @@ function showPage(name) {
   if (name === 'alina') loadPromptPage();
   if (name === 'guests') loadGuestsPage();
   if (name === 'pricing') loadPricingPage();
+  if (name === 'docs') loadDocsPage();
   // Показываем кнопку экспорта только на актуальных страницах
   var exportWrap = document.getElementById('export-menu-wrap');
   if (exportWrap) {
@@ -4574,6 +4410,115 @@ function resetPrompt() {
 }
 
 // ── DOCS ──
+var _docsData = [];
+var _editingDocsId = null;
+var _currentDocsTab = 'chat';
+
+function loadDocsPage() {
+  fetch(API + '/docs')
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      _docsData = d.data || [];
+      renderDocsTab(_currentDocsTab);
+    }).catch(function(){});
+}
+
+function renderDocsTab(tab) {
+  var tabs = ['chat','bookings','pricing','guests'];
+  tabs.forEach(function(t) {
+    var list = document.getElementById('docs-list-' + t);
+    if (!list) return;
+    var items = _docsData.filter(function(x){ return x.tab === t; });
+    if (!items.length) {
+      list.innerHTML = '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Разделов пока нет — нажмите «Добавить раздел»</div>';
+      return;
+    }
+    list.innerHTML = items.map(function(item) {
+      var paras = item.body.split('
+').filter(function(p){ return p.trim(); }).map(function(p){
+        return '<p>' + p + '</p>';
+      }).join('');
+      return '<div class="docs-item" id="docs-item-'+item.id+'">' +
+        '<div class="docs-head" onclick="toggleDocs(this)">' +
+          '<span>' + item.title + '</span>' +
+          '<div style="display:flex;align-items:center;gap:8px">' +
+            '<button class="icon-btn" onclick="event.stopPropagation();editDocsItem('+item.id+')" title="Редактировать"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
+            '<button class="icon-btn danger" onclick="event.stopPropagation();deleteDocsItem('+item.id+')" title="Удалить"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>' +
+            '<svg class="docs-arrow" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>' +
+          '</div>' +
+        '</div>' +
+        '<div class="docs-body">' + paras + '</div>' +
+      '</div>';
+    }).join('');
+  });
+}
+
+function switchDocsTab(tab, btn) {
+  _currentDocsTab = tab;
+  document.querySelectorAll('.docs-tab-content').forEach(function(el){ el.style.display = 'none'; });
+  document.querySelectorAll('#docs-tabs .filter-tab').forEach(function(t){ t.classList.remove('active'); });
+  var el = document.getElementById('docs-tab-' + tab);
+  if (el) el.style.display = 'block';
+  if (btn) btn.classList.add('active');
+}
+
+function toggleDocs(head) {
+  var item = head.parentElement;
+  item.classList.toggle('open');
+}
+
+function openDocsItemModal() {
+  _editingDocsId = null;
+  document.getElementById('docs-modal-title').textContent = 'Добавить раздел';
+  document.getElementById('docs-tab-select').value = _currentDocsTab;
+  document.getElementById('docs-title-input').value = '';
+  document.getElementById('docs-body-input').value = '';
+  openModal('modal-docs-item');
+}
+
+function editDocsItem(id) {
+  var item = _docsData.find(function(x){ return x.id === id; });
+  if (!item) return;
+  _editingDocsId = id;
+  document.getElementById('docs-modal-title').textContent = 'Редактировать раздел';
+  document.getElementById('docs-tab-select').value = item.tab;
+  document.getElementById('docs-title-input').value = item.title;
+  document.getElementById('docs-body-input').value = item.body;
+  openModal('modal-docs-item');
+}
+
+function saveDocsItem() {
+  var tab = document.getElementById('docs-tab-select').value;
+  var title = document.getElementById('docs-title-input').value.trim();
+  var body = document.getElementById('docs-body-input').value.trim();
+  if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
+
+  var method = _editingDocsId ? 'PUT' : 'POST';
+  var url = API + '/docs' + (_editingDocsId ? '/' + _editingDocsId : '');
+
+  fetch(url, {
+    method: method,
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ tab: tab, title: title, body: body, sort_order: 0 })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        closeModal('modal-docs-item');
+        showToast(_editingDocsId ? 'Раздел обновлён' : 'Раздел добавлен');
+        loadDocsPage();
+      }
+    }).catch(function(){ showToast('Ошибка сохранения'); });
+}
+
+function deleteDocsItem(id) {
+  if (!confirm('Удалить этот раздел?')) return;
+  fetch(API + '/docs/' + id, { method: 'DELETE' })
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) { showToast('Раздел удалён'); loadDocsPage(); }
+    }).catch(function(){});
+}
+
 function switchDocsTab(tab, btn) {
   document.querySelectorAll('.docs-tab-content').forEach(function(el){ el.style.display = 'none'; });
   document.querySelectorAll('#docs-tabs .filter-tab').forEach(function(t){ t.classList.remove('active'); });
