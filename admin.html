@@ -1994,7 +1994,18 @@ function changeStatus(id, sel) {
     if (sel.value === 'confirmed' && prevStatus !== 'confirmed') {
       var inFmt = b.in ? b.in.split('-').reverse().join('.') : '—';
       var outFmt = b.out ? b.out.split('-').reverse().join('.') : '—';
-      var guestUrl = 'https://aparts-baltika.ru/guest.html?id=' + b.obj + '&in=' + (b.in||'') + '&out=' + (b.out||'');
+      // Используем существующий токен или генерируем новый
+      var token = b.token && b.token.trim() ? b.token : (Math.random().toString(36).substr(2,10) + Date.now().toString(36));
+      if (!b.token || !b.token.trim()) {
+        // Сохраняем новый токен в БД
+        b.token = token;
+        fetch(API + '/bookings/' + b.id, {
+          method: 'PUT',
+          headers: {'Content-Type': 'application/json'},
+          body: JSON.stringify({ obj_id: b.obj, name: b.name, phone: b.phone, date_in: b.in, date_out: b.out, guests: b.guests, amount: b.amount, status: b.status, comment: b.comment, token: token })
+        }).catch(function(){});
+      }
+      var guestUrl = 'https://aparts-baltika.ru/property.html?id=' + b.obj + '&token=' + token + '&in=' + (b.in||'') + '&out=' + (b.out||'');
       var msgHtml = '✅ Бронирование подтверждено!<br><br>' +
         '👤 ' + b.name + '<br>' +
         '📅 ' + inFmt + ' — ' + outFmt + '<br>' +
