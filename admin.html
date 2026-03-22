@@ -3934,7 +3934,13 @@ function exportToExcel() {
     period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   }
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  var parts = period ? period.split('-') : [];
+  // Берём реальный период из текущей страницы
+  var displayPeriod = period;
+  if (currentPage === 'bookings') {
+    var bpSel = document.getElementById('booking-period');
+    displayPeriod = bpSel ? bpSel.value : '';
+  }
+  var parts = displayPeriod ? displayPeriod.split('-') : [];
   var monthLabel = parts.length >= 2 ? monthNames[parseInt(parts[1])] + ' ' + parts[0] : 'Все периоды';
 
   var periodBookings = (currentPage === 'bookings' && window._visibleBookings)
@@ -3997,13 +4003,14 @@ function exportToPdf() {
     var dSel = document.getElementById('dash-period');
     period = dSel ? dSel.value : '';
   }
-  if (!period) {
-    var now = new Date();
-    period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
-  }
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  var parts = period.split('-');
-  var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
+  var displayPeriod2 = period;
+  if (currentPage === 'bookings') {
+    var bpSel2 = document.getElementById('booking-period');
+    displayPeriod2 = bpSel2 ? bpSel2.value : '';
+  }
+  var parts = displayPeriod2 ? displayPeriod2.split('-') : [];
+  var monthLabel = parts.length >= 2 ? monthNames[parseInt(parts[1])] + ' ' + parts[0] : 'Все периоды';
 
   var periodBookings = (currentPage === 'bookings' && window._visibleBookings)
     ? window._visibleBookings
