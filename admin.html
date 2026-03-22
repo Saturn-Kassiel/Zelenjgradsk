@@ -55,24 +55,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 /* ── MAIN ── */
 .main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; min-height: 100vh; }
 .topbar {
-  background: var(--white); border-bottom: 1px solid var(--silver); box-shadow: 0 2px 8px rgba(46,56,77,0.06);
+  background: var(--white); border-bottom: 1px solid var(--silver);
   padding: 0 32px; height: 68px; display: flex; align-items: center;
   position: sticky; top: 0; z-index: 50;
-  display: none;
 }
 .topbar-inner { max-width: 1400px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-.topbar-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.topbar-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
-
-/* ── PAGE HEADER (desktop) ── */
-.page-header {
-  display: flex; align-items: center; justify-content: space-between;
-  margin-bottom: 24px; gap: 12px; flex-wrap: wrap;
-}
-.page-header-title {
-  font-family: 'Manrope', sans-serif; font-size: 24px; font-weight: 800;
-  color: var(--charcoal); letter-spacing: -0.5px;
-}
 .btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; border-radius: 50px; padding: 9px 18px; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; touch-action: manipulation; }
 .btn-primary { background: var(--teal); color: white; }
 .btn-primary:hover { background: #325f47; }
@@ -286,8 +275,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
   .main { margin-left: 0; }
   .mobile-menu-btn { display: flex; align-items: center; justify-content: center; width: 36px; height: 36px; border-radius: 10px; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; color: var(--charcoal); }
   .content { padding: 20px 16px; }
-  .topbar { display: flex; padding: 0 16px; }
-  .page-header { display: none; }
+  .topbar { padding: 0 16px; }
   .expenses-grid { grid-template-columns: 1fr; }
   .cleaning-cols { grid-template-columns: 1fr; }
   .supplies-grid { grid-template-columns: 1fr 1fr; }
@@ -444,12 +432,35 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 <div class="main">
   <div class="topbar">
     <div class="topbar-inner">
-      <div style="display:flex;align-items:center;gap:12px">
-        <button class="mobile-menu-btn" onclick="toggleSidebar()">
-          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+    <div style="display:flex;align-items:center;gap:12px">
+      <button class="mobile-menu-btn" onclick="toggleSidebar()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+      </button>
+      <div class="topbar-title" id="topbar-title">Бронирования</div>
+    </div>
+    <div class="topbar-right">
+      <div style="position:relative" id="export-menu-wrap">
+        <button class="btn btn-outline" onclick="toggleExportMenu()">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+          Экспорт
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
-        <div class="topbar-title" id="topbar-title">Бронирования</div>
+        <div id="export-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1.5px solid var(--silver);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 24px rgba(46,56,77,0.12);z-index:100">
+          <button onclick="currentPage==='dashboard'?exportDashboard('excel'):exportToExcel();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D6F42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+            Скачать Excel (.xlsx)
+          </button>
+          <button onclick="currentPage==='dashboard'?exportDashboard('pdf'):exportToPdf();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            Скачать PDF
+          </button>
+        </div>
       </div>
+      <button class="btn btn-primary" id="topbar-primary" onclick="topbarPrimary()">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+        Новая бронь
+      </button>
+    </div>
     </div>
   </div>
 
@@ -457,32 +468,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ BOOKINGS ══ -->
     <div class="page active" id="page-bookings">
-      <div class="page-header">
-        <div class="page-header-title">Бронирования</div>
-        <div style="display:flex;gap:8px;align-items:center">
-          <div style="position:relative" id="export-menu-wrap">
-            <button class="btn btn-outline" onclick="toggleExportMenu()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Экспорт
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div id="export-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1.5px solid var(--silver);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 24px rgba(46,56,77,0.12);z-index:100">
-              <button onclick="currentPage==='dashboard'?exportDashboard('excel'):exportToExcel();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D6F42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Скачать Excel (.xlsx)
-              </button>
-              <button onclick="currentPage==='dashboard'?exportDashboard('pdf'):exportToPdf();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Скачать PDF
-              </button>
-            </div>
-          </div>
-          <button class="btn btn-primary" id="topbar-primary" onclick="topbarPrimary()">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-            Новая бронь
-          </button>
-        </div>
-      </div>
       <div class="filter-bar">
         <button class="filter-tab active" data-filter="all" onclick="filterBookings('all',this)">Все</button>
         <button class="filter-tab" data-filter="new" onclick="filterBookings('new',this)">Новые</button>
@@ -529,9 +514,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ CALENDAR ══ -->
     <div class="page" id="page-calendar">
-      <div class="page-header">
-        <div class="page-header-title">Календарь</div>
-      </div>
       <div class="cal-toolbar">
         <div class="cal-obj-tabs">
           <button class="cal-obj-tab active" onclick="switchCalObj(1,this)">Балтийский бриз</button>
@@ -578,9 +560,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ EXPENSES ══ -->
     <div class="page" id="page-expenses">
-      <div class="page-header">
-        <div class="page-header-title">Расходы</div>
-      </div>
       <div class="expenses-toolbar">
         <select class="period-select" id="expense-period" onchange="renderExpenses()">
           <option value="2025-03">Март 2025</option>
@@ -628,14 +607,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ SUPPLIES ══ -->
     <div class="page" id="page-supplies">
-      <div class="page-header">
-        <div class="page-header-title">Расходники</div>
-        <button class="btn btn-primary" onclick="openAddSupply()">
-          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-          Добавить позицию
-        </button>
-      </div>
       <div style="margin-bottom:20px;display:flex;gap:10px;flex-wrap:wrap">
+        <button class="btn btn-primary" onclick="openAddSupply()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Добавить позицию
         </button>
@@ -645,9 +618,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ CLEANING ══ -->
     <div class="page" id="page-cleaning">
-      <div class="page-header">
-        <div class="page-header-title">Клининг</div>
-      </div>
       <div class="cleaning-cols">
         <div>
           <div class="clean-col-title">
@@ -688,9 +658,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ PROMO ══ -->
     <div class="page" id="page-promo">
-      <div class="page-header">
-        <div class="page-header-title">Промо / Спецпредложение</div>
-      </div>
       <div style="max-width:560px">
         <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:28px;margin-bottom:16px">
           <div style="margin-bottom:20px">
@@ -769,8 +736,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ OBJECTS ══ -->
     <div class="page" id="page-objects">
-      <div class="page-header">
-        <div class="page-header-title">Объекты</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
+        <div>
+          <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Объекты</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px">Управление апартаментами</div>
+        </div>
         <button class="btn btn-primary" onclick="openObjectModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Добавить объект
@@ -783,20 +753,29 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ ALINA ══ -->
     <div class="page" id="page-alina">
-      <div class="page-header">
-        <div class="page-header-title">Алина — промпт</div>
-        <div style="display:flex;gap:10px">
-          <button class="btn btn-outline" onclick="resetPrompt()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.71"/></svg>
-            Сбросить
-          </button>
-          <button class="btn btn-primary" onclick="savePrompt()">
-            <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
-            Сохранить всё
-          </button>
-        </div>
-      </div>
       <div style="max-width:720px">
+
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+          <div style="display:flex;align-items:center;gap:14px">
+            <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--teal),#4a6fa5);display:flex;align-items:center;justify-content:center;flex-shrink:0">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+            </div>
+            <div>
+              <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Алина — настройки промпта</div>
+              <div style="font-size:13px;color:var(--muted);margin-top:2px">Как отвечает чат-бот гостям</div>
+            </div>
+          </div>
+          <div style="display:flex;gap:10px">
+            <button class="btn btn-outline" onclick="resetPrompt()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 .49-3.71"/></svg>
+              Сбросить
+            </button>
+            <button class="btn btn-primary" onclick="savePrompt()">
+              <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg>
+              Сохранить всё
+            </button>
+          </div>
+        </div>
 
         <!-- ПРЕДУСТАНОВЛЕННЫЕ РАЗДЕЛЫ -->
         <div id="alina-preset-fields" style="display:flex;flex-direction:column;gap:12px;margin-bottom:16px"></div>
@@ -821,8 +800,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ GUESTS ══ -->
     <div class="page" id="page-guests">
-      <div class="page-header">
-        <div class="page-header-title">Клиентская база</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
+        <div>
+          <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Клиентская база</div>
+          <div style="font-size:13px;color:var(--muted);margin-top:2px" id="guests-count">Загрузка...</div>
+        </div>
         <div class="search-box" style="min-width:240px">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="guests-search" placeholder="Имя или телефон..." oninput="searchGuests(this.value)">
@@ -833,9 +815,6 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <!-- ══ PRICING ══ -->
     <div class="page" id="page-pricing">
-      <div class="page-header">
-        <div class="page-header-title">Ценообразование</div>
-      </div>
       <div style="max-width:900px">
 
         <!-- КАЛЬКУЛЯТОР -->
@@ -931,10 +910,13 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
     </div>
 
-    <!-- ══ DOCS ══ -->
+    <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-docs">
-      <div class="page-header">
-        <div class="page-header-title">Функционал сайта</div>
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+        <div>
+          <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Функционал сайта</h2>
+          <p style="font-size:13px;color:var(--muted)">Описание функций и процессов платформы</p>
+        </div>
         <button class="btn btn-primary" onclick="openDocsItemModal()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Добавить раздел
@@ -955,28 +937,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     </div>
 
     <div class="page" id="page-dashboard">
-      <div class="page-header">
-        <div class="page-header-title">Дашборд</div>
-        <div style="display:flex;align-items:center;gap:10px">
-          <select id="dash-period" class="period-select" onchange="updateDashboard()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none;font-family:DM Sans,sans-serif"></select>
-          <div style="position:relative" id="dash-export-wrap">
-            <button class="btn btn-outline" onclick="toggleDashExportMenu()">
-              <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-              Экспорт
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
-            </button>
-            <div id="dash-export-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1.5px solid var(--silver);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 24px rgba(46,56,77,0.12);z-index:100">
-              <button onclick="exportDashboard('excel');toggleDashExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D6F42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
-                Скачать Excel (.xlsx)
-              </button>
-              <button onclick="exportDashboard('pdf');toggleDashExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-                Скачать PDF
-              </button>
-            </div>
-          </div>
-        </div>
+      <!-- Фильтр периода -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:20px;flex-wrap:wrap">
+        <select id="dash-period" class="period-select" onchange="updateDashboard()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none;font-family:DM Sans,sans-serif"></select>
+        <span id="dash-period-label" style="font-size:13px;color:var(--muted)"></span>
       </div>
 
       <!-- КАРТОЧКИ СТАТИСТИКИ -->
@@ -1567,8 +1531,18 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div class="modal-title" id="docs-modal-title" style="font-size:17px;margin-bottom:20px">Добавить раздел</div>
 
     <div class="form-group-a" style="margin-bottom:14px">
-      <label>Вкладка</label>
+      <label style="display:flex;align-items:center;justify-content:space-between">
+        Вкладка
+        <span onclick="toggleNewTabInput()" style="font-size:11px;color:var(--teal);cursor:pointer;font-weight:600">+ Новая вкладка</span>
+      </label>
       <select id="docs-tab-select" class="form-select-a"></select>
+      <div id="new-tab-input-wrap" style="display:none;margin-top:8px;display:none">
+        <div style="display:flex;gap:8px">
+          <input type="text" id="new-tab-icon" class="form-input-a" placeholder="📄" style="width:60px;flex-shrink:0">
+          <input type="text" id="new-tab-name" class="form-input-a" placeholder="Название вкладки" style="flex:1">
+          <button class="btn btn-primary btn-sm" onclick="createTabFromModal()" style="flex-shrink:0;border-radius:10px">Создать</button>
+        </div>
+      </div>
     </div>
 
     <div class="form-group-a" style="margin-bottom:14px">
@@ -1769,6 +1743,17 @@ function showPage(name) {
   if (name === 'guests') loadGuestsPage();
   if (name === 'pricing') loadPricingPage();
   if (name === 'docs') loadDocsPage();
+  // Показываем кнопку экспорта только на актуальных страницах
+  var exportWrap = document.getElementById('export-menu-wrap');
+  if (exportWrap) {
+    var showExport = ['bookings','dashboard'].indexOf(name) !== -1;
+    exportWrap.style.display = showExport ? '' : 'none';
+  }
+  // Показываем кнопку "Новая бронь" только на странице бронирований
+  var primaryBtn = document.getElementById('topbar-primary');
+  if (primaryBtn) {
+    primaryBtn.style.display = name === 'bookings' ? '' : 'none';
+  }
 }
 
 function topbarPrimary() {
@@ -2158,7 +2143,7 @@ function changeStatus(id, sel) {
           body: JSON.stringify({ obj_id: b.obj, name: b.name, phone: b.phone, date_in: b.in, date_out: b.out, guests: b.guests, amount: b.amount, status: b.status, comment: b.comment, token: token })
         }).catch(function(){});
       }
-      var guestUrl = 'https://aparts-baltika.ru/property.html?id=' + b.obj + '&token=' + token + '&in=' + (b.in||'') + '&out=' + (b.out||'');
+      var guestUrl = 'https://aparts-baltika.ru/guest.html?id=' + b.obj + '&token=' + token + '&in=' + (b.in||'') + '&out=' + (b.out||'');
       // Сообщение для Telegram (plain text)
       var msgTg = '✅ Бронирование подтверждено!\n\n' +
         '👤 ' + b.name + '\n' +
@@ -3948,18 +3933,9 @@ function toggleExportMenu() {
   var dd = document.getElementById('export-dropdown');
   dd.style.display = dd.style.display === 'none' ? '' : 'none';
 }
-function toggleDashExportMenu() {
-  var dd = document.getElementById('dash-export-dropdown');
-  dd.style.display = dd.style.display === 'none' ? '' : 'none';
-}
 document.addEventListener('click', function(e) {
-  var wrap = document.getElementById('export-menu-wrap');
-  if (wrap && !wrap.contains(e.target)) {
+  if (!document.getElementById('export-menu-wrap').contains(e.target)) {
     document.getElementById('export-dropdown').style.display = 'none';
-  }
-  var dashWrap = document.getElementById('dash-export-wrap');
-  if (dashWrap && !dashWrap.contains(e.target)) {
-    document.getElementById('dash-export-dropdown').style.display = 'none';
   }
 });
 
@@ -5124,7 +5100,48 @@ function createTabFromModal() {
     }).catch(function(){ showToast('Ошибка создания вкладки'); });
 }
 
+function openDocsItemModal() {
+  _editingDocsId = null;
+  document.getElementById('docs-modal-title').textContent = 'Добавить раздел';
+  document.getElementById('docs-tab-select').value = _currentDocsTab;
+  document.getElementById('docs-title-input').value = '';
+  document.getElementById('docs-body-input').value = '';
+  openModal('modal-docs-item');
+}
 
+function editDocsItem(id) {
+  var item = _docsData.find(function(x){ return x.id === id; });
+  if (!item) return;
+  _editingDocsId = id;
+  document.getElementById('docs-modal-title').textContent = 'Редактировать раздел';
+  document.getElementById('docs-tab-select').value = item.tab;
+  document.getElementById('docs-title-input').value = item.title;
+  document.getElementById('docs-body-input').value = item.body;
+  openModal('modal-docs-item');
+}
+
+function saveDocsItem() {
+  var tab = document.getElementById('docs-tab-select').value;
+  var title = document.getElementById('docs-title-input').value.trim();
+  var body = document.getElementById('docs-body-input').value.trim();
+  if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
+
+  var method = _editingDocsId ? 'PUT' : 'POST';
+  var url = API + '/docs' + (_editingDocsId ? '/' + _editingDocsId : '');
+
+  fetch(url, {
+    method: method,
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify({ tab: tab, title: title, body: body, sort_order: 0 })
+  }).then(function(r){ return r.json(); })
+    .then(function(d){
+      if (d.ok) {
+        closeModal('modal-docs-item');
+        showToast(_editingDocsId ? 'Раздел обновлён' : 'Раздел добавлен');
+        loadDocsPage();
+      }
+    }).catch(function(){ showToast('Ошибка сохранения'); });
+}
 
 function deleteDocsItem(id) {
   _pendingDocsDelete = { type: 'item', id: id };
