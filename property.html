@@ -1001,7 +1001,7 @@ function submitForm() {
           // Уведомление через Алину с детализацией
           var bookingInfo = '📋 Новая заявка от '+name+' ('+phone+')\n📅 '+dateIn+' — '+dateOut+', '+nights+' '+nightWord(nights)+breakdown+'\n💰 Итого: '+amount.toLocaleString('ru')+' ₽';
           if (comment) bookingInfo += '\n💬 ' + comment;
-          fetch(CHAT_URL, { method:'POST', headers:{'Content-Type':'text/plain'}, body: JSON.stringify({ action:'notify', contact: name+' '+phone, dialog: bookingInfo }) }).catch(function(){});
+          fetch(APPS_URL + '/chat/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ contact: name+' '+phone, dialog: bookingInfo }) }).catch(function(){});
           // Сохраняем контакт
           fetch(APPS_URL + '/contact', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ name:name, phone:phone, source:'booking' }) }).catch(function(){});
           // Сообщение в чат
@@ -1042,7 +1042,7 @@ function loadTodayPrice() {
 
 function openModal() {
   if (typeof BookingModal !== 'undefined') {
-    BookingModal.init({ appsUrl: APPS_URL, chatUrl: CHAT_URL });
+    BookingModal.init({ appsUrl: APPS_URL });
     var dateIn = document.getElementById('bc-checkin').value;
     var dateOut = document.getElementById('bc-checkout').value;
     var nights = dateIn && dateOut ? Math.round((new Date(dateOut)-new Date(dateIn))/86400000) : 3;
@@ -1833,7 +1833,6 @@ initGuestAccess();
 <script>
 ChatWidget.init({
   appsUrl: APPS_URL,
-  chatUrl: CHAT_URL,
   objId: '1'
 });
 </script>
