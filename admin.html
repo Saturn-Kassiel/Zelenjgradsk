@@ -2959,7 +2959,7 @@ function addCleanTask(obj) {
 function initDashPeriods() {
   var sel = document.getElementById('dash-period');
   if (!sel) return;
-  // Собираем все месяцы из бронирований
+  var prevValue = sel.value; // сохраняем текущий выбор
   var months = {};
   bookings.forEach(function(b) { if(b.in && b.in.length>=7) months[b.in.substr(0,7)]=true; });
   var now = new Date();
@@ -2969,8 +2969,9 @@ function initDashPeriods() {
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   sel.innerHTML = '';
   sorted.forEach(function(m) {
-    var p=m.split('-');
-    sel.innerHTML += '<option value="'+m+'"'+(m===curMonth?' selected':'')+'>'+monthNames[parseInt(p[1])]+' '+p[0]+'</option>';
+    var p = m.split('-');
+    var selected = prevValue ? m === prevValue : m === curMonth;
+    sel.innerHTML += '<option value="'+m+'"'+(selected?' selected':'')+'>'+monthNames[parseInt(p[1])]+' '+p[0]+'</option>';
   });
 }
 
