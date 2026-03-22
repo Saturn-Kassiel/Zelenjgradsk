@@ -959,12 +959,22 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
         <div class="page-header-title">Дашборд</div>
         <div style="display:flex;align-items:center;gap:10px">
           <select id="dash-period" class="period-select" onchange="updateDashboard()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none;font-family:DM Sans,sans-serif"></select>
-          <div style="position:relative">
-            <button class="btn btn-outline" onclick="toggleExportMenu()">
+          <div style="position:relative" id="dash-export-wrap">
+            <button class="btn btn-outline" onclick="toggleDashExportMenu()">
               <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
               Экспорт
               <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
             </button>
+            <div id="dash-export-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1.5px solid var(--silver);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 24px rgba(46,56,77,0.12);z-index:100">
+              <button onclick="exportDashboard('excel');toggleDashExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D6F42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+                Скачать Excel (.xlsx)
+              </button>
+              <button onclick="exportDashboard('pdf');toggleDashExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                Скачать PDF
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -3938,9 +3948,18 @@ function toggleExportMenu() {
   var dd = document.getElementById('export-dropdown');
   dd.style.display = dd.style.display === 'none' ? '' : 'none';
 }
+function toggleDashExportMenu() {
+  var dd = document.getElementById('dash-export-dropdown');
+  dd.style.display = dd.style.display === 'none' ? '' : 'none';
+}
 document.addEventListener('click', function(e) {
-  if (!document.getElementById('export-menu-wrap').contains(e.target)) {
+  var wrap = document.getElementById('export-menu-wrap');
+  if (wrap && !wrap.contains(e.target)) {
     document.getElementById('export-dropdown').style.display = 'none';
+  }
+  var dashWrap = document.getElementById('dash-export-wrap');
+  if (dashWrap && !dashWrap.contains(e.target)) {
+    document.getElementById('dash-export-dropdown').style.display = 'none';
   }
 });
 
