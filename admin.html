@@ -2348,30 +2348,14 @@ function nbCalSelectDay(date) {
 var objPrices = { '1': 4000, '2': 5000 };
 
 function nbFormatPhone(input) {
-  var cursorPos = input.selectionStart;
-  var oldVal = input.value;
   var v = input.value.replace(/\D/g, '');
-  if (v.startsWith('8')) v = '7' + v.slice(1);
-  if (!v.startsWith('7')) v = '7' + v;
-  v = v.slice(0, 11);
-  var formatted = '+7';
-  if (v.length > 1) formatted += ' (' + v.slice(1, 4);
-  if (v.length >= 4) formatted += ') ' + v.slice(4, 7);
-  if (v.length >= 7) formatted += '-' + v.slice(7, 9);
-  if (v.length >= 9) formatted += '-' + v.slice(9, 11);
-  input.value = formatted;
-  // Восстанавливаем позицию курсора
-  var diff = formatted.length - oldVal.length;
-  var newPos = Math.max(0, cursorPos + diff);
-  try { input.setSelectionRange(newPos, newPos); } catch(e) {}
-  // Живая проверка
   var hint = document.getElementById('nb-phone-hint');
-  if (nbValidatePhone(formatted)) {
+  if (v.length >= 10) {
     input.style.borderColor = 'var(--teal)';
     hint.textContent = '✓ Номер корректен';
     hint.style.color = 'var(--teal)';
     hint.style.display = 'block';
-  } else if (v.length > 3) {
+  } else {
     input.style.borderColor = '';
     hint.style.display = 'none';
   }
