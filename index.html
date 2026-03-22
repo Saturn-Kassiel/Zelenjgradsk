@@ -2095,8 +2095,8 @@ function submitForm() {
   var ok = true;
 
   if (!name.value.trim()) { name.style.borderColor='var(--danger)'; ok=false; }
-  var phoneDigits = _gPhoneMask ? _gPhoneMask.unmaskedValue : phone.value.replace(/\D/g,'');
-  if (!phoneDigits || phoneDigits.length!==11) { phone.style.borderColor='var(--danger)'; ok=false; }
+  var phoneDigits = phone.value.replace(/\D/g,'');
+  if (!phoneDigits || phoneDigits.length < 10) { phone.style.borderColor='var(--danger)'; ok=false; }
   if (!checkin.value) { var fd=document.getElementById('f-checkin-disp'); if(fd) fd.style.border='1.5px solid var(--danger)'; ok=false; }
   if (!obj.value) { obj.style.borderColor='var(--danger)'; ok=false; }
   if (!ok) return;
