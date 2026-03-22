@@ -1152,6 +1152,21 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <div id="nb-breakdown-rows" style="display:flex;flex-direction:column;gap:4px"></div>
     </div>
 
+    <!-- Договорная цена -->
+    <div style="background:var(--bg);border-radius:10px;border:1.5px solid var(--silver);padding:12px 14px;margin-bottom:12px">
+      <label style="display:flex;align-items:center;gap:10px;cursor:pointer;margin-bottom:0">
+        <input type="checkbox" id="nb-custom-price-check" style="width:16px;height:16px;accent-color:var(--teal);cursor:pointer;flex-shrink:0" onchange="toggleCustomPrice()">
+        <span style="font-size:13px;font-weight:600;color:var(--charcoal)">Договорная цена</span>
+      </label>
+      <div id="nb-custom-price-wrap" style="display:none;margin-top:10px">
+        <div style="display:flex;align-items:center;gap:10px">
+          <input type="number" id="nb-custom-price" class="form-input-a" placeholder="Введите сумму" style="flex:1;margin-bottom:0" oninput="nbUpdateCustomPrice()">
+          <span style="font-size:14px;color:var(--muted);flex-shrink:0">₽</span>
+        </div>
+        <div id="nb-custom-price-hint" style="font-size:11px;color:var(--muted);margin-top:4px"></div>
+      </div>
+    </div>
+
     <input type="hidden" id="nb-out">
 
     <div class="form-group-a">
@@ -2365,6 +2380,8 @@ function nbFromCheckout() {
     document.getElementById('nb-nights').value = 1;
     document.getElementById('nb-out-vis').style.borderColor = 'var(--danger)';
     document.getElementById('nb-amount').value = 0;
+  var cpCheck = document.getElementById('nb-custom-price-check');
+  if (cpCheck) { cpCheck.checked = false; document.getElementById('nb-custom-price-wrap').style.display='none'; document.getElementById('nb-custom-price').value=''; document.getElementById('nb-amount').style.opacity='1'; }
     document.getElementById('nb-amount-hint').textContent = '⚠️ Дата выезда должна быть позже даты заезда';
     document.getElementById('nb-amount-hint').style.color = 'var(--danger)';
     return;
@@ -2381,6 +2398,50 @@ function nbChangeNights(delta) {
   val = Math.max(1, Math.min(90, val + delta));
   el.value = val;
   nbRecalc();
+}
+
+function toggleCustomPrice() {
+  var check = document.getElementById('nb-custom-price-check');
+  var wrap = document.getElementById('nb-custom-price-wrap');
+  var amountEl = document.getElementById('nb-amount');
+  wrap.style.display = check.checked ? 'block' : 'none';
+  if (check.checked) {
+    // Показываем расчётную цену как подсказку
+    var calcPrice = parseInt(amountEl.value) || 0;
+    if (calcPrice > 0) {
+      document.getElementById('nb-custom-price-hint').textContent = 'Расчётная цена: ' + calcPrice.toLocaleString('ru') + ' ₽';
+      document.getElementById('nb-custom-price').value = calcPrice;
+    }
+    amountEl.style.opacity = '0.4';
+  } else {
+    amountEl.style.opacity = '1';
+    document.getElementById('nb-custom-price').value = '';
+  }
+}
+
+function nbUpdateCustomPrice() {
+  // Ничего не делаем — значение берётся при сохранении
+}
+
+function nbGetFinalAmount() {
+  var check = document.getElementById('nb-custom-price-check');
+  if (check && check.checked) {
+    var val = parseInt(document.getElementById('nb-custom-price').value) || 0;
+    return val;
+  }
+  return parseInt(document.getElementById('nb-amount').value) || 0;
+}
+
+function nbGetComment() {
+  var comment = document.getElementById('nb-comment').value.trim();
+  var check = document.getElementById('nb-custom-price-check');
+  if (check && check.checked) {
+    var calcPrice = parseInt(document.getElementById('nb-amount').value) || 0;
+    var customPrice = parseInt(document.getElementById('nb-custom-price').value) || 0;
+    var note = '✏️ Договорная цена' + (calcPrice > 0 ? ' (расчётная: ' + calcPrice.toLocaleString('ru') + ' ₽)' : '');
+    return comment ? comment + '. ' + note : note;
+  }
+  return comment;
 }
 
 function nbRecalc() {
@@ -2595,20 +2656,22 @@ function saveBooking() {
   var inD = document.getElementById('nb-in').value;
   var outD = document.getElementById('nb-out').value;
   var row;
+  var finalAmount = nbGetFinalAmount();
+  var finalComment = nbGetComment();
   if (editingBookingId) {
     row = [editingBookingId, obj, name, phone, inD, outD,
       parseInt(document.getElementById('nb-guests').value),
-      parseInt(document.getElementById('nb-amount').value)||0,
+      finalAmount,
       document.getElementById('nb-status').value,
-      document.getElementById('nb-comment').value];
+      finalComment];
     apiWrite('update', 'bookings', row, editingBookingId, function(){ showToast('Бронирование обновлено'); loadBookings(); });
   } else {
     var id = genId();
     row = [id, obj, name, phone, inD, outD,
       parseInt(document.getElementById('nb-guests').value),
-      parseInt(document.getElementById('nb-amount').value)||0,
+      finalAmount,
       document.getElementById('nb-status').value,
-      document.getElementById('nb-comment').value];
+      finalComment];
     apiWrite('append', 'bookings', row, undefined, function(){ showToast('Бронирование сохранено'); loadBookings(); });
   }
   editingBookingId = null;
