@@ -60,7 +60,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
   position: sticky; top: 0; z-index: 50;
 }
 .topbar-inner { max-width: 1400px; width: 100%; margin: 0 auto; display: flex; align-items: center; justify-content: space-between; }
-.topbar-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; }
+.topbar-title { font-family: 'Manrope', sans-serif; font-size: 20px; font-weight: 800; color: var(--charcoal); letter-spacing: -0.3px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .topbar-right { display: flex; align-items: center; gap: 12px; }
 .btn { font-family: 'DM Sans', sans-serif; font-size: 13px; font-weight: 500; border-radius: 50px; padding: 9px 18px; border: none; cursor: pointer; transition: all 0.2s; display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; touch-action: manipulation; }
 .btn-primary { background: var(--teal); color: white; }
@@ -5090,48 +5090,7 @@ function createTabFromModal() {
     }).catch(function(){ showToast('Ошибка создания вкладки'); });
 }
 
-function openDocsItemModal() {
-  _editingDocsId = null;
-  document.getElementById('docs-modal-title').textContent = 'Добавить раздел';
-  document.getElementById('docs-tab-select').value = _currentDocsTab;
-  document.getElementById('docs-title-input').value = '';
-  document.getElementById('docs-body-input').value = '';
-  openModal('modal-docs-item');
-}
 
-function editDocsItem(id) {
-  var item = _docsData.find(function(x){ return x.id === id; });
-  if (!item) return;
-  _editingDocsId = id;
-  document.getElementById('docs-modal-title').textContent = 'Редактировать раздел';
-  document.getElementById('docs-tab-select').value = item.tab;
-  document.getElementById('docs-title-input').value = item.title;
-  document.getElementById('docs-body-input').value = item.body;
-  openModal('modal-docs-item');
-}
-
-function saveDocsItem() {
-  var tab = document.getElementById('docs-tab-select').value;
-  var title = document.getElementById('docs-title-input').value.trim();
-  var body = document.getElementById('docs-body-input').value.trim();
-  if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
-
-  var method = _editingDocsId ? 'PUT' : 'POST';
-  var url = API + '/docs' + (_editingDocsId ? '/' + _editingDocsId : '');
-
-  fetch(url, {
-    method: method,
-    headers: {'Content-Type':'application/json'},
-    body: JSON.stringify({ tab: tab, title: title, body: body, sort_order: 0 })
-  }).then(function(r){ return r.json(); })
-    .then(function(d){
-      if (d.ok) {
-        closeModal('modal-docs-item');
-        showToast(_editingDocsId ? 'Раздел обновлён' : 'Раздел добавлен');
-        loadDocsPage();
-      }
-    }).catch(function(){ showToast('Ошибка сохранения'); });
-}
 
 function deleteDocsItem(id) {
   _pendingDocsDelete = { type: 'item', id: id };
