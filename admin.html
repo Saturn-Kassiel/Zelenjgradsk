@@ -3960,8 +3960,6 @@ function exportToExcel() {
     bRows.push([b.in||'', b.out||'', nights, b.name||'', b.phone||'', b.objName||'', b.guests||'', b.amount||0, statuses[b.status]||b.status, b.comment||'']);
   });
   var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).reduce(function(s,b){ return s+b.amount; }, 0);
-  bRows.push([]);
-  bRows.push(['','','','','','','','Итого:', totalIncome, '']);
   var ws1 = XLSX.utils.aoa_to_sheet(bRows);
   ws1['!cols'] = [{wch:12},{wch:12},{wch:8},{wch:25},{wch:18},{wch:20},{wch:8},{wch:12},{wch:15},{wch:25}];
   XLSX.utils.book_append_sheet(wb, ws1, 'Бронирования');
@@ -3986,7 +3984,10 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(wb, ws2, 'Расходы');
   }
 
-  XLSX.writeFile(wb, 'baltika_' + (!period ? 'все_периоды' : period) + '.xlsx');
+  var excelName = currentPage === 'bookings' && !displayPeriod
+    ? 'baltika_бронирования_' + new Date().getFullYear()
+    : 'baltika_' + (displayPeriod || 'все_периоды');
+  XLSX.writeFile(wb, excelName + '.xlsx');
   showToast('Excel файл скачан ✓');
 }
 
@@ -4037,9 +4038,13 @@ function exportToPdf() {
     return '<tr><td>'+e.date+'</td><td>'+(catLabels[e.category]||e.category||'—')+'</td><td>'+(e.description||'—')+'</td><td>'+(promoObjNames[String(e.obj_id)]||'—')+'</td><td>'+parseInt(e.amount||0).toLocaleString('ru')+' ₽</td></tr>';
   }).join('');
 
+  var year = new Date().getFullYear();
+  var reportTitle = currentPage === 'bookings'
+    ? 'Бронирования · ' + (monthLabel === 'Все периоды' ? year + ' год' : monthLabel)
+    : 'Отчёт за ' + monthLabel;
   var logoUrl = 'https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png';
 
-  var html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Отчёт '+monthLabel+'</title><style>'+
+  var html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>'+reportTitle+'</title><style>'+
     'body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#222;margin:0;padding:20px}'+
     '.header{display:flex;align-items:center;gap:14px;margin-bottom:6px}'+
     '.logo{width:48px;height:48px;border-radius:12px;background:#3E7057;display:flex;align-items:center;justify-content:center;flex-shrink:0;overflow:hidden}'+
@@ -4065,14 +4070,8 @@ function exportToPdf() {
     '<div class="logo"><img src="'+logoUrl+'" onerror="this.style.display=\'none\'"></div>'+
     '<div><div class="brand">Апартаменты Балтики</div><div class="brand-sub">Зеленоградск, Калининградская область</div></div>'+
   '</div>'+
-  '<div class="period">Отчёт за '+monthLabel+'</div>'+
-  '<div class="stats">'+
-    '<div class="stat"><div class="stat-label">Доход</div><div class="stat-value">'+totalIncome.toLocaleString('ru')+' ₽</div></div>'+
-    '<div class="stat"><div class="stat-label">Расходы</div><div class="stat-value">'+totalExp.toLocaleString('ru')+' ₽</div></div>'+
-    '<div class="stat profit"><div class="stat-label">Прибыль</div><div class="stat-value">'+(totalIncome-totalExp).toLocaleString('ru')+' ₽</div></div>'+
-    '<div class="stat"><div class="stat-label">Броней</div><div class="stat-value">'+periodBookings.length+'</div></div>'+
-  '</div>'+
-  (periodBookings.length ? '<h2>Бронирования</h2><table><thead><tr><th>Заезд</th><th>Выезд</th><th>Ночей</th><th>Гость</th><th>Телефон</th><th>Объект</th><th>Сумма</th><th>Статус</th></tr></thead><tbody>'+bookingRows+'<tr class="total-row"><td colspan="6"></td><td>'+totalIncome.toLocaleString('ru')+' ₽</td><td>Итого</td></tr></tbody></table>' : '<p style="color:#8892a4">Бронирований нет</p>')+
+  '<div class="period">'+reportTitle+'</div>'+
+  (periodBookings.length ? '<h2>Бронирования</h2><table><thead><tr><th>Заезд</th><th>Выезд</th><th>Ночей</th><th>Гость</th><th>Телефон</th><th>Объект</th><th>Сумма</th><th>Статус</th></tr></thead><tbody>'+bookingRows+'</tbody></table>' : '<p style="color:#8892a4">Бронирований нет</p>')+
   (periodExpenses.length ? '<h2>Расходы</h2><table><thead><tr><th>Дата</th><th>Категория</th><th>Описание</th><th>Объект</th><th>Сумма</th></tr></thead><tbody>'+expenseRows+'<tr class="total-row"><td colspan="3"></td><td>Итого:</td><td>'+totalExp.toLocaleString('ru')+' ₽</td></tr></tbody></table>' : '')+
   '<div class="footer">Апартаменты Балтики · aparts-baltika.ru · Сформировано '+new Date().toLocaleDateString('ru-RU')+'</div>'+
   '</body></html>';
