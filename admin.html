@@ -2144,12 +2144,19 @@ function changeStatus(id, sel) {
         }).catch(function(){});
       }
       var guestUrl = 'https://aparts-baltika.ru/property.html?id=' + b.obj + '&token=' + token + '&in=' + (b.in||'') + '&out=' + (b.out||'');
+      // Сообщение для Telegram (plain text)
+      var msgTg = '✅ Бронирование подтверждено!\n\n' +
+        '👤 ' + b.name + '\n' +
+        '📅 ' + inFmt + ' — ' + outFmt + '\n' +
+        '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽\n\n' +
+        '🔗 Страница гостя: ' + guestUrl;
+      // Сообщение для чата гостя (HTML)
       var msgHtml = '✅ Бронирование подтверждено!<br><br>' +
         '👤 ' + b.name + '<br>' +
         '📅 ' + inFmt + ' — ' + outFmt + '<br>' +
         '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽<br><br>' +
         '🔗 <a href="' + guestUrl + '" target="_blank" style="color:#3E7057;font-weight:600">Ваша заявка</a>';
-      showChatConfirm(b.name, msgHtml, b.obj);
+      showChatConfirm(b.name, msgTg, msgHtml, b.obj);
     }
   });
 }
@@ -2157,8 +2164,11 @@ function changeStatus(id, sel) {
 var _pendingChatMsg = null;
 var _pendingChatObjId = null;
 
-function showChatConfirm(guestName, msg, objId) {
-  _pendingChatMsg = msg;
+var _pendingTgMsg = null;
+
+function showChatConfirm(guestName, tgMsg, htmlMsg, objId) {
+  _pendingTgMsg = tgMsg;
+  _pendingChatMsg = htmlMsg || tgMsg;
   _pendingChatObjId = objId || 1;
   var modal = document.getElementById('modal-chat-confirm');
   if (modal) {
@@ -2175,12 +2185,13 @@ function sendChatConfirmed() {
   _pendingChatMsg = null;
   _pendingChatObjId = null;
 
-  // Отправляем в Telegram
+  // Отправляем в Telegram (plain text)
   fetch(API + '/notify', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ text: msg })
+    body: JSON.stringify({ text: _pendingTgMsg || msg })
   }).then(function(){ showToast('Уведомление отправлено ✓'); }).catch(function(){});
+  _pendingTgMsg = null;
 
   // Сохраняем в очередь для чата гостя
   fetch(API + '/chat-queue', {
