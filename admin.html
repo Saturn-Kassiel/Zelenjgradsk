@@ -1063,7 +1063,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
       <div class="form-group-a">
         <label>Телефон <span style="color:var(--danger)">*</span></label>
-        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7 (000) 000-00-00" oninput="nbFormatPhone(this);nbClearError(this)">
+        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7(000)000-00-00" oninput="nbFormatPhone(this);nbClearError(this)" onfocus="nbPhoneFocus(this)" onkeydown="nbPhoneKeydown(this,event)">
         <div id="nb-phone-hint" style="font-size:11px;margin-top:4px;display:none"></div>
       </div>
     </div>
@@ -1763,6 +1763,19 @@ function topbarPrimary() {
     var checkErr = document.getElementById('nb-check-error');
     if (checkPd) checkPd.checked = false;
     if (checkErr) checkErr.style.display = 'none';
+    // Сбрасываем поля новой брони
+    document.getElementById('nb-name').value = '';
+    document.getElementById('nb-phone').value = '+7(';
+    document.getElementById('nb-in').value = '';
+    document.getElementById('nb-out-vis').value = '';
+    document.getElementById('nb-nights').value = '3';
+    document.getElementById('nb-amount').value = '0';
+    document.getElementById('nb-comment').value = '';
+    document.getElementById('nb-phone-hint').style.display = 'none';
+    document.getElementById('nb-amount-hint').textContent = '';
+    var cpCheck = document.getElementById('nb-custom-price-check');
+    if (cpCheck) { cpCheck.checked = false; document.getElementById('nb-custom-price-wrap').style.display='none'; document.getElementById('nb-custom-price').value=''; document.getElementById('nb-amount').style.opacity='1'; }
+    editingBookingId = null;
     openModal('modal-booking');
     nbRenderCal();
   }
@@ -2347,10 +2360,30 @@ function nbCalSelectDay(date) {
 
 var objPrices = { '1': 4000, '2': 5000 };
 
+function nbPhoneFocus(input) {
+  if (!input.value || input.value === '') {
+    input.value = '+7(';
+    setTimeout(function(){ input.setSelectionRange(input.value.length, input.value.length); }, 0);
+  }
+}
+
+function nbPhoneKeydown(input, e) {
+  // Не даём удалить префикс +7(
+  var prefix = '+7(';
+  if ((e.key === 'Backspace' || e.key === 'Delete') && input.value.length <= prefix.length) {
+    e.preventDefault();
+  }
+}
+
 function nbFormatPhone(input) {
-  var v = input.value.replace(/\D/g, '');
+  var prefix = '+7(';
+  // Убеждаемся что префикс на месте
+  if (!input.value.startsWith(prefix)) {
+    input.value = prefix + input.value.replace(/^\+?7?\(?/, '');
+  }
   var hint = document.getElementById('nb-phone-hint');
-  if (v.length >= 10) {
+  var digits = input.value.replace(/\D/g, '');
+  if (digits.length === 11) {
     input.style.borderColor = 'var(--teal)';
     hint.textContent = '✓ Номер корректен';
     hint.style.color = 'var(--teal)';
