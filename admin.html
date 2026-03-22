@@ -737,10 +737,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <!-- ══ OBJECTS ══ -->
     <div class="page" id="page-objects">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px">
-        <div>
-          <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Объекты</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:2px">Управление апартаментами</div>
-        </div>
+
         <button class="btn btn-primary" onclick="openObjectModal()">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Добавить объект
@@ -760,10 +757,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
             <div style="width:48px;height:48px;border-radius:16px;background:linear-gradient(135deg,var(--teal),#4a6fa5);display:flex;align-items:center;justify-content:center;flex-shrink:0">
               <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
             </div>
-            <div>
-              <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Алина — настройки промпта</div>
-              <div style="font-size:13px;color:var(--muted);margin-top:2px">Как отвечает чат-бот гостям</div>
-            </div>
+
           </div>
           <div style="display:flex;gap:10px">
             <button class="btn btn-outline" onclick="resetPrompt()">
@@ -801,10 +795,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <!-- ══ GUESTS ══ -->
     <div class="page" id="page-guests">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:20px;flex-wrap:wrap;gap:12px">
-        <div>
-          <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Клиентская база</div>
-          <div style="font-size:13px;color:var(--muted);margin-top:2px" id="guests-count">Загрузка...</div>
-        </div>
+
         <div class="search-box" style="min-width:240px">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
           <input type="text" id="guests-search" placeholder="Имя или телефон..." oninput="searchGuests(this.value)">
@@ -913,10 +904,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <!-- ══ DASHBOARD ══ -->
     <div class="page" id="page-docs">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
-        <div>
-          <h2 style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal);margin-bottom:4px">Функционал сайта</h2>
-          <p style="font-size:13px;color:var(--muted)">Описание функций и процессов платформы</p>
-        </div>
+
         <button class="btn btn-primary" onclick="openDocsItemModal()">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
           Добавить раздел
