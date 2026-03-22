@@ -2960,15 +2960,19 @@ function addCleanTask(obj) {
 function initDashPeriods() {
   var sel = document.getElementById('dash-period');
   if (!sel) return;
-  var prevValue = sel.value; // сохраняем текущий выбор
+  var prevValue = sel.value;
   var months = {};
   bookings.forEach(function(b) { if(b.in && b.in.length>=7) months[b.in.substr(0,7)]=true; });
   var now = new Date();
+  var curYear = String(now.getFullYear());
   var curMonth = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   months[curMonth] = true;
   var sorted = Object.keys(months).sort().reverse();
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
   sel.innerHTML = '';
+  // Добавляем опцию текущего года первой
+  var yearSelected = prevValue === curYear;
+  sel.innerHTML += '<option value="'+curYear+'"'+(yearSelected?' selected':'')+'>'+ curYear +' год (весь)</option>';
   sorted.forEach(function(m) {
     var p = m.split('-');
     var selected = prevValue ? m === prevValue : m === curMonth;
@@ -2985,14 +2989,18 @@ function updateDashboard() {
     period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
   }
 
+  var isYear = period.length === 4; // '2026' — год целиком
   var parts = period.split('-');
-  var year = parseInt(parts[0]), month = parseInt(parts[1]);
-  var daysInMonth = new Date(year, month, 0).getDate();
+  var year = parseInt(parts[0]), month = parseInt(parts[1] || 0);
+  var daysInMonth = isYear ? 365 : new Date(year, month, 0).getDate();
   var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
-  document.getElementById('dash-income-label').textContent = 'Доход — ' + monthNames[month];
+  document.getElementById('dash-income-label').textContent = isYear ? 'Доход — ' + year : 'Доход — ' + monthNames[month];
 
   var periodBookings = bookings.filter(function(b) {
-    return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
+    if (b.status === 'blocked') return false;
+    if (!b.in) return false;
+    if (isYear) return b.in.substr(0,4) === period;
+    return b.in.substr(0,7) === period;
   });
 
   // Доход
@@ -3002,7 +3010,10 @@ function updateDashboard() {
   document.getElementById('dash-income-sub').textContent = confirmedB.length + ' подтверждённых броней';
 
   // Расходы за период
-  var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
+  var periodExpenses = expenses.filter(function(e){
+    if (isYear) return (e.date||'').substr(0,4) === period;
+    return (e.date||'').substr(0,7) === period;
+  });
   var totalExpenses = periodExpenses.reduce(function(s,e){ return s + parseInt(e.amount||0); }, 0);
   document.getElementById('dash-expenses-val').textContent = totalExpenses.toLocaleString('ru') + ' ₽';
   document.getElementById('dash-expenses-sub').textContent = periodExpenses.length + ' расходов за период';
@@ -3023,7 +3034,8 @@ function updateDashboard() {
     var d = new Date(b.in), end = new Date(b.out);
     var obj = parseInt(b.obj)||1;
     while(d < end) {
-      if (d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0') === period) {
+      var dayPeriod = isYear ? String(d.getFullYear()) : d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+        if (dayPeriod === period) {
         occupiedNights[obj] = (occupiedNights[obj]||0) + 1;
       }
       d.setDate(d.getDate()+1);
@@ -3943,10 +3955,13 @@ function exportToExcel() {
   var parts = displayPeriod ? displayPeriod.split('-') : [];
   var monthLabel = parts.length >= 2 ? monthNames[parseInt(parts[1])] + ' ' + parts[0] : 'Все периоды';
 
+  var isYearPeriod = period && period.length === 4;
   var periodBookings = (currentPage === 'bookings' && window._visibleBookings)
     ? window._visibleBookings
     : bookings.filter(function(b){
+        if (b.status === 'blocked') return false;
         if (!period) return true;
+        if (isYearPeriod) return b.in && b.in.substr(0,4) === period;
         return b.in && b.in.substr(0,7) === period;
       });
 
@@ -4010,17 +4025,22 @@ function exportToPdf() {
     var bpSel2 = document.getElementById('booking-period');
     displayPeriod2 = bpSel2 ? bpSel2.value : '';
   }
+  var isYearDisp = displayPeriod2 && displayPeriod2.length === 4;
   var parts = displayPeriod2 ? displayPeriod2.split('-') : [];
-  var monthLabel = parts.length >= 2 ? monthNames[parseInt(parts[1])] + ' ' + parts[0] : 'Все периоды';
+  var monthLabel = isYearDisp ? displayPeriod2 + ' год' : (parts.length >= 2 ? monthNames[parseInt(parts[1])] + ' ' + parts[0] : 'Все периоды');
 
+  var isYearPeriod = period && period.length === 4;
   var periodBookings = (currentPage === 'bookings' && window._visibleBookings)
     ? window._visibleBookings
     : bookings.filter(function(b){
+        if (b.status === 'blocked') return false;
         if (!period) return true;
+        if (isYearPeriod) return b.in && b.in.substr(0,4) === period;
         return b.in && b.in.substr(0,7) === period;
       });
   var periodExpenses = expenses.filter(function(e){
     if (!period) return true;
+    if (isYearPeriod) return (e.date||'').substr(0,4) === period;
     return (e.date||'').substr(0,7) === period;
   });
 
