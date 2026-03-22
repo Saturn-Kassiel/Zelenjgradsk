@@ -1995,6 +1995,7 @@ function renderBookings(filter, search) {
     if (objFilter && objFilter !== 'all' && b.obj !== objFilter) return false;
     return true;
   });
+  window._visibleBookings = list; // сохраняем для экспорта
   tbody.innerHTML = '';
   if (!list.length) { tbody.innerHTML = '<tr><td colspan="7" style="text-align:center;padding:28px;color:var(--muted)">Нет бронирований</td></tr>'; return; }
   list.forEach(function(b) {
@@ -3936,12 +3937,13 @@ function exportToExcel() {
   var parts = period.split('-');
   var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
 
-  var allPeriods = !period;
-  var periodBookings = bookings.filter(function(b){
-    if (b.status === 'blocked') return false;
-    if (allPeriods) return true;
-    return b.in && b.in.substr(0,7) === period;
-  });
+  var periodBookings = (currentPage === 'bookings' && window._visibleBookings)
+    ? window._visibleBookings
+    : bookings.filter(function(b){
+        if (b.status === 'blocked') return false;
+        if (!period) return true;
+        return b.in && b.in.substr(0,7) === period;
+      });
 
   var wb = XLSX.utils.book_new();
 
@@ -3979,7 +3981,7 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(wb, ws2, 'Расходы');
   }
 
-  XLSX.writeFile(wb, 'baltika_' + (allPeriods ? 'все_периоды' : period) + '.xlsx');
+  XLSX.writeFile(wb, 'baltika_' + (!period ? 'все_периоды' : period) + '.xlsx');
   showToast('Excel файл скачан ✓');
 }
 
@@ -4004,14 +4006,15 @@ function exportToPdf() {
   var parts = period.split('-');
   var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
 
-  var allPeriods = !period;
-  var periodBookings = bookings.filter(function(b){
-    if (b.status === 'blocked') return false;
-    if (allPeriods) return true;
-    return b.in && b.in.substr(0,7) === period;
-  });
+  var periodBookings = (currentPage === 'bookings' && window._visibleBookings)
+    ? window._visibleBookings
+    : bookings.filter(function(b){
+        if (b.status === 'blocked') return false;
+        if (!period) return true;
+        return b.in && b.in.substr(0,7) === period;
+      });
   var periodExpenses = expenses.filter(function(e){
-    if (allPeriods) return true;
+    if (!period) return true;
     return (e.date||'').substr(0,7) === period;
   });
 
