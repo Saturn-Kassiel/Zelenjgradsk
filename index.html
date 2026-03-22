@@ -2025,7 +2025,7 @@ function loadGPromo() {
 
 function openModal(propId) {
   if (typeof BookingModal === 'undefined') { console.error('BookingModal не загружен'); return; }
-  BookingModal.init({ appsUrl: APPS_URL, chatUrl: CHAT_URL });
+  BookingModal.init({ appsUrl: APPS_URL });
   var prop = null;
   if (propId) {
     prop = allPropsData.find(function(p){ return String(p.id)===String(propId); });
@@ -2335,7 +2335,6 @@ function cookieAccept() {
 <script>
 ChatWidget.init({
   appsUrl: APPS_URL,
-  chatUrl: CHAT_URL,
   getObjId: function() {
     var sel = document.getElementById('prop-select');
     return sel ? (sel.value || '1') : '1';
