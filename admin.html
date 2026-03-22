@@ -3916,8 +3916,18 @@ function topbarSecondary() { toggleExportMenu(); }
 
 // ── EXCEL EXPORT (SheetJS) ──
 function exportToExcel() {
-  var sel = document.getElementById('dash-period');
-  var period = sel ? sel.value : '';
+  var period = '';
+  // Берём период из текущей страницы
+  if (currentPage === 'bookings') {
+    var bSel = document.getElementById('booking-period');
+    period = bSel ? bSel.value : '';
+  } else if (currentPage === 'expenses') {
+    var eSel = document.getElementById('expense-period');
+    period = eSel ? eSel.value : '';
+  } else {
+    var dSel = document.getElementById('dash-period');
+    period = dSel ? dSel.value : '';
+  }
   if (!period) {
     var now = new Date();
     period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
@@ -3969,8 +3979,17 @@ function exportToExcel() {
 
 // ── PDF EXPORT ──
 function exportToPdf() {
-  var sel = document.getElementById('dash-period');
-  var period = sel ? sel.value : '';
+  var period = '';
+  if (currentPage === 'bookings') {
+    var bSel = document.getElementById('booking-period');
+    period = bSel ? bSel.value : '';
+  } else if (currentPage === 'expenses') {
+    var eSel = document.getElementById('expense-period');
+    period = eSel ? eSel.value : '';
+  } else {
+    var dSel = document.getElementById('dash-period');
+    period = dSel ? dSel.value : '';
+  }
   if (!period) {
     var now = new Date();
     period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0');
