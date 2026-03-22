@@ -1067,7 +1067,7 @@ document.addEventListener('keydown', function(e) {
         </div>
         <div class="form-group">
           <label class="form-label">Телефон <span style="color:#E05252">*</span></label>
-          <input type="tel" class="form-input" placeholder="+7 (000) 000-00-00" id="f-phone" oninput="gFormatPhone(this)">
+          <input type="tel" class="form-input" placeholder="+7(___) ___-__-__" id="f-phone">
           <div id="f-phone-hint" style="font-size:11px;margin-top:3px;display:none"></div>
         </div>
       </div>
@@ -1830,29 +1830,28 @@ function gCalSelectDay(date) {
 }
 
 
-function gFormatPhone(input) {
-  var v = input.value.replace(/\D/g, '');
-  if (v.startsWith('8')) v = '7' + v.slice(1);
-  if (!v.startsWith('7')) v = '7' + v;
-  v = v.slice(0, 11);
-  var f = '+7';
-  if (v.length > 1) f += ' (' + v.slice(1,4);
-  if (v.length >= 4) f += ') ' + v.slice(4,7);
-  if (v.length >= 7) f += '-' + v.slice(7,9);
-  if (v.length >= 9) f += '-' + v.slice(9,11);
-  input.value = f;
-  var hint = document.getElementById('f-phone-hint');
-  var digits = v.length;
-  if (digits === 11) {
-    input.style.borderColor = 'var(--teal)';
-    hint.textContent = '✓ Номер корректен';
-    hint.style.color = 'var(--teal)';
-    hint.style.display = 'block';
-  } else {
-    input.style.borderColor = '';
-    hint.style.display = 'none';
-  }
+var _gPhoneMask = null;
+function gInitPhoneMask() {
+  var inp = document.getElementById('f-phone');
+  if (!inp) return;
+  if (_gPhoneMask) { _gPhoneMask.destroy(); _gPhoneMask = null; }
+  if (typeof IMask === 'undefined') return;
+  _gPhoneMask = IMask(inp, { mask: '+7(000) 000-00-00', lazy: false, placeholderChar: '_' });
+  _gPhoneMask.on('accept', function() {
+    var hint = document.getElementById('f-phone-hint');
+    if (!hint) return;
+    if (_gPhoneMask.unmaskedValue.length === 11) {
+      inp.style.borderColor = 'var(--teal)';
+      hint.textContent = '✓ Номер корректен';
+      hint.style.color = 'var(--teal)';
+      hint.style.display = 'block';
+    } else {
+      inp.style.borderColor = '';
+      hint.style.display = 'none';
+    }
+  });
 }
+function gFormatPhone(input) { /* заменено IMask */ }
 
 function gFromCheckout() {
   var inVal = document.getElementById('f-checkin').value;
@@ -2095,7 +2094,8 @@ function submitForm() {
   var ok = true;
 
   if (!name.value.trim()) { name.style.borderColor='var(--danger)'; ok=false; }
-  if (!phone.value.trim() || phone.value.replace(/\D/g,'').length!==11) { phone.style.borderColor='var(--danger)'; ok=false; }
+  var phoneDigits = _gPhoneMask ? _gPhoneMask.unmaskedValue : phone.value.replace(/\D/g,'');
+  if (!phoneDigits || phoneDigits.length!==11) { phone.style.borderColor='var(--danger)'; ok=false; }
   if (!checkin.value) { var fd=document.getElementById('f-checkin-disp'); if(fd) fd.style.border='1.5px solid var(--danger)'; ok=false; }
   if (!obj.value) { obj.style.borderColor='var(--danger)'; ok=false; }
   if (!ok) return;
