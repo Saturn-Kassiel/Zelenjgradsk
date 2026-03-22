@@ -2156,7 +2156,7 @@ function changeStatus(id, sel) {
         '📅 ' + inFmt + ' — ' + outFmt + '<br>' +
         '💰 ' + (b.amount||0).toLocaleString('ru') + ' ₽<br><br>' +
         '🔗 <a href="' + guestUrl + '" target="_blank" style="color:#3E7057;font-weight:600">Ваша заявка</a>';
-      showChatConfirm(b.name, msgTg, msgHtml, b.obj);
+      showChatConfirm(b.name, msgTg, msgHtml, b.obj, b.token || null);
     }
   });
 }
@@ -2165,11 +2165,13 @@ var _pendingChatMsg = null;
 var _pendingChatObjId = null;
 
 var _pendingTgMsg = null;
+var _pendingChatToken = null;
 
-function showChatConfirm(guestName, tgMsg, htmlMsg, objId) {
+function showChatConfirm(guestName, tgMsg, htmlMsg, objId, token) {
   _pendingTgMsg = tgMsg;
   _pendingChatMsg = htmlMsg || tgMsg;
   _pendingChatObjId = objId || 1;
+  _pendingChatToken = token || null;
   var modal = document.getElementById('modal-chat-confirm');
   if (modal) {
     document.getElementById('chat-confirm-name').textContent = guestName;
@@ -2197,8 +2199,9 @@ function sendChatConfirmed() {
   fetch(API + '/chat-queue', {
     method: 'POST',
     headers: {'Content-Type': 'application/json'},
-    body: JSON.stringify({ obj_id: objId, message: msg, is_html: true })
+    body: JSON.stringify({ obj_id: objId, message: msg, is_html: true, token: _pendingChatToken || null })
   }).catch(function(){});
+  _pendingChatToken = null;
 }
 
 function cancelChatConfirm() {
