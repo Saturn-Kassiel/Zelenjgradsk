@@ -994,12 +994,13 @@ function submitForm() {
     }).then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok || d.id) {
+          var bookingId = d.id;
           var form = document.getElementById('form-screen');
           var success = document.getElementById('success-screen');
           if (form) form.style.display = 'none';
           if (success) success.style.display = 'block';
           // Уведомление в Telegram
-          fetch(APPS_URL + '/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'new_booking', name:name, phone:phone, date_in:dateIn, date_out:dateOut, nights:nights, amount:amount }) }).catch(function(){});
+          fetch(APPS_URL + '/notify', { method:'POST', headers:{'Content-Type':'application/json'}, body: JSON.stringify({ type:'new_booking', booking_id:bookingId, obj_id:propData.id||1, name:name, phone:phone, date_in:dateIn, date_out:dateOut, nights:nights, amount:amount }) }).catch(function(){});
           // Уведомление через Алину с детализацией
           var bookingInfo = '📋 Новая заявка от '+name+' ('+phone+')\n📅 '+dateIn+' — '+dateOut+', '+nights+' '+nightWord(nights)+breakdown+'\n💰 Итого: '+amount.toLocaleString('ru')+' ₽';
           if (comment) bookingInfo += '\n💬 ' + comment;
