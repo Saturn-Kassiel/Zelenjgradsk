@@ -446,11 +446,11 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="6 9 12 15 18 9"/></svg>
         </button>
         <div id="export-dropdown" style="display:none;position:absolute;top:calc(100% + 6px);right:0;background:var(--white);border:1.5px solid var(--silver);border-radius:12px;padding:6px;min-width:180px;box-shadow:0 8px 24px rgba(46,56,77,0.12);z-index:100">
-          <button onclick="exportToExcel();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+          <button onclick="currentPage==='dashboard'?exportDashboard('excel'):exportToExcel();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#1D6F42" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
             Скачать Excel (.xlsx)
           </button>
-          <button onclick="exportToPdf();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
+          <button onclick="currentPage==='dashboard'?exportDashboard('pdf'):exportToPdf();toggleExportMenu()" style="display:flex;align-items:center;gap:10px;width:100%;padding:9px 12px;border:none;background:transparent;border-radius:8px;cursor:pointer;font-size:13px;color:var(--charcoal);font-family:DM Sans,sans-serif" onmouseover="this.style.background='var(--bg)'" onmouseout="this.style.background='transparent'">
             <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#E53935" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
             Скачать PDF
           </button>
@@ -1746,7 +1746,7 @@ function showPage(name) {
   // Показываем кнопку экспорта только на актуальных страницах
   var exportWrap = document.getElementById('export-menu-wrap');
   if (exportWrap) {
-    var showExport = ['bookings','guests','dashboard'].indexOf(name) !== -1;
+    var showExport = ['bookings','dashboard'].indexOf(name) !== -1;
     exportWrap.style.display = showExport ? '' : 'none';
   }
   // Показываем кнопку "Новая бронь" только на странице бронирований
@@ -3926,6 +3926,227 @@ document.addEventListener('click', function(e) {
 });
 
 function topbarSecondary() { toggleExportMenu(); }
+
+// ── DASHBOARD EXPORT ──
+function exportDashboard(format) {
+  var sel = document.getElementById('dash-period');
+  var period = sel ? sel.value : '';
+  if (!period) { var now = new Date(); period = now.getFullYear()+'-'+String(now.getMonth()+1).padStart(2,'0'); }
+
+  var isYear = period.length === 4;
+  var monthNames = ['','Январь','Февраль','Март','Апрель','Май','Июнь','Июль','Август','Сентябрь','Октябрь','Ноябрь','Декабрь'];
+  var parts = period.split('-');
+  var periodLabel = isYear ? period + ' год' : monthNames[parseInt(parts[1])] + ' ' + parts[0];
+  var year = parseInt(parts[0]);
+  var daysInMonth = isYear ? 365 : new Date(year, parseInt(parts[1]), 0).getDate();
+
+  // Данные
+  var periodBookings = bookings.filter(function(b){
+    if (b.status==='blocked' || !b.in) return false;
+    return isYear ? b.in.substr(0,4)===period : b.in.substr(0,7)===period;
+  });
+  var confirmedB = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; });
+  var income = confirmedB.reduce(function(s,b){ return s+b.amount; }, 0);
+  var periodExpenses = expenses.filter(function(e){
+    return isYear ? (e.date||'').substr(0,4)===period : (e.date||'').substr(0,7)===period;
+  });
+  var totalExpenses = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
+  var profit = income - totalExpenses;
+  var avgCheck = confirmedB.length ? Math.round(income/confirmedB.length) : 0;
+  var totalNights = confirmedB.reduce(function(s,b){
+    return s+(b.in&&b.out?Math.round((new Date(b.out)-new Date(b.in))/86400000):0);
+  },0);
+  var avgNights = confirmedB.length ? (totalNights/confirmedB.length).toFixed(1) : 0;
+  var cancelled = periodBookings.filter(function(b){ return b.status==='cancelled'; }).length;
+
+  // Занятость
+  var objIds = Object.keys(promoObjNames).map(Number);
+  var occupiedNights = {};
+  objIds.forEach(function(id){ occupiedNights[id]=0; });
+  bookings.forEach(function(b){
+    if (b.status!=='confirmed'&&b.status!=='blocked') return;
+    if (!b.in||!b.out) return;
+    var d=new Date(b.in), end=new Date(b.out), obj=parseInt(b.obj)||1;
+    while(d<end){
+      var dp=isYear?String(d.getFullYear()):d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');
+      if(dp===period) occupiedNights[obj]=(occupiedNights[obj]||0)+1;
+      d.setDate(d.getDate()+1);
+    }
+  });
+  var totalOcc = objIds.reduce(function(s,id){ return s+(occupiedNights[id]||0); },0);
+  var totalPossible = daysInMonth * Math.max(objIds.length,1);
+  var occPct = Math.round(totalOcc/totalPossible*100);
+
+  // Выручка по месяцам
+  var mnNames = ['янв','фев','мар','апр','май','июн','июл','авг','сен','окт','ноя','дек'];
+  var revenueMonths = [];
+  if (isYear) {
+    for (var m=1; m<=12; m++) {
+      var mk = period+'-'+String(m).padStart(2,'0');
+      var mi = bookings.filter(function(b){ return (b.status==='confirmed'||b.status==='done')&&b.in&&b.in.substr(0,7)===mk; }).reduce(function(s,b){return s+b.amount;},0);
+      var me = expenses.filter(function(e){ return (e.date||'').substr(0,7)===mk; }).reduce(function(s,e){return s+parseInt(e.amount||0);},0);
+      revenueMonths.push({ label: mnNames[m-1]+' '+period.substr(2), income: mi, expenses: me, profit: mi-me });
+    }
+  } else {
+    var now2 = new Date(); var base = new Date(year, parseInt(parts[1])-1, 1);
+    for (var i=5;i>=0;i--) {
+      var dd=new Date(now2.getFullYear(),now2.getMonth()-i,1);
+      var mk2=dd.getFullYear()+'-'+String(dd.getMonth()+1).padStart(2,'0');
+      var mi2=bookings.filter(function(b){return (b.status==='confirmed'||b.status==='done')&&b.in&&b.in.substr(0,7)===mk2;}).reduce(function(s,b){return s+b.amount;},0);
+      var me2=expenses.filter(function(e){return (e.date||'').substr(0,7)===mk2;}).reduce(function(s,e){return s+parseInt(e.amount||0);},0);
+      revenueMonths.push({label:mnNames[dd.getMonth()]+' '+String(dd.getFullYear()).substr(2),income:mi2,expenses:me2,profit:mi2-me2});
+    }
+  }
+
+  // Расходы по категориям
+  var catTotals={};
+  periodExpenses.forEach(function(e){ var c=e.category||'other'; catTotals[c]=(catTotals[c]||0)+parseInt(e.amount||0); });
+  var catLabels={cleaning:'Клининг',supplies:'Расходники',repair:'Ремонт',utilities:'Коммунальные',other:'Прочее'};
+
+  if (format === 'excel') {
+    exportDashboardExcel(periodLabel, period, income, totalExpenses, profit, occPct, totalOcc, totalPossible,
+      confirmedB.length, avgCheck, avgNights, cancelled, objIds, occupiedNights, daysInMonth,
+      revenueMonths, catTotals, catLabels, periodBookings.length);
+  } else {
+    exportDashboardPdf(periodLabel, income, totalExpenses, profit, occPct, totalOcc, totalPossible,
+      confirmedB.length, avgCheck, avgNights, cancelled, objIds, occupiedNights, daysInMonth,
+      revenueMonths, catTotals, catLabels, periodBookings.length);
+  }
+}
+
+function exportDashboardExcel(periodLabel, period, income, totalExp, profit, occPct, totalOcc, totalPossible,
+  bookingsCount, avgCheck, avgNights, cancelled, objIds, occupiedNights, daysInMonth,
+  revenueMonths, catTotals, catLabels, totalBookings) {
+
+  var wb = XLSX.utils.book_new();
+  var rows = [];
+
+  // Заголовок
+  rows.push(['ОТЧЁТ ДАШБОРД — ' + periodLabel.toUpperCase()]);
+  rows.push(['Сформировано: ' + new Date().toLocaleDateString('ru-RU')]);
+  rows.push([]);
+
+  // 8 показателей
+  rows.push(['КЛЮЧЕВЫЕ ПОКАЗАТЕЛИ']);
+  rows.push(['Показатель', 'Значение']);
+  rows.push(['Доход', income.toLocaleString('ru') + ' ₽']);
+  rows.push(['Расходы', totalExp.toLocaleString('ru') + ' ₽']);
+  rows.push(['Прибыль', profit.toLocaleString('ru') + ' ₽']);
+  rows.push(['Занятость', occPct + '% (' + totalOcc + ' из ' + totalPossible + ' ночей)']);
+  rows.push(['Бронирований', totalBookings + ' (' + bookingsCount + ' активных)']);
+  rows.push(['Средний чек', avgCheck.toLocaleString('ru') + ' ₽']);
+  rows.push(['Ср. длина пребывания', avgNights + ' ночей']);
+  rows.push(['Отменено', cancelled]);
+  rows.push([]);
+
+  // Выручка по месяцам
+  rows.push(['ВЫРУЧКА ПО МЕСЯЦАМ']);
+  rows.push(['Месяц', 'Доход (₽)', 'Расходы (₽)', 'Прибыль (₽)']);
+  revenueMonths.forEach(function(m){ rows.push([m.label, m.income, m.expenses, m.profit]); });
+  rows.push([]);
+
+  // По объектам
+  rows.push(['ПО ОБЪЕКТАМ']);
+  rows.push(['Объект', 'Ночей', 'Занятость %', 'Доход (₽)']);
+  objIds.forEach(function(id){
+    var name = promoObjNames[String(id)] || ('Объект ' + id);
+    var nights = occupiedNights[id] || 0;
+    var pct = Math.round(nights/daysInMonth*100);
+    rows.push([name, nights, pct + '%', '']);
+  });
+  rows.push([]);
+
+  // Расходы по категориям
+  if (Object.keys(catTotals).length) {
+    rows.push(['РАСХОДЫ ПО КАТЕГОРИЯМ']);
+    rows.push(['Категория', 'Сумма (₽)', '%']);
+    Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a];}).forEach(function(cat){
+      var pct = totalExp ? Math.round(catTotals[cat]/totalExp*100) : 0;
+      rows.push([catLabels[cat]||cat, catTotals[cat], pct + '%']);
+    });
+  }
+
+  var ws = XLSX.utils.aoa_to_sheet(rows);
+  ws['!cols'] = [{wch:30},{wch:20},{wch:15},{wch:15}];
+  XLSX.utils.book_append_sheet(wb, ws, 'Дашборд');
+  XLSX.writeFile(wb, 'baltika_дашборд_' + period + '.xlsx');
+  showToast('Excel скачан ✓');
+}
+
+function exportDashboardPdf(periodLabel, income, totalExp, profit, occPct, totalOcc, totalPossible,
+  bookingsCount, avgCheck, avgNights, cancelled, objIds, occupiedNights, daysInMonth,
+  revenueMonths, catTotals, catLabels, totalBookings) {
+
+  var logoUrl = 'https://raw.githubusercontent.com/Saturn-Kassiel/Zelenjgradsk/main/img/city/logo.png';
+  var profitColor = profit >= 0 ? '#3E7057' : '#e05252';
+
+  var objRows = objIds.map(function(id){
+    var name = promoObjNames[String(id)] || ('Объект ' + id);
+    var nights = occupiedNights[id] || 0;
+    var pct = Math.round(nights/daysInMonth*100);
+    return '<tr><td>'+name+'</td><td>'+nights+'</td><td>'+pct+'%</td></tr>';
+  }).join('');
+
+  var catRows = Object.keys(catTotals).sort(function(a,b){return catTotals[b]-catTotals[a];}).map(function(cat){
+    var pct = totalExp ? Math.round(catTotals[cat]/totalExp*100) : 0;
+    return '<tr><td>'+(catLabels[cat]||cat)+'</td><td>'+catTotals[cat].toLocaleString('ru')+' ₽</td><td>'+pct+'%</td></tr>';
+  }).join('');
+
+  var revRows = revenueMonths.map(function(m){
+    var pc = m.profit >= 0 ? '#3E7057' : '#e05252';
+    return '<tr><td>'+m.label+'</td><td>'+m.income.toLocaleString('ru')+'</td><td>'+m.expenses.toLocaleString('ru')+'</td><td style="color:'+pc+';font-weight:600">'+m.profit.toLocaleString('ru')+'</td></tr>';
+  }).join('');
+
+  var html = '<!DOCTYPE html><html lang="ru"><head><meta charset="UTF-8"><title>Дашборд '+periodLabel+'</title><style>'+
+    'body{font-family:Arial,Helvetica,sans-serif;font-size:11px;color:#222;margin:0;padding:20px}'+
+    '.header{display:flex;align-items:center;gap:14px;margin-bottom:6px}'+
+    '.logo{width:48px;height:48px;border-radius:12px;background:#3E7057;display:flex;align-items:center;justify-content:center;overflow:hidden}'+
+    '.logo img{width:36px;height:36px;object-fit:contain}'+
+    '.brand{font-size:20px;font-weight:800;color:#2e384d}'+
+    '.brand-sub{font-size:11px;color:#8892a4;margin-top:2px}'+
+    '.period{font-size:13px;color:#8892a4;margin-bottom:16px;padding-bottom:12px;border-top:2px solid #3E7057;padding-top:8px;margin-top:4px}'+
+    '.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px}'+
+    '.kpi{background:#f4f6fb;border-radius:10px;padding:12px 14px}'+
+    '.kpi-label{font-size:10px;color:#8892a4;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px}'+
+    '.kpi-value{font-size:16px;font-weight:800;color:#2e384d}'+
+    '.kpi-sub{font-size:10px;color:#8892a4;margin-top:2px}'+
+    'h2{font-size:12px;font-weight:800;color:#2e384d;margin:20px 0 8px;text-transform:uppercase;letter-spacing:0.5px}'+
+    'table{width:100%;border-collapse:collapse;margin-bottom:16px}'+
+    'th{background:#3E7057;color:white;padding:6px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase}'+
+    'td{padding:6px 10px;border-bottom:1px solid #e8eaf0;font-size:11px}'+
+    'tr:nth-child(even) td{background:#f9fafb}'+
+    '.footer{margin-top:20px;padding-top:10px;border-top:1px solid #e8eaf0;font-size:10px;color:#8892a4;text-align:center}'+
+    '@media print{body{padding:10px}}'+
+  '</style></head><body>'+
+  '<div class="header">'+
+    '<div class="logo"><img src="'+logoUrl+'" onerror="this.style.display='none'"></div>'+
+    '<div><div class="brand">Апартаменты Балтики</div><div class="brand-sub">Зеленоградск, Калининградская область</div></div>'+
+  '</div>'+
+  '<div class="period">Дашборд — '+periodLabel+'</div>'+
+  '<div class="kpi-grid">'+
+    '<div class="kpi"><div class="kpi-label">Доход</div><div class="kpi-value">'+income.toLocaleString('ru')+' ₽</div><div class="kpi-sub">'+bookingsCount+' подтверждённых</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Расходы</div><div class="kpi-value">'+totalExp.toLocaleString('ru')+' ₽</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Прибыль</div><div class="kpi-value" style="color:'+profitColor+'">'+profit.toLocaleString('ru')+' ₽</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Занятость</div><div class="kpi-value">'+occPct+'%</div><div class="kpi-sub">'+totalOcc+' из '+totalPossible+' ночей</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Бронирований</div><div class="kpi-value">'+totalBookings+'</div><div class="kpi-sub">'+bookingsCount+' активных</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Средний чек</div><div class="kpi-value">'+avgCheck.toLocaleString('ru')+' ₽</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Ср. пребывание</div><div class="kpi-value">'+avgNights+' н.</div></div>'+
+    '<div class="kpi"><div class="kpi-label">Отменено</div><div class="kpi-value">'+cancelled+'</div></div>'+
+  '</div>'+
+  '<h2>Выручка по месяцам</h2>'+
+  '<table><thead><tr><th>Месяц</th><th>Доход (₽)</th><th>Расходы (₽)</th><th>Прибыль (₽)</th></tr></thead><tbody>'+revRows+'</tbody></table>'+
+  '<h2>По объектам</h2>'+
+  '<table><thead><tr><th>Объект</th><th>Ночей</th><th>Занятость</th></tr></thead><tbody>'+objRows+'</tbody></table>'+
+  (catRows ? '<h2>Расходы по категориям</h2><table><thead><tr><th>Категория</th><th>Сумма</th><th>%</th></tr></thead><tbody>'+catRows+'</tbody></table>' : '')+
+  '<div class="footer">Апартаменты Балтики · aparts-baltika.ru · Сформировано '+new Date().toLocaleDateString('ru-RU')+'</div>'+
+  '</body></html>';
+
+  var w = window.open('', '_blank', 'width=900,height=700');
+  w.document.write(html);
+  w.document.close();
+  w.onload = function(){ w.print(); };
+  showToast('Открываю PDF для печати...');
+}
 
 // ── EXCEL EXPORT (SheetJS) ──
 function exportToExcel() {
