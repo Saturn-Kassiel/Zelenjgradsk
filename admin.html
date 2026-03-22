@@ -352,6 +352,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 </style>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <script src="config.js"></script>
+<script src="https://unpkg.com/imask@7.6.1/dist/imask.min.js"></script>
 </head>
 <body>
 
@@ -1063,7 +1064,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       </div>
       <div class="form-group-a">
         <label>Телефон <span style="color:var(--danger)">*</span></label>
-        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7(000)000-00-00" oninput="nbFormatPhone(this);nbClearError(this)" onfocus="nbPhoneFocus(this)" onkeydown="nbPhoneKeydown(this,event)">
+        <input type="tel" class="form-input-a" id="nb-phone" placeholder="+7(___) ___-__-__" oninput="nbCheckPhoneValid();nbClearError(this)">
         <div id="nb-phone-hint" style="font-size:11px;margin-top:4px;display:none"></div>
       </div>
     </div>
@@ -1765,7 +1766,7 @@ function topbarPrimary() {
     if (checkErr) checkErr.style.display = 'none';
     // Сбрасываем поля новой брони
     document.getElementById('nb-name').value = '';
-    document.getElementById('nb-phone').value = '+7(';
+    document.getElementById('nb-phone').value = '';
     document.getElementById('nb-in').value = '';
     document.getElementById('nb-out-vis').value = '';
     document.getElementById('nb-nights').value = '3';
@@ -1778,6 +1779,7 @@ function topbarPrimary() {
     editingBookingId = null;
     openModal('modal-booking');
     nbRenderCal();
+    setTimeout(nbInitPhoneMask, 50);
   }
   else if (currentPage === 'supplies') openAddSupply();
   else if (currentPage === 'expenses') { showPage('expenses'); }
@@ -2360,28 +2362,27 @@ function nbCalSelectDay(date) {
 
 var objPrices = { '1': 4000, '2': 5000 };
 
-function nbPhoneFocus(input) {
-  if (!input.value || input.value === '') {
-    input.value = '+7(';
-    setTimeout(function(){ input.setSelectionRange(input.value.length, input.value.length); }, 0);
-  }
+var _nbPhoneMask = null;
+
+function nbInitPhoneMask() {
+  var input = document.getElementById('nb-phone');
+  if (!input) return;
+  if (_nbPhoneMask) { _nbPhoneMask.destroy(); _nbPhoneMask = null; }
+  if (typeof IMask === 'undefined') return;
+  _nbPhoneMask = IMask(input, {
+    mask: '+7(000) 000-00-00',
+    lazy: false,
+    placeholderChar: '_'
+  });
+  _nbPhoneMask.on('accept', function() {
+    nbCheckPhoneValid();
+  });
 }
 
-function nbPhoneKeydown(input, e) {
-  // Не даём удалить префикс +7(
-  var prefix = '+7(';
-  if ((e.key === 'Backspace' || e.key === 'Delete') && input.value.length <= prefix.length) {
-    e.preventDefault();
-  }
-}
-
-function nbFormatPhone(input) {
-  var prefix = '+7(';
-  // Убеждаемся что префикс на месте
-  if (!input.value.startsWith(prefix)) {
-    input.value = prefix + input.value.replace(/^\+?7?\(?/, '');
-  }
+function nbCheckPhoneValid() {
+  var input = document.getElementById('nb-phone');
   var hint = document.getElementById('nb-phone-hint');
+  if (!input || !hint) return;
   var digits = input.value.replace(/\D/g, '');
   if (digits.length === 11) {
     input.style.borderColor = 'var(--teal)';
@@ -2392,6 +2393,10 @@ function nbFormatPhone(input) {
     input.style.borderColor = '';
     hint.style.display = 'none';
   }
+}
+
+function nbFormatPhone(input) {
+  nbCheckPhoneValid();
 }
 
 function nbFromCheckout() {
@@ -2669,13 +2674,14 @@ function editBooking(id) {
   nbRecalc();
   nbRenderCal();
   openModal('modal-booking');
-}
+  setTimeout(nbInitPhoneMask, 50);}
 
 function saveBooking() {
   if (!nbValidate()) return;
   var obj = document.getElementById('nb-obj').value;
   var name = document.getElementById('nb-name').value.trim();
-  var phone = document.getElementById('nb-phone').value.trim();
+  var phone = _nbPhoneMask ? _nbPhoneMask.unmaskedValue : document.getElementById('nb-phone').value.replace(/\D/g,'');
+  phone = phone.length === 11 ? '+7(' + phone.slice(1,4) + ') ' + phone.slice(4,7) + '-' + phone.slice(7,9) + '-' + phone.slice(9,11) : document.getElementById('nb-phone').value.trim();
   var inD = document.getElementById('nb-in').value;
   var outD = document.getElementById('nb-out').value;
   var row;
