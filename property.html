@@ -953,8 +953,8 @@ function submitForm() {
   var comment = document.getElementById('f-comment').value.trim();
   if (!name) { document.getElementById('f-name').style.borderColor='#E05252'; return; }
   var digits = phone.replace(/\D/g,'');
-  var phoneDigits = _propPhoneMask ? _propPhoneMask.unmaskedValue : digits;
-  if (phoneDigits.length !== 11) { document.getElementById('f-phone').style.borderColor='#E05252'; return; }
+  var phoneDigits = phone.replace(/\D/g,'');
+  if (phoneDigits.length < 10 || phoneDigits.length > 11) { document.getElementById('f-phone').style.borderColor='#E05252'; return; }
   if (!dateIn) { document.getElementById('f-checkin').style.borderColor='#E05252'; return; }
   var guestNum = parseInt(guests)||2;
   var guestSurcharge = guestNum >= 3 ? 750 * nights : 0;
@@ -2802,8 +2802,8 @@ function submitForm() {
   var comment = document.getElementById('f-comment').value.trim();
   if (!name) { document.getElementById('f-name').style.borderColor='#E05252'; return; }
   var digits = phone.replace(/\D/g,'');
-  var phoneDigits = _propPhoneMask ? _propPhoneMask.unmaskedValue : digits;
-  if (phoneDigits.length !== 11) { document.getElementById('f-phone').style.borderColor='#E05252'; return; }
+  var phoneDigits = phone.replace(/\D/g,'');
+  if (phoneDigits.length < 10 || phoneDigits.length > 11) { document.getElementById('f-phone').style.borderColor='#E05252'; return; }
   if (!dateIn) { document.getElementById('f-checkin').style.borderColor='#E05252'; return; }
   var guestNum = parseInt(guests)||2;
   var guestSurcharge = guestNum >= 3 ? 750 * nights : 0;
