@@ -4692,39 +4692,18 @@ function runCalcPrice() {
 }
 
 // ── ALINA PROMPT ──
-var PRESET_KEYS = [
-  { key: 'character',      label: 'Характер Алины',         placeholder: 'Дружелюбная, честная, отвечает коротко...' },
-  { key: 'style',          label: 'Стиль ответов',           placeholder: 'Без лишних слов, по делу...' },
-  { key: 'checkin',        label: 'Заезд / Выезд',           placeholder: 'Заезд с 14:00, выезд до 12:00...' },
-  { key: 'includes',       label: 'Что включено',            placeholder: 'Wi-Fi, постельное бельё, полотенца...' },
-  { key: 'parking',        label: 'Парковка',                placeholder: 'Бесплатная во дворе...' },
-  { key: 'pets',           label: 'Животные',                placeholder: 'По согласованию, доп. оплата...' },
-  { key: 'guests_policy',  label: 'Политика гостей',         placeholder: 'До 3 гостей, 3-й гость +500₽/ночь...' },
-  { key: 'location',       label: 'Локация',                 placeholder: 'Зеленоградск, 5 мин до моря...' },
-  { key: 'nearby_1',       label: 'Инфраструктура — Заря',   placeholder: 'SPAR 200м, кафе Балтика 300м...' },
-  { key: 'nearby_2',       label: 'Инфраструктура — Янтарный закат', placeholder: 'Магнит 150м...' },
-  { key: 'payment',        label: 'Оплата',                  placeholder: 'Наличные, перевод на карту...' },
-  { key: 'cancellation',   label: 'Отмена бронирования',     placeholder: 'За 3 дня — полный возврат...' },
-  { key: 'checkout_rules', label: 'Правила выезда',          placeholder: 'Вынести мусор, сдать ключи...' },
-  { key: 'emergency',      label: 'Экстренные контакты',     placeholder: '+7 (999) 123-45-67 — управляющий...' },
-  { key: 'escalate',       label: 'Когда передавать человеку', placeholder: 'При вопросах об оплате, жалобах...' },
-];
-
 var _promptData = {};
-var _customKeys = [];
+var _promptKeys = []; // все ключи в порядке загрузки
 
 function loadPromptPage() {
   fetch(API + '/prompt_settings')
     .then(function(r){ return r.json(); })
     .then(function(d){
       _promptData = {};
-      var presetKeySet = PRESET_KEYS.map(function(p){ return p.key; });
-      _customKeys = [];
+      _promptKeys = [];
       (d.data || []).forEach(function(row){
         _promptData[row.key] = row.value;
-        if (presetKeySet.indexOf(row.key) === -1 && row.value) {
-          _customKeys.push(row.key);
-        }
+        _promptKeys.push(row.key);
       });
       renderPromptFields();
     }).catch(function(){});
@@ -4732,13 +4711,10 @@ function loadPromptPage() {
 
 function renderPromptFields() {
   var presetEl = document.getElementById('alina-preset-fields');
-  presetEl.innerHTML = PRESET_KEYS.map(function(p){
-    return promptFieldHtml(p.key, p.label, p.placeholder, false);
-  }).join('');
-  var customEl = document.getElementById('alina-custom-fields');
-  customEl.innerHTML = _customKeys.map(function(key){
+  presetEl.innerHTML = _promptKeys.map(function(key){
     return promptFieldHtml(key, key, '', true);
   }).join('');
+  document.getElementById('alina-custom-fields').innerHTML = '';
 }
 
 function promptFieldHtml(key, label, placeholder, deletable) {
@@ -4770,30 +4746,32 @@ function addPromptField() {
     .replace(/[а-яё]/g, function(c){ var m={'а':'a','б':'b','в':'v','г':'g','д':'d','е':'e','ё':'yo','ж':'zh','з':'z','и':'i','й':'y','к':'k','л':'l','м':'m','н':'n','о':'o','п':'p','р':'r','с':'s','т':'t','у':'u','ф':'f','х':'kh','ц':'ts','ч':'ch','ш':'sh','щ':'sch','ъ':'','ы':'y','ь':'','э':'e','ю':'yu','я':'ya'}; return m[c]||c; })
     .replace(/[^a-z0-9]/g,'_').replace(/_+/g,'_').replace(/^_|_$/g,'');
   if (!key) { showToast('Некорректное название'); return; }
-  if (_customKeys.indexOf(key) !== -1 || PRESET_KEYS.find(function(p){ return p.key===key; })) {
+  if (_promptKeys.indexOf(key) !== -1) {
     showToast('Такой раздел уже есть'); return;
   }
   _promptData[key] = '';
-  _customKeys.push(key);
+  _promptKeys.push(key);
   keyInput.value = '';
-  var customEl = document.getElementById('alina-custom-fields');
+  var presetEl = document.getElementById('alina-preset-fields');
   var tmp = document.createElement('div');
   tmp.innerHTML = promptFieldHtml(key, rawLabel, '', true);
-  customEl.appendChild(tmp.firstChild);
+  presetEl.appendChild(tmp.firstChild);
   showToast('Раздел «' + rawLabel + '» добавлен');
 }
 
 function deletePromptField(key) {
   if (!confirm('Удалить раздел «' + key + '»?')) return;
-  _customKeys = _customKeys.filter(function(k){ return k !== key; });
+  _promptKeys = _promptKeys.filter(function(k){ return k !== key; });
   delete _promptData[key];
+  // Удаляем с сервера
+  fetch(API + '/prompt_settings/' + key, { method: 'DELETE' }).catch(function(){});
   var wrap = document.getElementById('pf-wrap-' + key);
   if (wrap) wrap.remove();
   showToast('Раздел удалён');
 }
 
 function savePrompt() {
-  var allKeys = PRESET_KEYS.map(function(p){ return p.key; }).concat(_customKeys);
+  var allKeys = _promptKeys.slice();
   var saveBtn = document.querySelector('#page-alina .btn-primary');
   if (saveBtn) { saveBtn.disabled = true; saveBtn.textContent = 'Сохраняем...'; }
   var promises = allKeys.map(function(key){
