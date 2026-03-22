@@ -1532,7 +1532,7 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 
     <div class="form-group-a" style="margin-bottom:14px">
       <label>Вкладка</label>
-      <input type="text" class="form-input-a" id="docs-tab-select" placeholder="Например: Инструкции">
+      <select id="docs-tab-select" class="form-select-a"></select>
     </div>
 
     <div class="form-group-a" style="margin-bottom:14px">
@@ -4994,7 +4994,10 @@ function openDocsItemModal() {
 }
 
 function renderDocsTabSelect() {
-  // tab is now a free-text input, nothing to render
+  var sel = document.getElementById('docs-tab-select');
+  sel.innerHTML = _docsTabs.map(function(tab) {
+    return '<option value="' + tab.id + '"' + (String(tab.id) === String(_currentDocsTab) ? ' selected' : '') + '>' + tab.icon + ' ' + tab.title + '</option>';
+  }).join('');
 }
 
 function editDocsItem(id) {
@@ -5010,10 +5013,9 @@ function editDocsItem(id) {
 }
 
 function saveDocsItem() {
-  var tab = document.getElementById('docs-tab-select').value.trim();
+  var tab = document.getElementById('docs-tab-select').value;
   var title = document.getElementById('docs-title-input').value.trim();
   var body = document.getElementById('docs-body-input').value.trim();
-  if (!tab) { showToast('Укажите название вкладки'); return; }
   if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
   var method = _editingDocsId ? 'PUT' : 'POST';
   var url = API + '/docs' + (_editingDocsId ? '/' + _editingDocsId : '');
@@ -5109,10 +5111,9 @@ function editDocsItem(id) {
 }
 
 function saveDocsItem() {
-  var tab = document.getElementById('docs-tab-select').value.trim();
+  var tab = document.getElementById('docs-tab-select').value;
   var title = document.getElementById('docs-title-input').value.trim();
   var body = document.getElementById('docs-body-input').value.trim();
-  if (!tab) { showToast('Укажите название вкладки'); return; }
   if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
 
   var method = _editingDocsId ? 'PUT' : 'POST';
