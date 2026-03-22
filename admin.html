@@ -1531,18 +1531,8 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     <div class="modal-title" id="docs-modal-title" style="font-size:17px;margin-bottom:20px">Добавить раздел</div>
 
     <div class="form-group-a" style="margin-bottom:14px">
-      <label style="display:flex;align-items:center;justify-content:space-between">
-        Вкладка
-        <span onclick="toggleNewTabInput()" style="font-size:11px;color:var(--teal);cursor:pointer;font-weight:600">+ Новая вкладка</span>
-      </label>
-      <select id="docs-tab-select" class="form-select-a"></select>
-      <div id="new-tab-input-wrap" style="display:none;margin-top:8px;display:none">
-        <div style="display:flex;gap:8px">
-          <input type="text" id="new-tab-icon" class="form-input-a" placeholder="📄" style="width:60px;flex-shrink:0">
-          <input type="text" id="new-tab-name" class="form-input-a" placeholder="Название вкладки" style="flex:1">
-          <button class="btn btn-primary btn-sm" onclick="createTabFromModal()" style="flex-shrink:0;border-radius:10px">Создать</button>
-        </div>
-      </div>
+      <label>Вкладка</label>
+      <input type="text" class="form-input-a" id="docs-tab-select" placeholder="Например: Инструкции">
     </div>
 
     <div class="form-group-a" style="margin-bottom:14px">
@@ -5004,10 +4994,7 @@ function openDocsItemModal() {
 }
 
 function renderDocsTabSelect() {
-  var sel = document.getElementById('docs-tab-select');
-  sel.innerHTML = _docsTabs.map(function(tab) {
-    return '<option value="' + tab.id + '"' + (String(tab.id) === String(_currentDocsTab) ? ' selected' : '') + '>' + tab.icon + ' ' + tab.title + '</option>';
-  }).join('');
+  // tab is now a free-text input, nothing to render
 }
 
 function editDocsItem(id) {
@@ -5023,9 +5010,10 @@ function editDocsItem(id) {
 }
 
 function saveDocsItem() {
-  var tab = document.getElementById('docs-tab-select').value;
+  var tab = document.getElementById('docs-tab-select').value.trim();
   var title = document.getElementById('docs-title-input').value.trim();
   var body = document.getElementById('docs-body-input').value.trim();
+  if (!tab) { showToast('Укажите название вкладки'); return; }
   if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
   var method = _editingDocsId ? 'PUT' : 'POST';
   var url = API + '/docs' + (_editingDocsId ? '/' + _editingDocsId : '');
@@ -5121,9 +5109,10 @@ function editDocsItem(id) {
 }
 
 function saveDocsItem() {
-  var tab = document.getElementById('docs-tab-select').value;
+  var tab = document.getElementById('docs-tab-select').value.trim();
   var title = document.getElementById('docs-title-input').value.trim();
   var body = document.getElementById('docs-body-input').value.trim();
+  if (!tab) { showToast('Укажите название вкладки'); return; }
   if (!title || !body) { showToast('Заполните заголовок и текст'); return; }
 
   var method = _editingDocsId ? 'PUT' : 'POST';
