@@ -3936,8 +3936,11 @@ function exportToExcel() {
   var parts = period.split('-');
   var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
 
+  var allPeriods = !period;
   var periodBookings = bookings.filter(function(b){
-    return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
+    if (b.status === 'blocked') return false;
+    if (allPeriods) return true;
+    return b.in && b.in.substr(0,7) === period;
   });
 
   var wb = XLSX.utils.book_new();
@@ -3957,7 +3960,10 @@ function exportToExcel() {
   XLSX.utils.book_append_sheet(wb, ws1, 'Бронирования');
 
   // Лист Расходы
-  var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
+  var periodExpenses = expenses.filter(function(e){ 
+    if (allPeriods) return true;
+    return (e.date||'').substr(0,7) === period; 
+  });
   if (periodExpenses.length) {
     var catLabels = { cleaning:'Клининг', supplies:'Расходники', repair:'Ремонт', utilities:'Коммунальные', other:'Прочее' };
     var eRows = [['Дата','Категория','Описание','Объект','Сумма (₽)']];
@@ -3973,7 +3979,7 @@ function exportToExcel() {
     XLSX.utils.book_append_sheet(wb, ws2, 'Расходы');
   }
 
-  XLSX.writeFile(wb, 'baltika_' + period + '.xlsx');
+  XLSX.writeFile(wb, 'baltika_' + (allPeriods ? 'все_периоды' : period) + '.xlsx');
   showToast('Excel файл скачан ✓');
 }
 
@@ -3998,10 +4004,16 @@ function exportToPdf() {
   var parts = period.split('-');
   var monthLabel = monthNames[parseInt(parts[1])] + ' ' + parts[0];
 
+  var allPeriods = !period;
   var periodBookings = bookings.filter(function(b){
-    return b.status !== 'blocked' && b.in && b.in.substr(0,7) === period;
+    if (b.status === 'blocked') return false;
+    if (allPeriods) return true;
+    return b.in && b.in.substr(0,7) === period;
   });
-  var periodExpenses = expenses.filter(function(e){ return (e.date||'').substr(0,7) === period; });
+  var periodExpenses = expenses.filter(function(e){
+    if (allPeriods) return true;
+    return (e.date||'').substr(0,7) === period;
+  });
 
   var totalIncome = periodBookings.filter(function(b){ return b.status==='confirmed'||b.status==='done'; }).reduce(function(s,b){ return s+b.amount; }, 0);
   var totalExp = periodExpenses.reduce(function(s,e){ return s+parseInt(e.amount||0); }, 0);
