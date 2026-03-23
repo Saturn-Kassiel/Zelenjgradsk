@@ -1632,13 +1632,17 @@ var _adminToken = '';
   var origFetch = window.fetch;
   window.fetch = function(url, opts) {
     if (typeof url === 'string' && url.indexOf(API) === 0 && _adminToken) {
-      opts = opts || {};
-      opts.headers = opts.headers || {};
-      if (typeof opts.headers === 'object') {
+      opts = opts ? JSON.parse(JSON.stringify(opts)) : {};
+      if (!opts.headers) {
+        opts.headers = {};
+      }
+      if (opts.headers instanceof Headers) {
+        opts.headers.set('x-admin-token', _adminToken);
+      } else {
         opts.headers['x-admin-token'] = _adminToken;
       }
     }
-    return origFetch.apply(this, arguments);
+    return origFetch.call(this, url, opts);
   };
 })();
 var CHAT_URL_ADMIN = typeof CHAT_URL !== 'undefined' ? CHAT_URL : '';
@@ -1706,7 +1710,7 @@ function normalizeRow(sheet, row) {
 }
 
 function apiRead(sheet, callback) {
-  fetch(API + '/' + sheet)
+  fetch(API + '/' + sheet, { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var data = (d.data || []).map(function(row){ return normalizeRow(sheet, row); });
@@ -1759,7 +1763,7 @@ function apiWrite(action, sheet, row, id, callback) {
 
   fetch(url, {
     method: method,
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', 'x-admin-token': _adminToken },
     body: method !== 'DELETE' ? JSON.stringify(body) : undefined
   })
   .then(function(r){ return r.json(); })
@@ -1880,7 +1884,7 @@ function nbUpdateGuests() {
 var adminPromoData = null;
 
 function loadAdminPromo() {
-  fetch(API + '/promo')
+  fetch(API + '/promo', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var rows = (d.data||[]).filter(function(r){
@@ -2201,7 +2205,7 @@ function changeStatus(id, sel) {
         b.token = token;
         fetch(API + '/bookings/' + b.id, {
           method: 'PUT',
-          headers: {'Content-Type': 'application/json'},
+          headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
           body: JSON.stringify({ obj_id: b.obj, name: b.name, phone: b.phone, date_in: b.in, date_out: b.out, guests: b.guests, amount: b.amount, status: b.status, comment: b.comment, token: token })
         }).catch(function(){});
       }
@@ -2252,7 +2256,7 @@ function sendChatConfirmed() {
   // Отправляем в Telegram (plain text)
   fetch(API + '/notify', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ text: _pendingTgMsg || msg })
   }).then(function(){ showToast('Уведомление отправлено ✓'); }).catch(function(){});
   _pendingTgMsg = null;
@@ -2260,7 +2264,7 @@ function sendChatConfirmed() {
   // Сохраняем в очередь для чата гостя
   fetch(API + '/chat-queue', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ obj_id: objId, message: msg, is_html: true, token: _pendingChatToken || null })
   }).catch(function(){});
   _pendingChatToken = null;
@@ -2309,7 +2313,7 @@ function confirmMemo() {
 
   fetch(API + '/memo', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ booking_id: m.bookingId, token: token, memo_text: memoText })
   }).then(function(r){ return r.json(); })
     .then(function(d){
@@ -3446,7 +3450,7 @@ var promoObjImages = {};
 var promoObjPrices = {};
 
 function loadObjects(callback) {
-  fetch(API + '/objects')
+  fetch(API + '/objects', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var props = d.data || [];
@@ -3579,7 +3583,7 @@ function uploadPhotos(input) {
     var slot = freeSlots[fi];
     var formData = new FormData();
     formData.append('photo', file);
-    fetch(API + '/upload/photo', { method: 'POST', body: formData })
+    fetch(API + '/upload/photo', { headers: { 'x-admin-token': _adminToken }, method: 'POST', body: formData })
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok) {
@@ -3870,7 +3874,7 @@ var objects = [];
 var editingObjectId = null;
 
 function loadObjectsPage() {
-  fetch(API + '/objects')
+  fetch(API + '/objects', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       objects = d.data || [];
@@ -3984,7 +3988,7 @@ function saveObject() {
 function deleteObject(id) {
   var o = objects.find(function(x){ return x.id === id; });
   if (!confirm('Удалить объект «' + (o ? o.name : id) + '»?')) return;
-  fetch(API + '/objects/' + id, { method: 'DELETE' })
+  fetch(API + '/objects/' + id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.ok) { showToast('Объект удалён'); loadObjectsPage(); }
@@ -4528,9 +4532,9 @@ var _surcharges = [];
 
 function loadPricingPage() {
   Promise.all([
-    fetch(API + '/pricing/seasons').then(function(r){ return r.json(); }),
-    fetch(API + '/pricing/discounts').then(function(r){ return r.json(); }),
-    fetch(API + '/pricing/surcharges').then(function(r){ return r.json(); })
+    fetch(API + '/pricing/seasons', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
+    fetch(API + '/pricing/discounts', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
+    fetch(API + '/pricing/surcharges', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); })
   ]).then(function(results){
     _seasons = results[0].data || [];
     _discounts = results[1].data || [];
@@ -4618,7 +4622,7 @@ function addDiscount() {
 }
 
 function deleteDiscount(id) {
-  fetch(API + '/pricing/discounts/'+id, { method: 'DELETE' })
+  fetch(API + '/pricing/discounts/'+id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
     .then(function(){ loadPricingPage(); showToast('Удалено'); }).catch(function(){});
 }
 
@@ -4673,7 +4677,7 @@ function addSurcharge() {
 }
 
 function deleteSurcharge(id) {
-  fetch(API + '/pricing/surcharges/'+id, { method: 'DELETE' })
+  fetch(API + '/pricing/surcharges/'+id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
     .then(function(){ loadPricingPage(); showToast('Удалено'); }).catch(function(){});
 }
 
@@ -4760,7 +4764,7 @@ var _promptData = {};
 var _promptKeys = []; // все ключи в порядке загрузки
 
 function loadPromptPage() {
-  fetch(API + '/prompt_settings')
+  fetch(API + '/prompt_settings', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       _promptData = {};
@@ -4828,7 +4832,7 @@ function deletePromptField(key) {
   _promptKeys = _promptKeys.filter(function(k){ return k !== key; });
   delete _promptData[key];
   // Удаляем с сервера
-  fetch(API + '/prompt_settings/' + key, { method: 'DELETE' }).catch(function(){});
+  fetch(API + '/prompt_settings/' + key, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' }).catch(function(){});
   var wrap = document.getElementById('pf-wrap-' + key);
   if (wrap) wrap.remove();
   showToast('Раздел удалён');
@@ -4922,8 +4926,8 @@ var _currentDocsTab = null;
 
 function loadDocsPage() {
   Promise.all([
-    fetch(API + '/doc-tabs').then(function(r){ return r.json(); }),
-    fetch(API + '/docs').then(function(r){ return r.json(); })
+    fetch(API + '/doc-tabs', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
+    fetch(API + '/docs', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); })
   ]).then(function(results) {
     _docsTabs = results[0].data || [];
     _docsData = results[1].data || [];
@@ -5283,7 +5287,7 @@ function loginSubmit() {
   btn.textContent = 'Проверяем...';
   fetch(API + '/auth', {
     method: 'POST',
-    headers: {'Content-Type': 'application/json'},
+    headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ password: pass })
   })
   .then(function(r){ return r.json(); })
