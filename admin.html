@@ -406,6 +406,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
       Алина (промпт)
     </div>
+    <div class="nav-item" onclick="showPage('chatstats')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      Статистика чатов
+    </div>
     <div class="nav-item" onclick="showPage('pricing')">
       <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
       Ценообразование
@@ -911,6 +915,47 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
     </div>
 
     <!-- ══ DASHBOARD ══ -->
+    <div class="page" id="page-chatstats">
+      <div style="max-width:900px">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
+          <div>
+            <div style="font-family:Manrope,sans-serif;font-size:20px;font-weight:800;color:var(--charcoal)">Статистика чатов</div>
+            <div style="font-size:13px;color:var(--muted);margin-top:2px">Диалоги с гостями через Алину</div>
+          </div>
+          <select id="chatstats-period" class="period-select" onchange="loadChatStatsPage()" style="font-size:13px;padding:8px 14px;border-radius:20px;border:1.5px solid var(--silver);background:white;color:var(--charcoal);cursor:pointer;outline:none">
+            <option value="7">7 дней</option>
+            <option value="30" selected>30 дней</option>
+            <option value="90">90 дней</option>
+          </select>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
+          <div class="stat-card">
+            <div class="stat-card-label">Диалогов</div>
+            <div class="stat-card-value" id="cs-total">—</div>
+            <div class="stat-card-sub">за период</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Ср. сообщений</div>
+            <div class="stat-card-value" id="cs-avg">—</div>
+            <div class="stat-card-sub">в диалоге</div>
+          </div>
+          <div class="stat-card">
+            <div class="stat-card-label">Сегодня</div>
+            <div class="stat-card-value" id="cs-today">—</div>
+            <div class="stat-card-sub">новых диалогов</div>
+          </div>
+        </div>
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:22px;margin-bottom:20px">
+          <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:var(--charcoal);margin-bottom:16px">По дням</div>
+          <div id="cs-byday" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+        <div style="background:var(--white);border-radius:16px;border:1px solid var(--silver);padding:22px">
+          <div style="font-family:Manrope,sans-serif;font-size:14px;font-weight:700;color:var(--charcoal);margin-bottom:16px">Последние диалоги — первый вопрос</div>
+          <div id="cs-recent" style="display:flex;flex-direction:column;gap:8px"></div>
+        </div>
+      </div>
+    </div>
+
     <div class="page" id="page-docs">
       <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:24px;flex-wrap:wrap;gap:12px">
         <div>
@@ -1726,14 +1771,14 @@ var catMeta = {
 
 // ── NAVIGATION ──
 var currentPage = 'bookings';
-var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', pricing:'Ценообразование', promo:'Промо / Спецпредложение', docs:'Функционал сайта' };
+var pageTitles = { bookings:'Бронирования', calendar:'Календарь', expenses:'Расходы', supplies:'Расходники', cleaning:'Клининг', dashboard:'Дашборд', guests:'Клиентская база', objects:'Объекты', alina:'Алина — промпт', chatstats:'Статистика чатов', pricing:'Ценообразование', promo:'Промо / Спецпредложение', docs:'Функционал сайта' };
 
 function showPage(name) {
   document.querySelectorAll('.page').forEach(function(p) { p.classList.remove('active'); });
   document.getElementById('page-' + name).classList.add('active');
   document.querySelectorAll('.nav-item').forEach(function(n) { n.classList.remove('active'); });
   var items = document.querySelectorAll('.nav-item');
-  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','pricing','promo','docs'].indexOf(name);
+  var pageIndex = ['bookings','calendar','expenses','supplies','cleaning','dashboard','guests','objects','alina','chatstats','pricing','promo','docs'].indexOf(name);
   if (items[pageIndex]) items[pageIndex].classList.add('active');
   document.getElementById('topbar-title').textContent = pageTitles[name];
   currentPage = name;
@@ -1743,6 +1788,7 @@ function showPage(name) {
   if (name === 'guests') loadGuestsPage();
   if (name === 'pricing') loadPricingPage();
   if (name === 'docs') loadDocsPage();
+  if (name === 'chatstats') loadChatStatsPage();
   // Показываем кнопку экспорта только на актуальных страницах
   var exportWrap = document.getElementById('export-menu-wrap');
   if (exportWrap) {
@@ -4797,6 +4843,57 @@ function savePrompt() {
 function resetPrompt() {
   if (!confirm('Сбросить изменения? Данные перезагрузятся с сервера.')) return;
   loadPromptPage();
+}
+
+// ── CHAT STATS ──
+function loadChatStatsPage() {
+  var period = document.getElementById('chatstats-period') ? document.getElementById('chatstats-period').value : '30';
+  fetch(API + '/chat/stats?period=' + period)
+    .then(function(r){ return r.json(); })
+    .then(function(d){
+      if (!d.ok) return;
+      document.getElementById('cs-total').textContent = d.total || 0;
+      document.getElementById('cs-avg').textContent = d.avg_messages || 0;
+
+      // Сегодня
+      var today = new Date().toISOString().slice(0,10);
+      var todayRow = (d.by_day || []).find(function(r){ return r.day && r.day.slice(0,10) === today; });
+      document.getElementById('cs-today').textContent = todayRow ? todayRow.count : 0;
+
+      // По дням
+      var byDay = document.getElementById('cs-byday');
+      if (!d.by_day || !d.by_day.length) {
+        byDay.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0">Нет данных</div>';
+      } else {
+        var maxCount = Math.max.apply(null, d.by_day.map(function(r){ return parseInt(r.count); }));
+        byDay.innerHTML = d.by_day.map(function(r) {
+          var pct = maxCount > 0 ? Math.round(parseInt(r.count) / maxCount * 100) : 0;
+          var dayStr = r.day ? r.day.slice(0,10).split('-').reverse().join('.') : '—';
+          return '<div style="display:flex;align-items:center;gap:12px">' +
+            '<div style="font-size:12px;color:var(--muted);min-width:80px">' + dayStr + '</div>' +
+            '<div style="flex:1;background:var(--silver);border-radius:4px;height:8px;overflow:hidden">' +
+              '<div style="width:' + pct + '%;height:100%;background:var(--teal);border-radius:4px"></div>' +
+            '</div>' +
+            '<div style="font-size:13px;font-weight:600;color:var(--charcoal);min-width:24px;text-align:right">' + r.count + '</div>' +
+          '</div>';
+        }).join('');
+      }
+
+      // Последние диалоги
+      var recent = document.getElementById('cs-recent');
+      if (!d.recent || !d.recent.length) {
+        recent.innerHTML = '<div style="font-size:13px;color:var(--muted);padding:8px 0">Нет данных</div>';
+      } else {
+        recent.innerHTML = d.recent.map(function(r) {
+          var dt = r.created_at ? new Date(r.created_at) : null;
+          var dtStr = dt ? dt.toLocaleDateString('ru') + ' ' + dt.toLocaleTimeString('ru', {hour:'2-digit',minute:'2-digit'}) : '—';
+          return '<div style="display:flex;align-items:flex-start;gap:12px;padding:10px 0;border-bottom:1px solid var(--silver)">' +
+            '<div style="flex:1;font-size:13px;color:var(--charcoal)">' + (r.first_message || '—') + '</div>' +
+            '<div style="font-size:11px;color:var(--muted);white-space:nowrap;flex-shrink:0">' + dtStr + '</div>' +
+          '</div>';
+        }).join('');
+      }
+    }).catch(function(){});
 }
 
 // ── DOCS ──
