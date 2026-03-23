@@ -141,6 +141,10 @@ body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--c
 .ss-cancelled { background: var(--danger-light); color: var(--danger); }
 .ss-done { background: var(--silver); color: var(--muted); }
 .action-btns { display: flex; gap: 6px; }
+.call-btn-wrap { display: none; }
+@media (max-width: 768px) { .call-btn-wrap { display: inline-flex; } }
+@media (max-width: 768px) { a.icon-btn[href^="tel:"] { display: inline-flex !important; color: var(--teal); background: rgba(62,112,87,0.1); } }
+@media (min-width: 769px) { a.call-btn { display: none !important; } }
 .icon-btn { width: 30px; height: 30px; border-radius: 8px; border: 1.5px solid var(--silver); background: transparent; cursor: pointer; display: flex; align-items: center; justify-content: center; color: var(--muted); transition: all 0.2s; touch-action: manipulation; }
 .icon-btn:hover { border-color: var(--teal); color: var(--teal); }
 .icon-btn.danger:hover { border-color: var(--danger); color: var(--danger); }
@@ -2094,6 +2098,7 @@ function renderBookings(filter, search) {
       '<td><select class="status-select ss-'+b.status+'"'+(isDisabled?' disabled style="opacity:0.7;cursor:default"':'')+' onchange="changeStatus(\''+b.id+'\',this)">'+opts+'</select></td>' +
       '<td><div class="action-btns">' +
         (b.status==='confirmed' ? '<button class="icon-btn memo-btn" data-id="'+b.id+'" data-obj="'+b.obj+'" data-name="'+encodeURIComponent(b.name)+'" data-in="'+(b.in||'')+'" data-out="'+(b.out||'')+'" data-token="'+(b.token||'')+'" title="Отправить памятку гостю" style="background:rgba(62,112,87,0.1);color:var(--teal)"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg></button>' : '') +
+        (b.phone ? '<a href="tel:'+b.phone+'" class="icon-btn call-btn" title="Позвонить '+b.phone+'"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 13a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 2.18h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg></a>' : '') +
         '<button class="icon-btn" onclick="editBooking(\''+b.id+'\')" title="Редактировать"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg></button>' +
         '<button class="icon-btn danger" onclick="deleteBooking(\''+b.id+'\')" title="Удалить"><svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"/></svg></button>' +
       '</div></td>';
