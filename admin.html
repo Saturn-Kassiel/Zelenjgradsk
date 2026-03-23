@@ -3461,16 +3461,18 @@ function loadObjects(callback) {
     .catch(function(){ if (callback) callback(); });
 }
 
-loadObjects(function(){
-  updateObjSelects();
-  loadBookings();
-  loadExpenses();
-  loadSupplies();
-  loadCleaning();
-  loadPromoAdmin();
-  loadAdminPromo();
-  loadDocsPage();
-});
+function initAdminData() {
+  loadObjects(function(){
+    updateObjSelects();
+    loadBookings();
+    loadExpenses();
+    loadSupplies();
+    loadCleaning();
+    loadPromoAdmin();
+    loadAdminPromo();
+    loadDocsPage();
+  });
+}
 
 function updateObjSelects() {
   var ids = Object.keys(promoObjNames).sort();
@@ -5289,6 +5291,7 @@ function loginSubmit() {
     if (d && d.ok) {
       _adminToken = pass;
       document.getElementById('login-overlay').classList.add('hidden');
+      initAdminData();
     } else {
       input.classList.add('error');
       err.style.display = 'block';
