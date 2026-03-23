@@ -1625,6 +1625,22 @@ function driveDirectUrl(url) {
 
 
 var API = APPS_URL;
+var _adminToken = '';
+
+// Патч fetch — автоматически добавляем x-admin-token к запросам на API
+(function() {
+  var origFetch = window.fetch;
+  window.fetch = function(url, opts) {
+    if (typeof url === 'string' && url.indexOf(API) === 0 && _adminToken) {
+      opts = opts || {};
+      opts.headers = opts.headers || {};
+      if (typeof opts.headers === 'object') {
+        opts.headers['x-admin-token'] = _adminToken;
+      }
+    }
+    return origFetch.apply(this, arguments);
+  };
+})();
 var CHAT_URL_ADMIN = typeof CHAT_URL !== 'undefined' ? CHAT_URL : '';
 
 // ── Маппинг полей из БД в старый формат (для совместимости с остальным кодом) ──
@@ -5271,6 +5287,7 @@ function loginSubmit() {
   .then(function(r){ return r.json(); })
   .then(function(d){
     if (d && d.ok) {
+      _adminToken = pass;
       document.getElementById('login-overlay').classList.add('hidden');
     } else {
       input.classList.add('error');
