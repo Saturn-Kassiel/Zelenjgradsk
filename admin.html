@@ -1627,24 +1627,13 @@ function driveDirectUrl(url) {
 var API = APPS_URL;
 var _adminToken = '';
 
-// Патч fetch — автоматически добавляем x-admin-token к запросам на API
-(function() {
-  var origFetch = window.fetch;
-  window.fetch = function(url, opts) {
-    if (typeof url === 'string' && url.indexOf(API) === 0 && _adminToken) {
-      opts = opts ? JSON.parse(JSON.stringify(opts)) : {};
-      if (!opts.headers) {
-        opts.headers = {};
-      }
-      if (opts.headers instanceof Headers) {
-        opts.headers.set('x-admin-token', _adminToken);
-      } else {
-        opts.headers['x-admin-token'] = _adminToken;
-      }
-    }
-    return origFetch.call(this, url, opts);
-  };
-})();
+// Вспомогательная функция для запросов к API с токеном
+function apiFetch(url, opts) {
+  opts = opts || {};
+  opts.headers = opts.headers || {};
+  if (_adminToken) opts.headers['x-admin-token'] = _adminToken;
+  return fetch(url, opts);
+}
 var CHAT_URL_ADMIN = typeof CHAT_URL !== 'undefined' ? CHAT_URL : '';
 
 // ── Маппинг полей из БД в старый формат (для совместимости с остальным кодом) ──
@@ -1710,7 +1699,7 @@ function normalizeRow(sheet, row) {
 }
 
 function apiRead(sheet, callback) {
-  fetch(API + '/' + sheet, { headers: { 'x-admin-token': _adminToken } })
+  apiFetch(API + '/' + sheet, { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var data = (d.data || []).map(function(row){ return normalizeRow(sheet, row); });
@@ -1884,7 +1873,7 @@ function nbUpdateGuests() {
 var adminPromoData = null;
 
 function loadAdminPromo() {
-  fetch(API + '/promo', { headers: { 'x-admin-token': _adminToken } })
+  apiFetch(API + '/promo', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var rows = (d.data||[]).filter(function(r){
@@ -2203,7 +2192,7 @@ function changeStatus(id, sel) {
       if (!b.token || !b.token.trim()) {
         // Сохраняем новый токен в БД
         b.token = token;
-        fetch(API + '/bookings/' + b.id, {
+        apiFetch(API + '/bookings/' + b.id, {
           method: 'PUT',
           headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
           body: JSON.stringify({ obj_id: b.obj, name: b.name, phone: b.phone, date_in: b.in, date_out: b.out, guests: b.guests, amount: b.amount, status: b.status, comment: b.comment, token: token })
@@ -2254,7 +2243,7 @@ function sendChatConfirmed() {
   _pendingChatObjId = null;
 
   // Отправляем в Telegram (plain text)
-  fetch(API + '/notify', {
+  apiFetch(API + '/notify', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ text: _pendingTgMsg || msg })
@@ -2262,7 +2251,7 @@ function sendChatConfirmed() {
   _pendingTgMsg = null;
 
   // Сохраняем в очередь для чата гостя
-  fetch(API + '/chat-queue', {
+  apiFetch(API + '/chat-queue', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ obj_id: objId, message: msg, is_html: true, token: _pendingChatToken || null })
@@ -2311,7 +2300,7 @@ function confirmMemo() {
     '\nВыезд: ' + checkoutFormatted +
     '\nСсылка для гостя:\n' + accessUrl;
 
-  fetch(API + '/memo', {
+  apiFetch(API + '/memo', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ booking_id: m.bookingId, token: token, memo_text: memoText })
@@ -2615,7 +2604,7 @@ function nbRecalc() {
   var breakdownEl = document.getElementById('nb-breakdown');
   var breakdownRows = document.getElementById('nb-breakdown-rows');
   if (price && inVal && outStr) {
-    fetch(API + '/pricing/calculate', {
+    apiFetch(API + '/pricing/calculate', {
       method: 'POST', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ base_price: price, date_in: inVal, date_out: outStr, obj_id: obj })
     }).then(function(r){ return r.json(); })
@@ -3379,7 +3368,7 @@ function savePromo() {
   var row = [true, obj, price, from, to, label];
 
   var body = { obj_id: obj, price: price, date_from: from, date_to: to, label: label };
-  fetch(API + '/promo', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
+  apiFetch(API + '/promo', { method: 'POST', headers: {'Content-Type':'application/json'}, body: JSON.stringify(body) })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d && d.ok) {
@@ -3450,7 +3439,7 @@ var promoObjImages = {};
 var promoObjPrices = {};
 
 function loadObjects(callback) {
-  fetch(API + '/objects', { headers: { 'x-admin-token': _adminToken } })
+  apiFetch(API + '/objects', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       var props = d.data || [];
@@ -3583,7 +3572,7 @@ function uploadPhotos(input) {
     var slot = freeSlots[fi];
     var formData = new FormData();
     formData.append('photo', file);
-    fetch(API + '/upload/photo', { headers: { 'x-admin-token': _adminToken }, method: 'POST', body: formData })
+    apiFetch(API + '/upload/photo', { headers: { 'x-admin-token': _adminToken }, method: 'POST', body: formData })
       .then(function(r){ return r.json(); })
       .then(function(d){
         if (d.ok) {
@@ -3874,7 +3863,7 @@ var objects = [];
 var editingObjectId = null;
 
 function loadObjectsPage() {
-  fetch(API + '/objects', { headers: { 'x-admin-token': _adminToken } })
+  apiFetch(API + '/objects', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       objects = d.data || [];
@@ -3988,7 +3977,7 @@ function saveObject() {
 function deleteObject(id) {
   var o = objects.find(function(x){ return x.id === id; });
   if (!confirm('Удалить объект «' + (o ? o.name : id) + '»?')) return;
-  fetch(API + '/objects/' + id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
+  apiFetch(API + '/objects/' + id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (d.ok) { showToast('Объект удалён'); loadObjectsPage(); }
@@ -4482,7 +4471,7 @@ function openGuestModal(phoneEncoded) {
 
   // Загружаем историю броней
   document.getElementById('gm-bookings').innerHTML = '<div style="font-size:12px;color:var(--muted)">Загрузка...</div>';
-  fetch(API + '/guests/' + encodeURIComponent(phone) + '/bookings')
+  apiFetch(API + '/guests/' + encodeURIComponent(phone) + '/bookings')
     .then(function(r){ return r.json(); })
     .then(function(d){
       var items = d.data || [];
@@ -4511,7 +4500,7 @@ function saveGuestNote() {
   if (!_currentGuest) return;
   var label = document.getElementById('guest-modal-label').value;
   var note = document.getElementById('guest-modal-note').value;
-  fetch(API + '/guests/note', {
+  apiFetch(API + '/guests/note', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ phone: _currentGuest.phone, name: _currentGuest.name, label: label, note: note })
@@ -4532,9 +4521,9 @@ var _surcharges = [];
 
 function loadPricingPage() {
   Promise.all([
-    fetch(API + '/pricing/seasons', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
-    fetch(API + '/pricing/discounts', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
-    fetch(API + '/pricing/surcharges', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); })
+    apiFetch(API + '/pricing/seasons', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
+    apiFetch(API + '/pricing/discounts', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
+    apiFetch(API + '/pricing/surcharges', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); })
   ]).then(function(results){
     _seasons = results[0].data || [];
     _discounts = results[1].data || [];
@@ -4582,7 +4571,7 @@ function saveSeasons() {
   var promises = Array.from(inputs).map(function(inp){
     var month = inp.dataset.month;
     var coef = parseFloat(inp.value)||1;
-    return fetch(API + '/pricing/seasons/'+month, {
+    return apiFetch(API + '/pricing/seasons/'+month, {
       method: 'PUT',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ coefficient: coef, label: '' })
@@ -4614,7 +4603,7 @@ function renderDiscounts() {
 
 function addDiscount() {
   if (_discounts.length >= 5) { showToast('Максимум 5 позиций'); return; }
-  fetch(API + '/pricing/discounts', {
+  apiFetch(API + '/pricing/discounts', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ nights_from: 7, discount_pct: 5, label: '' })
   }).then(function(r){ return r.json(); })
@@ -4622,7 +4611,7 @@ function addDiscount() {
 }
 
 function deleteDiscount(id) {
-  fetch(API + '/pricing/discounts/'+id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
+  apiFetch(API + '/pricing/discounts/'+id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
     .then(function(){ loadPricingPage(); showToast('Удалено'); }).catch(function(){});
 }
 
@@ -4630,7 +4619,7 @@ function saveDiscounts() {
   var rows = document.querySelectorAll('#discounts-list [data-id]');
   var promises = Array.from(rows).map(function(row){
     var id = row.dataset.id;
-    return fetch(API + '/pricing/discounts/'+id, {
+    return apiFetch(API + '/pricing/discounts/'+id, {
       method: 'PUT', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         nights_from: parseInt(row.querySelector('[data-field="nights_from"]').value)||1,
@@ -4669,7 +4658,7 @@ function addSurcharge() {
   var now = new Date();
   var df = now.getFullYear()+'-01-01';
   var dt = now.getFullYear()+'-01-08';
-  fetch(API + '/pricing/surcharges', {
+  apiFetch(API + '/pricing/surcharges', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ label: 'Новый период', date_from: df, date_to: dt, coefficient: 1.5 })
   }).then(function(r){ return r.json(); })
@@ -4677,7 +4666,7 @@ function addSurcharge() {
 }
 
 function deleteSurcharge(id) {
-  fetch(API + '/pricing/surcharges/'+id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
+  apiFetch(API + '/pricing/surcharges/'+id, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' })
     .then(function(){ loadPricingPage(); showToast('Удалено'); }).catch(function(){});
 }
 
@@ -4685,7 +4674,7 @@ function saveSurcharges() {
   var rows = document.querySelectorAll('#surcharges-list [data-id]');
   var promises = Array.from(rows).map(function(row){
     var id = row.dataset.id;
-    return fetch(API + '/pricing/surcharges/'+id, {
+    return apiFetch(API + '/pricing/surcharges/'+id, {
       method: 'PUT', headers: {'Content-Type':'application/json'},
       body: JSON.stringify({
         label: row.querySelector('[data-field="label"]').value.trim(),
@@ -4724,7 +4713,7 @@ function runCalcPrice() {
   }
   if (errEl) errEl.style.display = 'none';
   var basePrice = parseInt(promoObjPrices[objId]||4000);
-  fetch(API + '/pricing/calculate', {
+  apiFetch(API + '/pricing/calculate', {
     method: 'POST', headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ base_price: basePrice, date_in: dateIn, date_out: dateOut, obj_id: objId })
   }).then(function(r){ return r.json(); })
@@ -4764,7 +4753,7 @@ var _promptData = {};
 var _promptKeys = []; // все ключи в порядке загрузки
 
 function loadPromptPage() {
-  fetch(API + '/prompt_settings', { headers: { 'x-admin-token': _adminToken } })
+  apiFetch(API + '/prompt_settings', { headers: { 'x-admin-token': _adminToken } })
     .then(function(r){ return r.json(); })
     .then(function(d){
       _promptData = {};
@@ -4832,7 +4821,7 @@ function deletePromptField(key) {
   _promptKeys = _promptKeys.filter(function(k){ return k !== key; });
   delete _promptData[key];
   // Удаляем с сервера
-  fetch(API + '/prompt_settings/' + key, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' }).catch(function(){});
+  apiFetch(API + '/prompt_settings/' + key, { headers: { 'x-admin-token': _adminToken }, method: 'DELETE' }).catch(function(){});
   var wrap = document.getElementById('pf-wrap-' + key);
   if (wrap) wrap.remove();
   showToast('Раздел удалён');
@@ -4845,7 +4834,7 @@ function savePrompt() {
   var promises = allKeys.map(function(key){
     var el = document.getElementById('pf-' + key);
     if (!el) return Promise.resolve();
-    return fetch(API + '/prompt_settings', {
+    return apiFetch(API + '/prompt_settings', {
       method: 'POST',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({ key: key, value: el.value })
@@ -4870,7 +4859,7 @@ function resetPrompt() {
 // ── CHAT STATS ──
 function loadChatStatsPage() {
   var period = document.getElementById('chatstats-period') ? document.getElementById('chatstats-period').value : '30';
-  fetch(API + '/chat/stats?period=' + period)
+  apiFetch(API + '/chat/stats?period=' + period)
     .then(function(r){ return r.json(); })
     .then(function(d){
       if (!d.ok) return;
@@ -4926,8 +4915,8 @@ var _currentDocsTab = null;
 
 function loadDocsPage() {
   Promise.all([
-    fetch(API + '/doc-tabs', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
-    fetch(API + '/docs', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); })
+    apiFetch(API + '/doc-tabs', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); }),
+    apiFetch(API + '/docs', { headers: { 'x-admin-token': _adminToken } }).then(function(r){ return r.json(); })
   ]).then(function(results) {
     _docsTabs = results[0].data || [];
     _docsData = results[1].data || [];
@@ -5036,7 +5025,7 @@ function saveNewTab() {
   var icon = document.getElementById('tab-icon-input').value.trim() || '📄';
   var title = document.getElementById('tab-title-input').value.trim();
   if (!title) { showToast('Введите название вкладки'); return; }
-  fetch(API + '/doc-tabs', {
+  apiFetch(API + '/doc-tabs', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ title: title, icon: icon, sort_order: _docsTabs.length })
@@ -5074,7 +5063,7 @@ function createTabFromModal() {
   var icon = document.getElementById('new-tab-icon').value.trim() || '📄';
   var title = document.getElementById('new-tab-name').value.trim();
   if (!title) { showToast('Введите название вкладки'); return; }
-  fetch(API + '/doc-tabs', {
+  apiFetch(API + '/doc-tabs', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ title: title, icon: icon, sort_order: _docsTabs.length })
@@ -5181,7 +5170,7 @@ function createTabFromModal() {
   var icon = document.getElementById('new-tab-icon').value.trim() || '📄';
   var title = document.getElementById('new-tab-name').value.trim();
   if (!title) { showToast('Введите название вкладки'); return; }
-  fetch(API + '/doc-tabs', {
+  apiFetch(API + '/doc-tabs', {
     method: 'POST',
     headers: {'Content-Type':'application/json'},
     body: JSON.stringify({ title: title, icon: icon, sort_order: _docsTabs.length })
@@ -5285,7 +5274,7 @@ function loginSubmit() {
   err.style.display = 'none';
   btn.disabled = true;
   btn.textContent = 'Проверяем...';
-  fetch(API + '/auth', {
+  apiFetch(API + '/auth', {
     method: 'POST',
     headers: {'Content-Type': 'application/json', 'x-admin-token': _adminToken},
     body: JSON.stringify({ password: pass })
