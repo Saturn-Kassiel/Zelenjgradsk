@@ -4409,7 +4409,7 @@ var GUEST_LABELS = {
 
 function loadGuestsPage(search) {
   var url = API + '/guests' + (search ? '?search=' + encodeURIComponent(search) : '');
-  fetch(url)
+  apiFetch(url)
     .then(function(r){ return r.json(); })
     .then(function(d){
       _guests = d.data || [];
