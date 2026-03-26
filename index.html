@@ -42,7 +42,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; overscroll-behavior-x: none; }
+body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); overflow-x: hidden; }
 
 body::before {
   content: '';
@@ -1379,7 +1379,7 @@ function renderCards(props) {
   }
 
   // Загружаем бронирования ПЕРВЫМИ — рендер карточек только после
-  fetch(APPS_URL + '/bookings')
+  fetch(APPS_URL + '/bookings/busy')
     .then(function(r){ return r.json(); })
     .then(function(d){
       (d.data||[]).forEach(function(b){
@@ -1632,7 +1632,7 @@ var calData = {
 
 // Загружаем бронирования сразу для блокировки дат в форме
 function loadBookingsForCal() {
-  fetch(APPS_URL + '/bookings')
+  fetch(APPS_URL + '/bookings/busy')
     .then(function(r){ return r.json(); })
     .then(function(d){
       (d.data||[]).forEach(function(b){
@@ -2108,7 +2108,7 @@ function submitForm() {
   var id = Date.now();
   var row = [id, obj.value, name.value.trim(), phone.value.trim(), checkin.value, checkout, guests, 0, 'new', comment];
 
-  fetch(APPS_URL + '/bookings', {
+  fetch(APPS_URL + '/bookings/busy', {
     method:'POST',
     headers: {'Content-Type': 'application/json'},
     body: JSON.stringify({ obj_id: row[1], name: row[2], phone: row[3], date_in: row[4], date_out: row[5], guests: row[6], amount: row[7], status: 'new', comment: row[9]||'' })
