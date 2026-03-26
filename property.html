@@ -3,7 +3,6 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-<meta name="format-detection" content="telephone=no">
 <meta name="theme-color" content="#F4F6FB">
 <title>Апартаменты Балтики — аренда в Калининградской области</title>
 <meta name="description" content="Апартаменты в Зеленоградске у Балтийского моря. Современный ремонт, всё необходимое для отдыха. Бронирование онлайн.">
@@ -32,7 +31,7 @@
 }
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
-body { overflow-x: hidden; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--charcoal); overscroll-behavior-x: none; }
+body { overflow-x: hidden; font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--charcoal); overflow-x: hidden; }
 body::before {
   content: ''; position: fixed; inset: 0; z-index: -1;
   background:
@@ -359,15 +358,6 @@ footer { background: var(--charcoal); color: rgba(255,255,255,0.65); padding: 48
 .footer-col ul a:hover { color: var(--mint); }
 .footer-bottom { max-width: 1200px; margin: 0 auto; padding-top: 22px; border-top: 1px solid rgba(255,255,255,0.1); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 10px; }
 .footer-bottom p { font-size: 12px; color: rgba(255,255,255,0.3); }
-@media (max-width: 900px) {
-  .footer-inner { grid-template-columns: 1fr 1fr; }
-}
-@media (max-width: 600px) {
-  footer { padding: 36px 20px 24px; }
-  .footer-inner { grid-template-columns: 1fr; gap: 24px; }
-  .footer-bottom { flex-direction: column; align-items: flex-start; gap: 12px; }
-  .footer-bottom > div { justify-content: flex-start !important; }
-}
 
 /* MODAL */
 .modal-overlay {
@@ -1179,7 +1169,7 @@ var statuses = {};
 
 function loadPropBookings() {
   var propId = getPropId();
-  fetch(APPS_URL + '/bookings')
+  fetch(APPS_URL + '/bookings/busy')
     .then(function(r){ return r.json(); })
     .then(function(d){
       (d.data||[]).forEach(function(b){
